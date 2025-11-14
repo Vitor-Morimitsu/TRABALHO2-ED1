@@ -7,6 +7,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "circulo.h"
+#include "retangulo.h"
+#include "linha.h"
+#include "texto.h"
 
 typedef void* Pacote;
 typedef void* Forma;
@@ -35,5 +39,14 @@ void setFormaPacote(Pacote pac, Forma form);
     Define o tipo do pacote.
 */
 void setTipoPacote(Pacote pac, char type);
+
+/*
+    Compara o id da forma contida no pacote com a id passada.
+    Retorna 0 caso o id passado e o id da forma sejam iguais.
+    Retorna 1 caso contrário.
+*/
+int comparaPacote(Pacote pac, int id);
+
+
 
 #endif

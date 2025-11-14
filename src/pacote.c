@@ -52,3 +52,24 @@ void setTipoPacote(Pacote pac, char type){
     stPacote* p = (stPacote*)pac;
     p->tipo = type;
 }
+
+int comparaPacote(Pacote pac, int id){
+    if(pac == NULL){
+        printf("Erro ao comparar pacotes.");
+        return;
+    }
+
+    stPacote* p = (stPacote*)pac;
+    int idForma = -1;
+
+    if(p->tipo == 'c'){
+        return getIDCirculo((Circulo*)p->fig);
+    }else if(p->tipo == 'r'){
+        return getIDRetangulo((Retangulo*)p->fig);
+    }else if(p->tipo == 'l'){
+        return getIDLinha((Linha*)p->fig);
+    }else if(p->tipo == 't'){
+        return  getIDTexto((Texto*)p->fig);
+    }
+
+}
