@@ -26,6 +26,11 @@ void insereLista(Lista l, Pacote pac);
 */
 Pacote removeLista(Lista l,int id); //chamar compara pacote
 
+/*
+    Retorna o tamanho da lista.
+*/
+int getTamanhoLista(Lista l);
 
+Pacote procuraPacoteLista(Lista l)
 
 #endif
