@@ -24,13 +24,13 @@ void insereLista(Lista l, Pacote pac);
 /*
     Remove um pacote da lista e o retorna.
 */
-Pacote removeLista(Lista l,int id); //chamar compara pacote
+Pacote removeLista(Lista l,int id); //chamar procura pacote
 
 /*
     Retorna o tamanho da lista.
 */
 int getTamanhoLista(Lista l);
 
-Pacote procuraPacoteLista(Lista l)
+Pacote procuraPacoteLista(Lista l,int id);
 
 #endif

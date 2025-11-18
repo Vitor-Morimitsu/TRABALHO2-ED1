@@ -18,7 +18,7 @@ Lista criarLista(){
     stLista* lista = malloc(sizeof(stLista));
     if(lista == NULL){
         printf("Erro ao criar lista\n");
-        return;
+        return NULL;
     }
 
     lista->inicio = NULL;
@@ -53,4 +53,78 @@ void insereLista(Lista l, Pacote pac){
     }
     lista->fim = novo;
     lista->tamanho++;
+}
+
+int getTamanhoLista(Lista l){
+    if(l == NULL){
+        printf("Erro em getTamanhoLista\n");
+        return -1;
+    }
+
+    return ((stLista*)l)->tamanho;
+}
+
+Pacote procuraPacoteLista(Lista l, int id){
+    if(l == NULL){
+        printf("Erro em procuraPacoteLista\n");
+        return NULL;
+    }
+
+    stLista* lista = (stLista*)l;
+    stCelula* temp = lista->inicio;
+    int confirma = -1;
+    while(temp != NULL){
+        confirma = comparaPacote((Pacote)temp->conteudo, id);
+        if(confirma == 0){
+            return (Pacote)temp->conteudo;
+        }
+
+        temp = temp->proximo;
+    }
+    return NULL;
+}
+
+Pacote removeLista(Lista l, int id){
+    if(l == NULL){
+        printf("Erro em removeLista\n");
+        return NULL;
+    }
+
+    int identificador = -1;
+    stLista* lista = (stLista*)l;
+    stCelula* temp = lista->inicio;
+    if(temp == NULL){
+        printf("Lista vazia.Impossível remoção\n");
+        return NULL;
+    }
+
+    while(temp != NULL){
+        Pacote p = (Pacote)temp->conteudo;
+        int identificador = getIDPacote(p);
+        
+        if(identificador == id){
+            if(temp->anterior != NULL){
+                temp->anterior->proximo = temp->proximo;
+            }else{
+                //primeiro elemento
+                lista->inicio = temp->proximo;
+            }
+
+            if(temp->proximo != NULL){
+                temp->proximo->anterior = temp->anterior;
+            }else{
+                //último elemento
+                lista->fim = temp->anterior;
+            }
+            
+            lista->tamanho--;  
+            free(temp);        
+            return p;          
+        }
+        
+        temp = temp->proximo;
+    }
+    
+    //mão encontrou o pacote com o id especificado
+    return NULL;
 }

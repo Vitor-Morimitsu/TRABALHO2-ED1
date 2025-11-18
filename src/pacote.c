@@ -34,6 +34,29 @@ char getTipoPacote(Pacote pac){
     return p->tipo;
 }
 
+int getIDPacote(Pacote pac){
+    if(pac == NULL){
+        printf("Erro em getIDPacote\n");
+        return;
+    }
+    
+    int id = -1;
+    char tipo = getTipoPacote(pac);
+    Forma form = getFormaPacote(pac);
+
+    if(tipo == 'c'){
+        id = getIDCirculo((Circulo)form);
+    }else if(tipo == 'r'){
+        id = getIDRetangulo((Retangulo)form);
+    }else if(tipo == 'l'){
+        id = getIDLinha((Linha)form);
+    }else if(tipo == 't'){
+        id = getIDTexto((Texto)form);
+    }
+
+    return id;
+}
+
 void setFormaPacote(Pacote pac, Forma form){
     if(pac == NULL || form == NULL){
         printf("Erro em setFormaPacote\n");

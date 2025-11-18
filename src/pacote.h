@@ -47,6 +47,11 @@ void setTipoPacote(Pacote pac, char type);
 */
 int comparaPacote(Pacote pac, int id);
 
+/*
+    Retorna o id da forma contida no pacote.
+*/
+int getIDPacote(Pacote pac);
+
 
 
 #endif
