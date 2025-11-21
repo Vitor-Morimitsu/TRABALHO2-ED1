@@ -31,6 +31,9 @@ Pacote removeLista(Lista l,int id); //chamar procura pacote
 */
 int getTamanhoLista(Lista l);
 
+/*
+    Procura e retorna um pacote contido na lista sem apagá-lo da lista.
+*/
 Pacote procuraPacoteLista(Lista l,int id);
 
 #endif

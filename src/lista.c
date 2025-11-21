@@ -125,6 +125,6 @@ Pacote removeLista(Lista l, int id){
         temp = temp->proximo;
     }
     
-    //mão encontrou o pacote com o id especificado
+    //não encontrou o pacote com o id especificado
     return NULL;
 }
