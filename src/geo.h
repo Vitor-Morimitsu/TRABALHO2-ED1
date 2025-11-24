@@ -17,6 +17,4 @@
 */
 void lerGeo(FILE* geo, FILE* svgEntrada, Lista list);
 
-
-
 #endif
