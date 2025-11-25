@@ -26,16 +26,20 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
             char cor[50] = getCorPCirculo((Circulo)formaPac);
 
             if(letra == 'h'){//círculo virará um anteparo(linha) horizontal
-                Linha lin = criarLinha(id,x - raio, y - raio,x+raio,y+raio,cor);
-                setFormaPacote(pac, (Forma)formaPac);
-                
+                Linha lin = criarLinha(id,x - raio, y,x+raio,y,cor);
+                setFormaPacote(pac, (Forma)lin);
+
             }else if(letra == 'v'){//círculo virará um anteparo(linha) vertical
+                Linha lin = criarLinha(id,x, y-raio, x, y+raio,cor);
+                setFormaPacote(pac, (Forma)lin);
 
             }else{
                 printf("letra de comando invalida em comandoA\n");
                 break;
             }
-        }
+            fprintf(arqTxt, "id do segmento: %i, figura original: círculo\n");
+        }else if(tipo == 'r'){}
+        contador++;
 
     }
 

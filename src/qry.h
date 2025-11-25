@@ -6,6 +6,8 @@
 #include "lista.h"
 #include "arvore.h"
 #include "pacote.h"
+#include <string.h>
+
 /*
     Arquivo .h responsável pelo processamento das instruções contidas no .qry
 */
