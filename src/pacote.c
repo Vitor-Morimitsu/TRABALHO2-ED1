@@ -96,3 +96,17 @@ int comparaPacote(Pacote pac, int id){
     }
 
 }
+
+void liberarPacote(Pacote p) {
+    if(p == NULL) {
+        return;
+    }
+    
+    stPacote* pacote = (stPacote*)p;
+    
+    if(pacote->fig != NULL) {
+        free(pacote->fig);
+    }
+    
+    free(pacote);
+}

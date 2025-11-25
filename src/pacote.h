@@ -52,6 +52,10 @@ int comparaPacote(Pacote pac, int id);
 */
 int getIDPacote(Pacote pac);
 
+/*
+    Libera a memória de um pacote.
+*/
+void liberarPacote(Pacote pac);
 
 
 #endif
