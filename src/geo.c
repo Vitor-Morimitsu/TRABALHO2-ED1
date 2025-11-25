@@ -16,7 +16,7 @@ void lerGeo(FILE* geo, FILE* svgEntrada, Lista list){
 
         sscanf(linha, "%c", &tipoPacote);
 
-        if(tipoPacote == 'c'){          //círculo
+        if(tipoPacote == 'c'){//círculo
             int id;
             double x,y,r;
             char corb[32], corp[32];
@@ -27,7 +27,7 @@ void lerGeo(FILE* geo, FILE* svgEntrada, Lista list){
             setTipoPacote(pac, 'c');
             insereLista(list, pac);
             desenharCirculoSVG(svgEntrada,c);
-        }else if(tipoPacote == 'r'){ //retângulo
+        }else if(tipoPacote == 'r'){//retângulo
             int id;
             double x,y,w,h;
             char corb[32], corp[32];
@@ -38,7 +38,7 @@ void lerGeo(FILE* geo, FILE* svgEntrada, Lista list){
             setTipoPacote(pac, 'r');
             insereLista(list, pac);
             desenharRetanguloSVG(svgEntrada, r);
-        }else if(tipoPacote == 'l'){ //Linha
+        }else if(tipoPacote == 'l'){//Linha
             int i;
             double x1,y1,x2,y2;
             char cor[32];
@@ -49,7 +49,7 @@ void lerGeo(FILE* geo, FILE* svgEntrada, Lista list){
             setTipoPacote(pac, 'l');
             insereLista(list, pac);    
             desenharLinhaSVG(svgEntrada,lin);       
-        }else if(tipoPacote == 't'){ //Texto
+        }else if(tipoPacote == 't'){//Texto
             int i;
             double x, y;
             char corb[32];
