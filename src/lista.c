@@ -128,3 +128,56 @@ Pacote removeLista(Lista l, int id){
     //não encontrou o pacote com o id especificado
     return NULL;
 }
+
+int getMaiorIdLista(Lista l){
+    if(l == NULL) return;
+
+    stLista* original = (stLista*)l;
+
+    int tamanho = getTamanhoLista(l);
+    int maiorAtual = -1;
+
+    stCelula* temp = original->inicio;
+
+    while(temp != NULL){
+        Pacote p = (Pacote)temp->conteudo;
+        Forma f = getFormaPacote(p);
+        char tipo = getTipoPacote(p);
+        int idForma = 0;
+        if(tipo == 'c'){
+            idForma = getIDCirculo((Circulo)f);
+        }else if(tipo == 'r'){
+            idForma = getIDRetangulo((Retangulo)f);
+        }else if(tipo == 'l'){
+            idForma = getIDLinha((Linha)f);
+        }else if(tipo == 't'){
+            idForma = getIDTexto((Texto)f);
+        }
+
+        if(idForma > maiorAtual) maiorAtual = idForma;
+
+        temp = temp->proximo;
+    }
+    return maiorAtual;
+}
+
+void liberaLista(Lista l){
+    if(l == NULL) return;
+    
+    stLista* lista = (stLista*)l;
+    stCelula* temp = lista->inicio;
+    stCelula* proximo;
+    
+    //percorre a lista liberando cada célula
+    while(temp != NULL) {
+        proximo = temp->proximo;
+        
+        liberarPacote((Pacote)temp->conteudo);
+        
+        free(temp);
+        temp = proximo;
+    }
+    
+    //libera a estrutura da lista
+    free(lista);
+}

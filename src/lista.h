@@ -36,4 +36,14 @@ int getTamanhoLista(Lista l);
 */
 Pacote procuraPacoteLista(Lista l,int id);
 
+/*
+    Retorna o maior id da lista.
+*/
+int getMaiorIdLista(Lista l);
+
+/*
+    Libera a memória de uma lista.
+*/
+void liberaLista(Lista l);
+
 #endif
