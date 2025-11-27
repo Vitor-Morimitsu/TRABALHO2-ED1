@@ -17,7 +17,10 @@
 */
 void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, char letra);
 
-
+/*
+    Função responsável por processar o comando D descrito no trabalho.
+*/
+void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos);
 
 
 
