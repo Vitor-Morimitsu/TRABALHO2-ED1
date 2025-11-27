@@ -42,6 +42,20 @@ Pacote procuraPacoteLista(Lista l,int id);
 int getMaiorIdLista(Lista l);
 
 /*
+    Retorna o maior valor de x ou de y presente na lista dependendo do comando passado.
+    1 retorna o maior x. b b
+    2 retorna o maior y.
+*/
+double getMaiorValorLista(Lista lista, int opcao);
+
+/*
+    Retorna o menor valor de x ou y presente na lista dependendo da opção selecionada.
+    1 retorna o menor x.
+    2 retorna o menor y.
+*/
+double getMenorValorLista(Lista lista, int opcao);
+
+/*
     Libera a memória de uma lista.
 */
 void liberaLista(Lista l);
