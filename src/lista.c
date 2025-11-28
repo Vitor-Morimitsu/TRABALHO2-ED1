@@ -64,6 +64,28 @@ int getTamanhoLista(Lista l){
     return ((stLista*)l)->tamanho;
 }
 
+void* getPrimeiraCelulaLista(Lista l){
+    if(l == NULL){
+        printf("Erro em getPrimeiraCelulaLista\n");
+        return;
+    }
+
+    stLista* lista = (stLista*)l;
+    stCelula* cel = lista->inicio;
+    return (void*)cel;
+}
+
+void* getProximaCelulaLista(void* celula){
+    if(celula == NULL){
+        printf("Erro em getProximaCelulaLista\n");
+        return;
+    }
+
+    stCelula* cel = (stCelula*)celula;
+    return cel->proximo;
+}
+
+
 Pacote procuraPacoteLista(Lista l, int id){
     if(l == NULL){
         printf("Erro em procuraPacoteLista\n");

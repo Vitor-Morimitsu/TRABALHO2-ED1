@@ -24,12 +24,22 @@ void insereLista(Lista l, Pacote pac);
 /*
     Remove um pacote da lista e o retorna.
 */
-Pacote removeLista(Lista l,int id); //chamar procura pacote
+Pacote removeLista(Lista l,int id);
 
 /*
     Retorna o tamanho da lista.
 */
 int getTamanhoLista(Lista l);
+
+/*
+    Retorna a primeira célula da lista.
+*/
+void* getPrimeiraCelulaLista(Lista l);
+
+/*
+    Retorna a próxima célula da lista.
+*/
+void* getProximaCelulaLista(void* celula);
 
 /*
     Procura e retorna um pacote contido na lista sem apagá-lo da lista.
