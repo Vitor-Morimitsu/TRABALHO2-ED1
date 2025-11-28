@@ -1,5 +1,36 @@
 #include "qry.h"
 
+void gerarArena(FILE* svgEntrada, Lista pacotes,Lista anteparos){
+    if(svgEntrada == NULL || pacotes == NULL || anteparos == NULL){
+        printf("erro em gerarArena no qry\n");
+        return;
+    }
+    //busca dos menores valores
+    double menorXPacotes = getMenorValorLista(pacotes,1);
+    double menorXAnteparos = getMenorValorLista(anteparos,1);
+    double menorX = (menorXPacotes < menorXAnteparos) ? menorXPacotes : menorXAnteparos;
+    
+    double menorYPacotes = getMenorValorLista(pacotes,2);
+    double menorYAnteparos = getMenorValorLista(anteparos, 2);
+    double menorY = (menorYPacotes < menorYAnteparos) ?  menorYPacotes : menorYAnteparos;
+    
+    //busca dos maiores valores
+    double maiorXPacotes = getMaiorValorLista(pacotes, 1);
+    double maiorXAnteparos = getMaiorValorLista(anteparos,1);
+    double maiorX = (maiorXPacotes > maiorXAnteparos) ? maiorXPacotes : maiorXAnteparos;
+
+    double maiorYPacotes = getMaiorValorLista(pacotes, 2);
+    double maiorYAnteparos = getMaiorValorLista(anteparos,2);
+    double maiorY = (maiorYPacotes > maiorYAnteparos) ? maiorYPacotes : maiorYAnteparos;
+
+    //criação do retangulo que será a arena
+    Retangulo arena = criaRetangulo(-100,menorX,menorY,maiorX, maiorY,"#000000", "#000000");
+    desenharRetanguloSVG(svgEntrada, arena);
+
+    liberaRetangulo(arena);
+
+}
+
 void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, char letra){
     if(arqTxt == NULL || pacotes == NULL){
         printf("Erro em comandoA\n");

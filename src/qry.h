@@ -7,10 +7,17 @@
 #include "arvore.h"
 #include "pacote.h"
 #include <string.h>
+#include "svg.h"
+#include "geo.h"
 
 /*
     Arquivo .h responsável pelo processamento das instruções contidas no .qry
 */
+
+/*
+    Função responsável por criar a arena retangular que englobará todas as formas e anteparos.
+*/
+void gerarArena(FILE* svgEntrada, Lista pacotes,Lista anteparos);
 
 /*
     Função responsável por processar o comando A descrito no trabalho.
