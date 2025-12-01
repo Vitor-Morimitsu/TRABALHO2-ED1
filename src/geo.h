@@ -17,8 +17,4 @@
 */
 void lerGeo(FILE* geo, FILE* svgEntrada, Lista list);
 
-/*
-    Função responsável por criar a arena retangular que englobará todas as formas e anteparos.
-*/
-void gerarArena(FILE* svgEntrada, Lista pacotes);
 #endif

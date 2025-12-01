@@ -10,6 +10,7 @@
 */
 
 typedef void* Arvore;
+typedef stCelulaArvore* CelulaArvore;
 
 /*
     Função responsável por criar a arvore e inicializar ela.
@@ -19,9 +20,12 @@ Arvore criaArvore();
 /*
     Função responsável por inserir um pacote na árvore.
 */
-void insereArvore(Arvore arv, void* segmentoAtivo);
+void insereArvore(Arvore arv, Pacote segmentoAtivo);
 
-void buscaCelulaArvore(Arvore arv, int id);
+/* 
+    Função responsável por buscar uma célula da árvore que possui a maior distancia
+*/
+CelulaArvore* buscaCelulaArvore(Arvore arv);
 
 void removeArvore(Arvore arv);
 

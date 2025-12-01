@@ -76,10 +76,3 @@ void lerGeo(FILE* geo, FILE* svgEntrada, Lista list){
     }
 
 }
-
-void gerarArena(FILE* svgEntrada, Lista pacotes){
-    if(svgEntrada == NULL || pacotes == NULL){
-        printf("Erro em gerarArena\n");
-        return;
-    }
-}

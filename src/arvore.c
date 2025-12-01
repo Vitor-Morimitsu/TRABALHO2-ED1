@@ -24,17 +24,47 @@ Arvore criaArvore(){
     return (Arvore)arvore;
 }
 
-void insereArvore(Arvore arv, void* segmentoAtivo){
+void insereArvore(Arvore arv, Pacote segmentoAtivo){
     if(arv == NULL || segmentoAtivo == NULL){
         printf("Erro em insereArvore\n");
         return;
     }
 
     stArvore* arvore = (stArvore*)arv;
+    stCelulaArvore* cel = arvore->raiz;
     if(arvore->raiz == NULL){//é o primeiro elemento
         arvore->raiz = segmentoAtivo;    
     }else{
+        if(cel->esquerda == NULL){
+            stCelulaArvore* novaCelula = malloc(sizeof(stCelulaArvore));
+            if(novaCelula == NULL) {
+                printf("Erro ao alocar espaço para a nova célula da árvore\n");
+                return;
+            }
+            cel->esquerda = novaCelula;
+            novaCelula->conteudo = segmentoAtivo;
+        }else{
+            if(cel->direita == NULL){
+                stCelulaArvore* novaCelula = malloc(sizeof(stCelulaArvore));
+                if(novaCelula == NULL) {
+                    printf("Erro ao alocar espaço para a nova célula da árvore\n");
+                    return;
+                }
+                cel->direita = novaCelula;
+                novaCelula->conteudo = segmentoAtivo;
+            }else{
+                stCelulaArvore* novaCelula = malloc(sizeof(stCelulaArvore));
+                if(novaCelula == NULL) {
+                    printf("Erro ao alocar espaço para a nova célula da árvore\n");
+                    return;
+                }
+                cel->esquerda->esquerda = novaCelula;
+                novaCelula->conteudo = segmentoAtivo;
+
+            }
+        }
 
     }
+    arvore->tamanho++;
 
 }
