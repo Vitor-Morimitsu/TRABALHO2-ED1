@@ -22,7 +22,7 @@ Lista mergeSort(Lista desordenada){
 
 }
 
-Lista insertionSort(Lista desordenada,double xOrigem, double yOrigem, Arvore arv){
+void insertionSort(Lista desordenada,double xOrigem, double yOrigem, Arvore arv){
     if(desordenada == NULL){
         printf("Erro em insertionSort\n");
         return NULL;
@@ -34,7 +34,7 @@ Lista insertionSort(Lista desordenada,double xOrigem, double yOrigem, Arvore arv
     
     while(contador != tamanho){
         //obter x1,y1,x2,y2 de dois pacotes e calcular a distancia até o ponto em que a bomba está
-        Pacote a = getPrimeiroPacoteLista(desordenada); //--------------só tem as linhas pois vou ordenar os anteparos(que são linhas).
+        Pacote a = getPrimeiroPacoteLista(desordenada); 
         if(a == NULL){
             printf("lista vazia em insertion sort\n");
             return NULL;
@@ -64,14 +64,16 @@ Lista insertionSort(Lista desordenada,double xOrigem, double yOrigem, Arvore arv
         double distancia2B = distanciaEntrePontos(xOrigem,yOrigem,x2b,y2b);        
 
         //ordenar com base na distancia
-        //ver quais distancias são menores dentro dos pacotes e depois comparar
         double menorA = (distancia1A < distancia2A) ? distancia1A : distancia2A;
         double menorB = (distancia1B < distancia2B) ? distancia1B : distancia2B;
 
-        if(menorA < menorB) insereArvore(arv, a);
-        if(menorA > menorB) insereArvore(arv, b);
-
-        //preciso saber de qual anteparo(forma) é a distância
+        if(menorA < menorB) {
+            insereArvore(arv, a);
+            insereArvore(arv, b);
+        }else{
+            insereArvore(arv, b);
+            insereArvore(arv, a);
+        }
 
         contador++;
     }
