@@ -12,7 +12,7 @@ typedef struct{
 }stArvore;
 
 Arvore criaArvore(){
-    stArvore* arvore = malloc(sizeof(stCelulaArvore));
+    stArvore* arvore = malloc(sizeof(stArvore));
     if(arvore == NULL){
         printf("Erro ao criarArvore.\n");
         return NULL;
@@ -31,40 +31,34 @@ void insereArvore(Arvore arv, Pacote segmentoAtivo){
     }
 
     stArvore* arvore = (stArvore*)arv;
-    stCelulaArvore* cel = arvore->raiz;
-    if(arvore->raiz == NULL){//é o primeiro elemento
-        arvore->raiz = segmentoAtivo;    
-    }else{
-        if(cel->esquerda == NULL){
-            stCelulaArvore* novaCelula = malloc(sizeof(stCelulaArvore));
-            if(novaCelula == NULL) {
-                printf("Erro ao alocar espaço para a nova célula da árvore\n");
-                return;
-            }
-            cel->esquerda = novaCelula;
-            novaCelula->conteudo = segmentoAtivo;
-        }else{
-            if(cel->direita == NULL){
-                stCelulaArvore* novaCelula = malloc(sizeof(stCelulaArvore));
-                if(novaCelula == NULL) {
-                    printf("Erro ao alocar espaço para a nova célula da árvore\n");
-                    return;
-                }
-                cel->direita = novaCelula;
-                novaCelula->conteudo = segmentoAtivo;
-            }else{
-                stCelulaArvore* novaCelula = malloc(sizeof(stCelulaArvore));
-                if(novaCelula == NULL) {
-                    printf("Erro ao alocar espaço para a nova célula da árvore\n");
-                    return;
-                }
-                cel->esquerda->esquerda = novaCelula;
-                novaCelula->conteudo = segmentoAtivo;
-
-            }
+    stCelulaArvore* novaCelula = malloc(sizeof(stCelulaArvore));
+    if(novaCelula == NULL) {
+        printf("Erro ao alocar espaço para a nova célula da árvore\n");
+        return;
+    }
+    novaCelula->conteudo = segmentoAtivo;
+    novaCelula->esquerda = NULL;
+    novaCelula->direita = NULL;
+    
+    //árvore vazia
+    if(arvore->raiz == NULL){
+        arvore->raiz = novaCelula;
+        arvore->tamanho++;
+        return;
+    }
+    
+    //inserção na esquerda 
+    stCelulaArvore* atual = arvore->raiz;
+    while(atual->esquerda != NULL) {
+        if(atual->direita == NULL){
+            atual->direita = novaCelula;
+            arvore->tamanho++;
+            return;
         }
+        atual = atual->esquerda;
 
     }
+    atual->esquerda = novaCelula;
+    
     arvore->tamanho++;
-
 }
