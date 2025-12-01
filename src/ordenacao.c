@@ -75,6 +75,9 @@ Lista insertionSort(Lista desordenada,double xOrigem, double yOrigem, Arvore arv
 
         contador++;
     }
+}
 
-
+double determinante(double x1, double y1, double x2, double y2, double x3, double y3){
+    double det = x1*y2 + y1*x3 + x2*y3 - (y2*x3 + x1*y3 + y1*x2);
+    return det;
 }

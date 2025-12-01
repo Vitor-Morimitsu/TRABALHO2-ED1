@@ -27,5 +27,9 @@ Lista mergeSort(Lista desordenada);
 Lista insertionSort(Lista desordenada,double xOrigem, double yOrigem, Arvore arv);
 //estou ordenando os anteparos? todo anteparo é uma linha
 
+/* 
+    Função responsável por realizar o cálculo do determinante.
+*/
+double determinante(double x1, double y1, double x2, double y2, double x3, double y3);
 
 #endif
