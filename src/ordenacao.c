@@ -78,7 +78,6 @@ void mergeSort(No array, int tamanho){
     
     stNo* ar = (stNo*)array;
     
-    // Iterativo usando abordagem bottom-up
     for(int tamanhoAtual = 1; tamanhoAtual < tamanho; tamanhoAtual *= 2){
         for(int inicio = 0; inicio < tamanho - 1; inicio += 2 * tamanhoAtual){
             int meio = inicio + tamanhoAtual - 1;
@@ -87,7 +86,6 @@ void mergeSort(No array, int tamanho){
             
             if(meio >= tamanho) continue;
             
-            // Merge inline
             int n1 = meio - inicio + 1;
             int n2 = fim - meio;
             
