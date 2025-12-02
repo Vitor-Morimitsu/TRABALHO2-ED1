@@ -4,15 +4,15 @@ typedef struct NO{
     Pacote pac;
     double distanciaPto1;
     double distanciaPto2;
-}No;
+}stNo;
 
-No* gerarArray(Lista lista,double xOrigem, double yOrigem){
+No gerarArray(Lista lista,int tamanho,double xOrigem, double yOrigem){
     if(lista == NULL){
         printf("Erro em gerarArray\n");
         return NULL;
     }
-    int tamanho = getTamanhoLista(lista);
-    No* array = (No*)calloc(tamanho, sizeof(No));
+    
+    stNo* array = (stNo*)calloc(tamanho, sizeof(stNo));
     if(array == NULL){
         printf("Erro ao alocar memória em gerarArray\n");
         return NULL;
@@ -41,9 +41,18 @@ No* gerarArray(Lista lista,double xOrigem, double yOrigem){
         atual = getProximaCelulaLista(atual);
         contador++;
     }
-    return array;
+    return (No)array;
 }
 
+void liberarArray(No array){
+    if(array == NULL){
+        printf("Erro em liberarArray.\n");
+        return;
+    }
+    stNo* ar = (stNo*)array;
+
+    free(ar);
+}
 
 double distanciaEntrePontos(double x1, double y1, double x2, double y2){
     double horizontal = fabs(x2-x1);
@@ -57,73 +66,115 @@ double distanciaEntrePontos(double x1, double y1, double x2, double y2){
     return distancia;
 }
 
-
-void mergeSort(Lista desordenada){
-    if(desordenada == NULL){
+void mergeSort(No array, int tamanho){
+    if(array == NULL){
         printf("Erro em mergeSort\n");
         return;
     }
     
-
-
-
+    if(tamanho <= 1){
+        return;
+    }
+    
+    stNo* ar = (stNo*)array;
+    
+    // Iterativo usando abordagem bottom-up
+    for(int tamanhoAtual = 1; tamanhoAtual < tamanho; tamanhoAtual *= 2){
+        for(int inicio = 0; inicio < tamanho - 1; inicio += 2 * tamanhoAtual){
+            int meio = inicio + tamanhoAtual - 1;
+            int fim = (inicio + 2 * tamanhoAtual - 1 < tamanho - 1) ? 
+                      inicio + 2 * tamanhoAtual - 1 : tamanho - 1;
+            
+            if(meio >= tamanho) continue;
+            
+            // Merge inline
+            int n1 = meio - inicio + 1;
+            int n2 = fim - meio;
+            
+            stNo* L = (stNo*)malloc(n1 * sizeof(stNo));
+            stNo* R = (stNo*)malloc(n2 * sizeof(stNo));
+            
+            if(L == NULL || R == NULL){
+                printf("Erro ao alocar memória em mergeSort\n");
+                if(L) free(L);
+                if(R) free(R);
+                return;
+            }
+            
+            for(int i = 0; i < n1; i++){
+                L[i] = ar[inicio + i];
+            }
+            for(int j = 0; j < n2; j++){
+                R[j] = ar[meio + 1 + j];
+            }
+            
+            int i = 0, j = 0, k = inicio;
+            
+            while(i < n1 && j < n2){
+                double somaL = L[i].distanciaPto1 + L[i].distanciaPto2;
+                double somaR = R[j].distanciaPto1 + R[j].distanciaPto2;
+                
+                if(somaL <= somaR){
+                    ar[k] = L[i];
+                    i++;
+                }else{
+                    ar[k] = R[j];
+                    j++;
+                }
+                k++;
+            }
+            
+            while(i < n1){
+                ar[k] = L[i];
+                i++;
+                k++;
+            }
+            
+            while(j < n2){
+                ar[k] = R[j];
+                j++;
+                k++;
+            }
+            
+            free(L);
+            free(R);
+        }
+    }
 }
 
-void insertionSort(Lista desordenada,double xOrigem, double yOrigem, Arvore arv){
+void insertionSort(Lista desordenada, double xOrigem, double yOrigem, Arvore arv){
     if(desordenada == NULL){
         printf("Erro em insertionSort\n");
-        return NULL;
+        return;
     }
-    //desordenada = lista de anteparos
-
-    int tamanho = getTamanhoLista(desordenada);
-    int contador = 0;
     
-    while(contador != tamanho){
-        //obter x1,y1,x2,y2 de dois pacotes e calcular a distancia até o ponto em que a bomba está
-        Pacote a = getPrimeiroPacoteLista(desordenada); 
-        if(a == NULL){
-            printf("lista vazia em insertion sort\n");
-            return NULL;
-        }
-        
-        Forma linhaA = getFormaPacote(a);
-        double x1a = getX1Linha((Linha)linhaA);
-        double y1a = getY1Linha((Linha)linhaA);
-        double distancia1A = distanciaEntrePontos(xOrigem,yOrigem,x1a,y1a);
-
-        double x2a = getX2Linha((Linha)linhaA);
-        double y2a = getY2Linha((Linha)linhaA);
-        double distancia2A = distanciaEntrePontos(xOrigem, yOrigem,x2a,y2a);
-
-        void* celula = getPrimeiraCelulaLista(desordenada);
-        void* proximaCelula = getProximaCelulaLista(celula);
-
-        Pacote b = NULL;
-        if(proximaCelula != NULL) b = getConteudoCelula(proximaCelula);
-        Forma linhaB = getFormaPacote(b);
-        double x1b = getX1Linha((Linha)linhaB);
-        double y1b = getY1Linha((Linha)linhaB);
-        double distancia1B = distanciaEntrePontos(xOrigem,yOrigem, x1b,y1b);
-
-        double x2b = getX2Linha((Linha)linhaB);
-        double y2b = getY2Linha((Linha)linhaB);
-        double distancia2B = distanciaEntrePontos(xOrigem,yOrigem,x2b,y2b);        
-
-        //ordenar com base na distancia
-        double menorA = (distancia1A < distancia2A) ? distancia1A : distancia2A;
-        double menorB = (distancia1B < distancia2B) ? distancia1B : distancia2B;
-
-        if(menorA < menorB) {
-            insereArvore(arv, a);
-            insereArvore(arv, b);
-        }else{
-            insereArvore(arv, b);
-            insereArvore(arv, a);
-        }
-
-        contador++;
+    int tamanho = getTamanhoLista(desordenada);
+    No array = gerarArray(desordenada, tamanho, xOrigem, yOrigem); 
+    if(array == NULL){
+        printf("Erro em insertionSort\n");  
+        return;
     }
+    
+    stNo* ar = (stNo*)array;  
+
+    for(int i = 1; i < tamanho; i++){
+        stNo chave = ar[i];  
+        int j = i - 1;
+
+        double somaChave = chave.distanciaPto1 + chave.distanciaPto2;
+
+        while(j >= 0 && (ar[j].distanciaPto1 + ar[j].distanciaPto2) > somaChave){  
+            ar[j + 1] = ar[j];  
+            j--;
+        }
+        ar[j + 1] = chave;  
+    }
+
+    for(int i = 0; i < tamanho; i++){
+        insereArvore(arv, ar[i].pac);
+    }
+
+    liberarArray(array);
 }
 
 double determinante(double x1, double y1, double x2, double y2, double x3, double y3){
