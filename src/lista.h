@@ -32,11 +32,6 @@ Pacote removeLista(Lista l, int id);
 int getTamanhoLista(Lista l);
 
 /*
-    Retorna o primeiro pacote da lista.
-*/
-Pacote getPrimeiroPacoteLista(Lista l);
-
-/*
     Retorna o pacote contido em uma célula.
 */
 Pacote getConteudoCelula(void *celula);

@@ -10,6 +10,12 @@
 /*
     Arquivo .h responsável pela criação e uso de algoritmos de ordenação.
 */
+typedef void* No;
+
+/*
+    Converte os dados da lista em um array.
+*/
+No* gerarArray(Lista lista, double xOrigem, double yOrigem);
 
 /*
     Realiza o cálculo da distância entre dois pontos.
@@ -19,7 +25,7 @@ double distanciaEntrePontos(double x1, double y1, double x2, double y2);
 /*
     Retorna uma lista ordenada com o algoritmo mergeSort.Útil para subvetores maiores que 10 elementos.
 */
-Lista mergeSort(Lista desordenada);
+void mergeSort(Lista desordenada);
 
 /*
     Retorna uma lista ordenada com o algoritmo insertion sort.

@@ -1,5 +1,50 @@
 #include "ordenacao.h"
 
+typedef struct NO{
+    Pacote pac;
+    double distanciaPto1;
+    double distanciaPto2;
+}No;
+
+No* gerarArray(Lista lista,double xOrigem, double yOrigem){
+    if(lista == NULL){
+        printf("Erro em gerarArray\n");
+        return NULL;
+    }
+    int tamanho = getTamanhoLista(lista);
+    No* array = (No*)calloc(tamanho, sizeof(No));
+    if(array == NULL){
+        printf("Erro ao alocar memória em gerarArray\n");
+        return NULL;
+    }
+    
+    int contador = 0;
+    void* atual = getPrimeiraCelulaLista(lista);
+
+    while(contador < tamanho){
+        Pacote pacAtual = getConteudoCelula(atual);
+        Forma formaAtual = getFormaPacote(pacAtual);
+
+        double x1 = getX1Linha((Linha)formaAtual);
+        double y1 = getY1Linha((Linha)formaAtual);
+
+        double x2 = getX2Linha((Linha)formaAtual);
+        double y2 = getY2Linha((Linha)formaAtual);
+
+        double distancia1 = distanciaEntrePontos(xOrigem,yOrigem,x1,y1);
+        double distancia2 = distanciaEntrePontos(xOrigem,yOrigem,x2,y2);
+
+        array[contador].pac = pacAtual;
+        array[contador].distanciaPto1 = distancia1;
+        array[contador].distanciaPto2 = distancia2;
+
+        atual = getProximaCelulaLista(atual);
+        contador++;
+    }
+    return array;
+}
+
+
 double distanciaEntrePontos(double x1, double y1, double x2, double y2){
     double horizontal = fabs(x2-x1);
     double potenciaX = pow(horizontal, 2);
@@ -13,11 +58,13 @@ double distanciaEntrePontos(double x1, double y1, double x2, double y2){
 }
 
 
-Lista mergeSort(Lista desordenada){
+void mergeSort(Lista desordenada){
     if(desordenada == NULL){
         printf("Erro em mergeSort\n");
         return;
     }
+    
+
 
 
 }
