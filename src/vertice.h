@@ -60,7 +60,7 @@ void setYVertice(Vertice v, double y);
 /*
     Define o angulo do vertice
 */
-void setAnguloVertice(Vertice v, double angulo);
+void setAnguloVertice(Vertice v, double xBomba, double yBomba);
 
 /*
     Define a distancia do vertice até a bomba
@@ -79,4 +79,9 @@ void setTipoVertice(Vertice v, char tipo);
     Define o anteparo do vertice
 */
 void setAnteparoVertice(Vertice v, Anteparo a);
+
+/*
+    Função responsável por calcular a intersecção da bomba com o anteparo, gerando um novo vértice para o polígono
+*/
+Vertice calculaInterseccao(double xBomba, double yBomba, double xVertice, double yVertice, double raio);
 #endif

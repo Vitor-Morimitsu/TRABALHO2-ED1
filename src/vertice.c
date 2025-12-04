@@ -1,7 +1,10 @@
 #include "vertice.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
 
 typedef struct vertice{
-    double x,y;
+    double x, y;
     double angulo;
     double distancia;
     char tipo;
@@ -21,7 +24,7 @@ Vertice criarVertice(){
     vertice->tipo = 'n';
     vertice->a = NULL;
 
-    return(Vertice)vertice;
+    return (Vertice)vertice;
 }
 
 double getXVertice(Vertice v){
@@ -64,9 +67,12 @@ void setYVertice(Vertice v, double y){
     ver->y = y;
 }
 
-void setAnguloVertice(Vertice v, double angulo){
+void setAnguloVertice(Vertice v, double xBomba, double yBomba){
     stVertice* ver = (stVertice*)v;
-    ver->angulo = angulo;
+    double dx = getXVertice(v) - xBomba;
+    double dy = getYVertice(v) - yBomba;
+
+    ver->angulo = atan2(dy,dx);
 }
 
 void setDistanciaVertice(Vertice v, double distancia){
@@ -82,4 +88,50 @@ void setTipoVertice(Vertice v, char tipo){
 void setAnteparoVertice(Vertice v, Anteparo a){
     stVertice* ver = (stVertice*)v;
     ver->a = a;
+}
+
+Vertice calculaInterseccao(double xBomba, double yBomba, double xVertice, double yVertice, double raio) {
+    stVertice* intersecao = (stVertice*)malloc(sizeof(stVertice));
+    
+    if(intersecao == NULL){
+        printf("Erro ao alocar memoria em calculaInterseccao\n");
+        return NULL;
+    }
+ 
+    double dx = xVertice - xBomba;
+    double dy = yVertice - yBomba;
+
+    double distancia = sqrt(dx * dx + dy * dy);
+    
+    if (distancia < 1e-10) {
+        intersecao->x = xBomba;
+        intersecao->y = yBomba;
+        intersecao->angulo = 0.0;
+        intersecao->distancia = 0.0;
+        intersecao->tipo = 'I';
+        intersecao->a = NULL;
+        return (Vertice)intersecao;
+    }
+    
+    double ux = dx / distancia;
+    double uy = dy / distancia;
+    
+    // Ponto de interseção = bomba + raio * direção_unitária
+    intersecao->x = xBomba + raio * ux;
+    intersecao->y = yBomba + raio * uy;
+    
+    // Preenche os outros campos da estrutura
+    intersecao->distancia = raio;
+    intersecao->angulo = atan2(uy, ux);  // Calcula o ângulo em radianos
+    intersecao->tipo = 'I';  // 'I' de Interseção
+    intersecao->a = NULL;    // Sem anteparo por padrão
+    
+    return (Vertice)intersecao;
+}
+
+void destroiVertice(Vertice v){
+    stVertice* vertice = (stVertice*)v;
+    if(vertice != NULL){
+        free(vertice);
+    }
 }
