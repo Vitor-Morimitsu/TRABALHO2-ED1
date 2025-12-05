@@ -27,8 +27,8 @@ Lista criarLista(){
     return lista;
 }
 
-void insereLista(Lista l, Pacote pac){
-    if(l == NULL || pac == NULL){
+void insereLista(Lista l, void* conteudo){
+    if(l == NULL || conteudo == NULL){
         printf("Erro ao inserir pacote na lista\n");
         return;
     }
@@ -41,7 +41,7 @@ void insereLista(Lista l, Pacote pac){
         return;
     }
 
-    novo->conteudo = pac;
+    novo->conteudo = conteudo;
     novo->proximo = NULL;
     if(lista->inicio == NULL){
         //lista vazia
