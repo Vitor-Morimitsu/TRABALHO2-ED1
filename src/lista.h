@@ -9,7 +9,8 @@
 #include <stdlib.h>
 #include "pacote.h"
 
-typedef void *Lista;
+typedef void* Lista;
+typedef void* CelulaLista;
 
 /*
     Cria uma lista e a retorna.
@@ -19,12 +20,12 @@ Lista criarLista();
 /*
     Insere um pacote na lista.
 */
-void insereLista(Lista l, Pacote pac);
+void insereLista(Lista l, void* pac);
 
 /*
     Remove um pacote da lista e o retorna.
 */
-Pacote removeLista(Lista l, int id);
+CelulaLista removeLista(Lista l, int id);
 
 /*
     Retorna o tamanho da lista.
@@ -34,17 +35,17 @@ int getTamanhoLista(Lista l);
 /*
     Retorna o pacote contido em uma célula.
 */
-Pacote getConteudoCelula(void *celula);
+Pacote getConteudoCelula(CelulaLista celula);
 
 /*
     Retorna a primeira célula da lista.
 */
-void *getPrimeiraCelulaLista(Lista l);
+CelulaLista getPrimeiraCelulaLista(Lista l);
 
 /*
     Retorna a próxima célula da lista.
 */
-void *getProximaCelulaLista(void *celula);
+CelulaLista getProximaCelulaLista(CelulaLista celula);
 
 /*
     Procura e retorna um pacote contido na lista sem apagá-lo da lista.

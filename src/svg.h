@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "pacote.h"
 #include "geo.h"
+#include "poligono.h"
 
 /*
     Arquivo .h responsável pela criação de arquivo svg.
@@ -30,5 +31,8 @@ void desenharLinhaSVG(FILE* arqSvg, Linha l);
 */
 void desenharTextoSVG(FILE* arqSvg, Texto t, Estilo ts);
 
-
+/*
+    Função responsável por gerar um polígono no svg
+*/
+void desenharPoligonoSVG(FILE* arqSvg, Poligono p, char* corB, char* corP);
 #endif

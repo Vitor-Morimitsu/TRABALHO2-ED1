@@ -67,3 +67,18 @@ void desenharTextoSVG(FILE* arqSvg, Texto t, Estilo ts){
         getTxtoTexto(t));
     }
 }
+
+void desenharPoligonoSVG(FILE* arqSvg, Poligono p, char* corB, char* corP){
+    if(arqSvg == NULL || p == NULL){
+        printf("Erro em desenharPoligonoSvg\n");
+        return;
+    }
+
+    int n = getNumeroVertices(p);
+    for (int i = 0; i < n; i++){
+        double x, y;
+        getVerticePoligono(p, i, &x, &y);
+        fprintf(arqSvg, "%.2f,%.2f ", x, y);
+    }
+    fprintf(arqSvg, "\" style=\"fill:%s; opacity:0.5; stroke:%s; stroke-width:2\" />\n", corP, corB);
+}
