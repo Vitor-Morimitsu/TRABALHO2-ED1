@@ -6,6 +6,7 @@
 #include <math.h>
 #include "pacote.h"
 #include "vertice.h"
+#include "lista.h"
 
 /*
     Arquivo .h responsável por realizar todas as geometrias necessárias no segundo trabalho de estrutura de dados.
@@ -25,15 +26,6 @@ double determinante(double x1, double y1, double x2, double y2, double x3, doubl
     Função responsável por calcular o ponto de intersecção de um segmento com uma reta de origem na bomba e destino no segmento
     criará um novo vertice do polígono
 */
-Vertice calculaIntersecçao(double xOrigem, double yOrigem, double xVertice, double yVertice);
-
-
-
-
-
-
-
-
-
+Vertice calculaInterseccao(Lista anteparos,Linha scaner);
 
 #endif
