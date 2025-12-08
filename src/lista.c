@@ -71,7 +71,7 @@ void* getConteudoCelula(CelulaLista celula){
     }
     
     stCelula* cel = (stCelula*)celula;
-    return (Pacote)cel->conteudo;
+    return cel->conteudo;
 }
 
 CelulaLista getPrimeiraCelulaLista(Lista l){
@@ -116,7 +116,7 @@ Pacote procuraPacoteLista(Lista l, int id){
     return NULL;
 }
 
-Pacote removeLista(Lista l, int id){
+CelulaLista removeLista(Lista l, int id){
     if(l == NULL){
         printf("Erro em removeLista\n");
         return NULL;
@@ -131,8 +131,8 @@ Pacote removeLista(Lista l, int id){
     }
 
     while(temp != NULL){
-        Pacote p = (Pacote)temp->conteudo;
-        int identificador = getIDPacote(p);
+        void* cont = (void*)temp->conteudo;
+        int identificador = getIDPacote(cont);
         
         if(identificador == id){
             if(temp->anterior != NULL){
@@ -151,7 +151,7 @@ Pacote removeLista(Lista l, int id){
             
             lista->tamanho--;  
             free(temp);        
-            return p;          
+            return cont;          
         }
         
         temp = temp->proximo;

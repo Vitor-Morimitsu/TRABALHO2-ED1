@@ -80,8 +80,4 @@ void setTipoVertice(Vertice v, char tipo);
 */
 void setAnteparoVertice(Vertice v, Anteparo a);
 
-/*
-    Função responsável por calcular a intersecção da bomba com o anteparo, gerando um novo vértice para o polígono
-*/
-Vertice calculaInterseccao(double xBomba, double yBomba, double xVertice, double yVertice, double raio);
 #endif

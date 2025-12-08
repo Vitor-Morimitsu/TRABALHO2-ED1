@@ -33,9 +33,9 @@ CelulaLista removeLista(Lista l, int id);
 int getTamanhoLista(Lista l);
 
 /*
-    Retorna o pacote contido em uma célula.
+    Retorna o conteudo contido em uma célula.
 */
-Pacote getConteudoCelula(CelulaLista celula);
+void* getConteudoCelula(CelulaLista celula);
 
 /*
     Retorna a primeira célula da lista.
