@@ -27,8 +27,12 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
 /*
     Função responsável por processar o comando D descrito no trabalho.
 */
-void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos);
+void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double xBomba, double yBomba, char* comando);
 
+/*
+    Função responsável por processar o comando P descrito no trabalho.
+*/
+void comandoP(FILE* txt, FILE* svg,Lista anteparos);
 
 
 

@@ -4,13 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "pacote.h"
+#include "vertice.h"
 
 /*
     Arquivo .h responsável pela criação e uttilização de uma árvore binária.
 */
 
 typedef void* Arvore;
-typedef stCelulaArvore* CelulaArvore;
+typedef void* CelulaArvore;
 
 /*
     Função responsável por criar a arvore e inicializar ela.
@@ -20,13 +21,16 @@ Arvore criaArvore();
 /*
     Função responsável por inserir um pacote na árvore.
 */
-void insereArvore(Arvore arv, Pacote segmentoAtivo);
+void insereArvore(Arvore arv, void* segmentoAtivo);
 
 /* 
-    Função responsável por buscar uma célula da árvore que possui a maior distancia
+    Função responsável por buscar uma célula da árvore que possui o menor angulo
 */
-CelulaArvore* buscaCelulaArvore(Arvore arv);
+CelulaArvore buscaCelulaArvore(Arvore arv);
 
+/*
+    Função responsável por remover um conteudo da arvore
+*/
 void removeArvore(Arvore arv);
 
 #endif

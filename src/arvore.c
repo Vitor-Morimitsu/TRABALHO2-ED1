@@ -1,7 +1,7 @@
 #include "arvore.h"
 
 typedef struct celula{
-    Pacote conteudo;
+    void* conteudo;
     struct celula* esquerda;
     struct celula* direita;
 }stCelulaArvore;
@@ -24,7 +24,7 @@ Arvore criaArvore(){
     return (Arvore)arvore;
 }
 
-void insereArvore(Arvore arv, Pacote segmentoAtivo){
+void insereArvore(Arvore arv, void* segmentoAtivo){
     if(arv == NULL || segmentoAtivo == NULL){
         printf("Erro em insereArvore\n");
         return;
@@ -39,6 +39,9 @@ void insereArvore(Arvore arv, Pacote segmentoAtivo){
     novaCelula->conteudo = segmentoAtivo;
     novaCelula->esquerda = NULL;
     novaCelula->direita = NULL;
+
+    Vertice v = (Vertice)segmentoAtivo;
+    
     
     //árvore vazia
     if(arvore->raiz == NULL){

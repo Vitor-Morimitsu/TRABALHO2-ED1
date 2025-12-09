@@ -6,7 +6,6 @@
 #include <math.h>
 #include "lista.h"
 #include "arvore.h"
-#include "geometria.h"
 #include "anteparo.h"
 #include "vertice.h"
 

@@ -28,9 +28,13 @@ void gerarBoundingBox(Poligono p,double *minX, double *minY, double *maxX, doubl
 /*
     Função responsável por calcular o polígono de visibilidade a partir dos parâmetros fornecidos.
     /// @param ordenacao: escolher o tipo de ordenação desejado( q = quicksort, m = mergesort)
-    /// @param parametro: parâmetro para utilizar o insertion sort
 */
-void calcularVisibilidade(Poligono p, Lista anteparos, Lista atingidos, double xOrigem, double yOrigem, char ordenacao, int parametro);
+void calcularVisibilidade(Poligono p, Lista anteparos, Lista formas, double xOrigem, double yOrigem, char ordenacao);
+
+/*
+    Verifica se um ponto está dentro do polígono.
+*/
+bool pontoNoPoligono(Poligono p, double x, double y);
 
 /*
     Função responsável por retornar as coordenadas do vértice do poligono

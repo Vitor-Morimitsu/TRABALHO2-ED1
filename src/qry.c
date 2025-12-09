@@ -169,9 +169,46 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
     }
 }
 
-void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos){
+void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double xBomba, double yBomba, char* comando){
     if(arqTxt == NULL || svgSfx == NULL || anteparos == NULL){
         printf("Erro em comandoD\n");
         return;
     }
+    CelulaLista atual = getPrimeiraCelulaLista(anteparos);
+    Lista vertices = criarLista();
+    Poligono poligono = criarPoligono();
+    Arvore arvore = criarArvore();
+
+    while (atual!=NULL){
+        //cadastro dos vertices e inserção deles no poligono
+        Anteparo anteparoAtual = (Anteparo)getConteudoCelula(atual);    
+        Vertice vInicio = criarVertice();
+        Vertice vFim = criarVertice();
+        double x1Anteparo = getX1Anteparo(anteparoAtual);
+        double y1Anteparo = getY1Anteparo(anteparoAtual);
+        double x2Anteparo = getX2Anteparo(anteparoAtual);
+        double y2Anteparo = getY2Anteparo(anteparoAtual);
+
+        setXVertice(vInicio, x1Anteparo);
+        setYVertice(vInicio, y1Anteparo);
+        setAnguloVertice(vInicio, xBomba,yBomba);
+        insereLista(vertices, (void*)vInicio);
+
+        setXVertice(vFim, x2Anteparo);
+        setYVertice(vFim, y2Anteparo);
+        setAnguloVertice(vFim, xBomba, yBomba);
+        insereLista(vertices, (void*)vFim);
+
+
+        adicionarVerticePoligono(poligono, vInicio);
+        adicionarVerticePoligono(poligono, vFim);
+        atual = getProximaCelulaLista(atual);
+    }
+    //----consertar esse parametro q eu nao sei onde receber ele
+    int parametro = 0;
+    
+    //ver a visibilidade
+    calcularVisibilidade(poligono,anteparos,formas,xBomba,yBomba,comando,parametro);
+
+    
 }
