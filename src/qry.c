@@ -38,11 +38,12 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
     }
 
     int contador = inicio;
-    while(contador != fim){
+    while(contador < fim){  // Corrigido: < ao invés de !=
         Pacote pac = procuraPacoteLista(pacotes, contador);
         if(pac == NULL){//não achou o pacote
             printf("Pacote não encontrado em comandoA\n");
-            break;    
+            contador++;
+            continue;    
         }
 
         char tipo = getTipoPacote(pac);
@@ -52,13 +53,14 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
             double x = getCoordXCirculo((Circulo)formaPac);
             double y = getCoordYCirculo((Circulo)formaPac);
             double raio = getRaioCirculo((Circulo)formaPac);
-            char cor[50] = getCorPCirculo((Circulo)formaPac);
+            char* cor = getCorPCirculo((Circulo)formaPac);  // Corrigido: char* ao invés de char[]
 
             if(letra == 'h'){//círculo virará um anteparo(linha) horizontal
                 Linha lin = criarLinha(id,x - raio, y,x+raio,y,cor);
                 liberaCirculo((Circulo)formaPac);
                 setTipoPacote(pac, 'l');
                 setFormaPacote(pac, (Forma)lin);
+                removeLista(pacotes, id);  // Remove da lista original
                 insereLista(anteparos, pac);
 
             }else if(letra == 'v'){//círculo virará um anteparo(linha) vertical
@@ -66,6 +68,7 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
                 liberaCirculo((Circulo)formaPac);
                 setTipoPacote(pac, 'l');
                 setFormaPacote(pac, (Forma)lin);
+                removeLista(pacotes, id);  // Remove da lista original
                 insereLista(anteparos, pac);
 
             }else{
@@ -133,7 +136,7 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
             double x = getCoordXTexto((Texto)t);
             double y = getCoordYTexto((Texto)t);
             double x1,y1,x2,y2;
-            char cor[50] = getCorPTexto((Texto)t);
+            char* cor = getCorPTexto((Texto)t);  // Corrigido: char* ao invés de char[]
 
             if(ancora == 'i'){
                 x1 = x;
@@ -161,6 +164,7 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
 
             setTipoPacote(pac, 'l');
             setFormaPacote(pac, (Forma)posTxt);
+            removeLista(pacotes, id);  // Remove da lista original
             insereLista(anteparos, pac);
             fprintf(arqTxt,"Id do texto: %i, figura original: Texto\n", id);
 
@@ -182,7 +186,7 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
     Arvore arvoreSegmentos = criarArvore();
     
     // Calcula o polígono de visibilidade
-    calcularVisibilidade(poligono, anteparos, formas, NULL, arvoreSegmentos, xBomba, yBomba, comando);
+    calcularVisibilidade(poligono, anteparos, formas,arvoreSegmentos, xBomba, yBomba, comando);
     
     // Desenha o polígono de visibilidade no SVG
     desenharPoligonoSVG(svgSfx, poligono, "#FF8A80", "#000000");
@@ -229,15 +233,14 @@ void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos,double x, doub
         return;
     }
     
-    // Bomba de pintura é lançada na coordenada (x,y). 
-    // Formas dentro da região de visibilidade tem suas cores de preenchimento e de borda pintadas com a cor especificada.
+    // Bomba de pintura é lançada na coordenada (x,y). Formas dentro da região de visibilidade tem suas cores de preenchimento e de borda pintadas com a cor especificada.
     
     // Cria o polígono de visibilidade
     Poligono poligono = criarPoligono();
     Arvore arvoreSegmentos = criarArvore();
     
     // Calcula o polígono de visibilidade a partir da posição da bomba
-    calcularVisibilidade(poligono, anteparos, formas, NULL, arvoreSegmentos, x, y, comandoSfx);
+    calcularVisibilidade(poligono, anteparos, formas, arvoreSegmentos, x, y, comandoSfx);
     
     // Obtém a lista de formas atingidas
     Lista formasAtingidas = obterFormasAtingidas(formas, poligono);
@@ -297,11 +300,137 @@ void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, d
         printf("Erro em comandoCln\n");
         return;
     }
-    //Bomba de clonagem é lançada na coordenada (x,y). Os clones são trasladados em dx, dy (nos eixos x e y, respectivamente).Note que clones devem ter identificadores únicos.
-
-
-
-
+    
+    // Bomba de clonagem é lançada na coordenada (x,y)
+    // Os clones são trasladados em dx, dy (nos eixos x e y, respectivamente)
+    // Clones devem ter identificadores únicos
+    
+    // Cria o polígono de visibilidade
+    Poligono poligono = criarPoligono();
+    Arvore arvoreSegmentos = criarArvore();
+    
+    // Calcula o polígono de visibilidade
+    calcularVisibilidade(poligono, anteparos, formas, arvoreSegmentos, x, y, comandoSfx);
+    
+    // Desenha o polígono de visibilidade no SVG
+    desenharPoligonoSVG(svg, poligono, "#B388FF", "#000000");
+    
+    // Reporta informações da clonagem no arquivo de texto
+    fprintf(txt, "Clonagem na posição (%.2f, %.2f)\n", x, y);
+    fprintf(txt, "Deslocamento: dx=%.2f, dy=%.2f\n", dx, dy);
+    fprintf(txt, "Formas clonadas:\n");
+    
+    // Obtém o maior ID atual para gerar IDs únicos para os clones
+    int maiorID = getMaiorIdLista(formas);
+    int proximoID = maiorID + 1;
+    int formasClonadas = 0;
+    
+    // Cria uma lista temporária para armazenar os clones
+    Lista clones = criarLista();
+    
+    // Percorre a lista de formas verificando quais estão dentro do polígono
+    for(CelulaLista celula = getPrimeiraCelulaLista(formas); celula != NULL; celula = getProximaCelulaLista(celula)) {
+        Pacote pac = (Pacote)getConteudoCelula(celula);
+        
+        // Usa a função de colisão para verificar se a forma está dentro do polígono
+        if(formaDentroPoligono(pac, poligono)) {
+            char tipo = getTipoPacote(pac);
+            Forma formaOriginal = getFormaPacote(pac);
+            int idOriginal = getIDPacote(pac);
+            
+            // Cria um clone da forma com novo ID e posição transladada
+            Pacote clone = criaPacote();
+            setTipoPacote(clone, tipo);
+            
+            switch(tipo) {
+                case 'c': {
+                    Circulo original = (Circulo)formaOriginal;
+                    double xOriginal = getCoordXCirculo(original);
+                    double yOriginal = getCoordYCirculo(original);
+                    double raio = getRaioCirculo(original);
+                    char* corB = getCorBCirculo(original);
+                    char* corP = getCorPCirculo(original);
+                    
+                    Circulo novoCirculo = criaCirculo(proximoID, xOriginal + dx, yOriginal + dy, raio, corB, corP);
+                    setFormaPacote(clone, (Forma)novoCirculo);
+                    fprintf(txt, "  - Círculo ID %d clonado para ID %d\n", idOriginal, proximoID);
+                    break;
+                }
+                case 'r': {
+                    Retangulo original = (Retangulo)formaOriginal;
+                    double xOriginal = getCoordXRetangulo(original);
+                    double yOriginal = getCoordYRetangulo(original);
+                    double w = getWRetangulo(original);
+                    double h = getHRetangulo(original);
+                    char* corB = getCorBRetangulo(original);
+                    char* corP = getCorPRetangulo(original);
+                    
+                    Retangulo novoRetangulo = criaRetangulo(proximoID, xOriginal + dx, yOriginal + dy, w, h, corB, corP);
+                    setFormaPacote(clone, (Forma)novoRetangulo);
+                    fprintf(txt, "  - Retângulo ID %d clonado para ID %d\n", idOriginal, proximoID);
+                    break;
+                }
+                case 'l': {
+                    Linha original = (Linha)formaOriginal;
+                    double x1 = getX1Linha(original);
+                    double y1 = getY1Linha(original);
+                    double x2 = getX2Linha(original);
+                    double y2 = getY2Linha(original);
+                    char* cor = getCorLinha(original);
+                    
+                    Linha novaLinha = criarLinha(proximoID, x1 + dx, y1 + dy, x2 + dx, y2 + dy, cor);
+                    setFormaPacote(clone, (Forma)novaLinha);
+                    fprintf(txt, "  - Linha ID %d clonada para ID %d\n", idOriginal, proximoID);
+                    break;
+                }
+                case 't': {
+                    Texto original = (Texto)formaOriginal;
+                    double xOriginal = getCoordXTexto(original);
+                    double yOriginal = getCoordYTexto(original);
+                    char* corB = getCorBTexto(original);
+                    char* corP = getCorPTexto(original);
+                    char ancora = getATexto(original);
+                    char* texto = getTxtoTexto(original);
+                    
+                    Texto novoTexto = criarTexto(proximoID, xOriginal + dx, yOriginal + dy, corB, corP, ancora, texto);
+                    
+                    // Copia o estilo se existir
+                    Estilo estiloOriginal = getEstiloTexto(original);
+                    if(estiloOriginal != NULL) {
+                        char* family = getfFamily(estiloOriginal);
+                        char* weight = getfWeight(estiloOriginal);
+                        char* size = getfSize(estiloOriginal);
+                        Estilo novoEstilo = criarEstilo(family, weight, size);
+                        setEstiloTexto(novoTexto, novoEstilo);
+                    }
+                    
+                    setFormaPacote(clone, (Forma)novoTexto);
+                    fprintf(txt, "  - Texto ID %d clonado para ID %d\n", idOriginal, proximoID);
+                    break;
+                }
+            }
+            
+            // Adiciona o clone à lista temporária
+            insereLista(clones, clone);
+            proximoID++;
+            formasClonadas++;
+        }
+    }
+    
+    fprintf(txt, "Total de formas clonadas: %d\n\n", formasClonadas);
+    
+    // Adiciona todos os clones à lista de formas original
+    for(CelulaLista celula = getPrimeiraCelulaLista(clones); celula != NULL; celula = getProximaCelulaLista(celula)) {
+        Pacote clone = (Pacote)getConteudoCelula(celula);
+        insereLista(formas, clone);
+    }
+    
+    // Libera apenas a lista de clones (não os pacotes, pois foram adicionados à lista de formas)
+    liberaLista(clones);
+    
+    // Libera memória
+    liberarArvore(arvoreSegmentos);
+    liberarPoligono(poligono);
 }
 
 void lerQry(FILE* qry,FILE* txt, FILE* svg, Lista formas){
@@ -322,26 +451,27 @@ void lerQry(FILE* qry,FILE* txt, FILE* svg, Lista formas){
         sscanf(linha, "%s", comando);
 
         if(strcmp(comando, "a") == 0){
-            double inicio, fim;
+            int inicio, fim;
             char letra;
-            sscanf(linha, "a %lf %lf %c", &inicio, &fim, &letra);
+            sscanf(linha, "a %d %d %c", &inicio, &fim, &letra);
             comandoA(txt,formas,anteparos,inicio,fim,letra);
         }else if(strcmp(comando, "d") == 0){
             double x,y;
-            char* sufixo;
-            sscanf(linha, "d %lf %lf %s", &x, &y, &sufixo);
+            char sufixo[50];
+            sscanf(linha, "d %lf %lf %s", &x, &y, sufixo);
             comandoD(txt,svg,anteparos,formas,x,y,sufixo);
         }else if(strcmp(comando, "p") == 0){
             double x,y;
-            char* cor;
-            char* sufixo;
-            sscanf(linha,"p %lf %lf %s %s", &x,&y,&cor,&sufixo);
+            char cor[50];
+            char sufixo[50];
+            sscanf(linha,"p %lf %lf %s %s", &x,&y,&cor,sufixo);
             comandoP(txt,svg,formas,anteparos,x,y,cor,sufixo);
         }else if(strcmp(comando, "cln") == 0){
             double x,y,dx,dy;
-            char* sufixo;
-            sscanf(linha,"cln %lf %lf %lf %lf %s",&x,&y,&dx,&dy,&sufixo);
+            char sufixo[50];
+            sscanf(linha,"cln %lf %lf %lf %lf %s",&x,&y,&dx,&dy,sufixo);
             comandoCln(txt,svg,formas,anteparos,x,y,dx,dy,sufixo);
         }
     }
+    liberaLista(anteparos);
 }

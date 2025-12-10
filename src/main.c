@@ -76,35 +76,52 @@ int main(int argc, char* argv[])
     arqGeo = fopen(fullPathGeo, "r");
     if(arqGeo == NULL){
         printf("ERRO: Não foi possível abrir o arquivo .geo: %s\n", fullPathGeo);
+        return EXIT_FAILURE;
     }
 
     FILE* arqSvgEntrada = fopen(arquivoSaidaSvgGeo, "w");
     if(arqSvgEntrada == NULL){
-        printf("ERRO: Não foi possível criar arquivo SVG de entrada: %s\n", arquivoSaidaSvgGeo);
+        fprintf(stderr, "ERRO: Não foi possível criar arquivo SVG de entrada: %s\n", arquivoSaidaSvgGeo);
+        fclose(arqGeo);
+        return EXIT_FAILURE;
     }
 
     Lista formas = criarLista();
 
     lerGeo(arqGeo,arqSvgEntrada,formas);
 
+    fclose(arqGeo);
+    fclose(arqSvgEntrada);
+
     FILE* qry = fopen(fullPathQry, "r");
     if(qry == NULL){
-        printf("ERRO: Não foi possível abrir o arquivo .qry: %s\n", fullPathQry);
+        fprintf(stderr, "ERRO: Não foi possível abrir o arquivo .qry: %s\n", fullPathQry);
+        liberaLista(formas);
+        return EXIT_FAILURE;
     }
     
     FILE* txt = fopen(arquivoSaidaTxt, "w");
     if(txt == NULL){
-        printf("ERRo: Não foi possível abrir o arquivo .txt: %s\n", arquivoSaidaTxt);
+        fprintf(stderr, "ERRO: Não foi possível abrir o arquivo .txt: %s\n", arquivoSaidaTxt);
+        fclose(qry);
+        liberaLista(formas);
+        return EXIT_FAILURE;
     }
 
     FILE* svgSaida = fopen(arquivoSaidaSvgQry, "w");
     if(svgSaida == NULL){
-        printf("ERRO: Não foi possível abrir o arquivo de saída do svg: %s\n", arquivoSaidaSvgQry);
+        fprintf(stderr, "ERRO: Não foi possível abrir o arquivo de saída do svg: %s\n", arquivoSaidaSvgQry);
+        fclose(qry);
+        fclose(txt);
+        liberaLista(formas);
+        return EXIT_FAILURE;
     }
+    
     lerQry(qry,txt,svgSaida,formas);
 
     fclose(qry);
     fclose(txt);
     fclose(svgSaida);
     liberaLista(formas);
+    return EXIT_SUCCESS;
 }

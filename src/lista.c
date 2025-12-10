@@ -1,4 +1,5 @@
 #include "lista.h"
+#include <float.h>
 
 typedef struct celula{
     void* conteudo;
@@ -162,7 +163,7 @@ CelulaLista removeLista(Lista l, int id){
 }
 
 int getMaiorIdLista(Lista l){
-    if(l == NULL) return;
+    if(l == NULL) return -1;
 
     stLista* original = (stLista*)l;
 
@@ -201,7 +202,12 @@ double getMaiorValorLista(Lista lista, int opcao){
 
     stLista* l = (stLista*)lista;
     stCelula* temp = l->inicio;
-    double maior = -1;
+    
+    if(temp == NULL){
+        return 0.0; // Lista vazia
+    }
+    
+    double maior = -DBL_MAX; // Inicializa com menor valor possível
 
     if(opcao == 1){
         while(temp != NULL){
@@ -296,7 +302,12 @@ double getMenorValorLista(Lista lista, int opcao){
 
     stLista* l = (stLista*)lista;
     stCelula* temp = l->inicio;
-    double menor = -1;
+    
+    if(temp == NULL){
+        return 0.0; // Lista vazia
+    }
+    
+    double menor = DBL_MAX; // Inicializa com maior valor possível
     if(opcao == 1){
         while(temp != NULL){
             Pacote pac = temp->conteudo;

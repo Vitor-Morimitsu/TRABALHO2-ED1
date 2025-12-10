@@ -29,14 +29,12 @@ void gerarBoundingBox(Poligono p,double *minX, double *minY, double *maxX, doubl
     Função responsável por calcular o polígono de visibilidade a partir dos parâmetros fornecidos.
     /// @param p: polígono onde os vértices serão adicionados
     /// @param anteparos: lista de pacotes contendo linhas (anteparos)
-    /// @param formas: lista de formas (não usado atualmente)
-    /// @param vertices: lista de vértices (não usado atualmente)
     /// @param arvoreSegmentos: árvore BST para manter segmentos ativos ordenados por distância
     /// @param xOrigem: coordenada X da origem (bomba)
     /// @param yOrigem: coordenada Y da origem (bomba)
     /// @param comando: escolher o tipo de ordenação desejado( "q" = quicksort, "m" = mergesort, "i" = insertion sort)
 */
-void calcularVisibilidade(Poligono p, Lista anteparos, Lista formas, Lista vertices, Arvore arvoreSegmentos, double xOrigem, double yOrigem, char* comando);
+void calcularVisibilidade(Poligono p, Lista anteparos, Lista formas, Arvore arvoreSegmentos, double xOrigem, double yOrigem, char* comando);
 
 /*
     Verifica se um ponto está dentro do polígono.

@@ -8,7 +8,6 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-// Definição local da estrutura de nó (mesma de ordenacao.c)
 typedef struct NO{
     Vertice ver;
     double angulo;
@@ -45,20 +44,20 @@ void gerarBoundingBox(Poligono p,double *minX, double *minY, double *maxX, doubl
     *maxY = pol->maxY;
 }
 
-void calcularVisibilidade(Poligono p, Lista anteparos, Lista formas, Lista vertices, Arvore arvoreSegmentos, double xOrigem, double yOrigem, char* comando){
+void calcularVisibilidade(Poligono p, Lista anteparos, Lista formas, Arvore arvoreSegmentos, double xOrigem, double yOrigem, char* comando){
     if(p == NULL || anteparos == NULL || arvoreSegmentos == NULL){
         printf("Erro em calcularVisibilidade: parametros invalidos\n");
         return;
     }
 
-    // Etapa 1: Extrair todos os vértices dos anteparos, calcular seus ângulos e definir o tipo (início/fim)
+    //gerar todos os vértices dos anteparos, calcular seus ângulos e definir o tipo (início/fim)
     Lista todosVertices = criarLista();
     
     for(CelulaLista celula = getPrimeiraCelulaLista(anteparos); celula != NULL; celula = getProximaCelulaLista(celula)) {
         Pacote pac = (Pacote)getConteudoCelula(celula);
         char tipo = getTipoPacote(pac);
         
-        if(tipo != 'l') continue; // Apenas linhas são anteparos válidos
+        if(tipo != 'l') continue; 
         
         Linha linha = (Linha)getFormaPacote(pac);
         
@@ -74,20 +73,20 @@ void calcularVisibilidade(Poligono p, Lista anteparos, Lista formas, Lista verti
         setAnguloVertice(v2, xOrigem, yOrigem);
         setAnteparoVertice(v2, (Anteparo)linha);
 
-        // Determina qual vértice é 'inicio' e qual é 'fim'
+        //determina qual vértice é 'inicio' e qual é 'fim'
         double ang1 = getAnguloVertice(v1);
         double ang2 = getAnguloVertice(v2);
         double diff = ang1 - ang2;
 
-        // Normaliza a diferença para o intervalo [-PI, PI]
+        //normaliza a diferença para o intervalo [-PI, PI]
         if (diff > M_PI) diff -= 2 * M_PI;
         if (diff < -M_PI) diff += 2 * M_PI;
 
         if (diff < 0) {
-            setTipoVertice(v1, 'i'); // ang1 < ang2, v1 é início
+            setTipoVertice(v1, 'i'); //ang1 < ang2, v1 é início
             setTipoVertice(v2, 'f');
         } else {
-            setTipoVertice(v2, 'i'); // ang2 < ang1, v2 é início
+            setTipoVertice(v2, 'i'); //ang2 < ang1, v2 é início
             setTipoVertice(v1, 'f');
         }
 
@@ -95,16 +94,16 @@ void calcularVisibilidade(Poligono p, Lista anteparos, Lista formas, Lista verti
         insereLista(todosVertices, v2);
     }
 
-    // Etapa 2: Ordenar os vértices por ângulo
+    //ordenar os vértices por ângulo
     int tamanho = getTamanhoLista(todosVertices);
     if (tamanho == 0) {
         liberaLista(todosVertices);
-        return; // Nenhum vértice para processar
+        return; //nenhum vértice para processar
     }
     
     No* arrayOrdenado = gerarArray(todosVertices, tamanho, xOrigem, yOrigem);
     
-    // Determina o tipo de ordenação baseado no comando
+    //determina o tipo de ordenação baseado no comando
     char ordenacao = 'i'; // padrão insertion sort
     if(comando != NULL && strlen(comando) > 0) {
         if(strcmp(comando, "m") == 0) {
@@ -122,10 +121,10 @@ void calcularVisibilidade(Poligono p, Lista anteparos, Lista formas, Lista verti
         insertionSort(arrayOrdenado, tamanho);
     }
 
-    // Etapa 3: Algoritmo de Varredura (Sweep-line) usando Árvore BST
-    // Usa a árvore passada como parâmetro para manter segmentos ativos ordenados
+    //algoritmo de Varredura (Sweep-line) usando Árvore
+    //usa a árvore passada como parâmetro para manter segmentos ativos ordenados
     Arvore segmentosAtivos = arvoreSegmentos;
-    double far_dist = 10000.0; // Distância longa para projeção do raio
+    double far_dist = 10000.0; //distância longa para projeção do raio
 
     stNo* nos = (stNo*)arrayOrdenado;
 
@@ -135,14 +134,14 @@ void calcularVisibilidade(Poligono p, Lista anteparos, Lista formas, Lista verti
         double eventoAngulo = noAtual->angulo;
         Anteparo eventoAnteparo = getAnteparoVertice(eventoVertice);
 
-        // Atualiza a origem e ângulo atual na árvore para cálculo de distâncias
+        //atualiza a origem e ângulo atual na árvore para cálculo de distâncias
         setOrigemArvore(segmentosAtivos, xOrigem, yOrigem, eventoAngulo);
 
-        // -- Raio um pouco antes do ângulo do evento --
+        //raio um pouco antes do ângulo do evento 
         double anguloAntes = eventoAngulo - 0.0001;
         setOrigemArvore(segmentosAtivos, xOrigem, yOrigem, anguloAntes);
         
-        // Busca o segmento mais próximo (mais à esquerda na árvore)
+        //busca o segmento mais próximo (mais à esquerda na árvore)
         Linha linhaProxima = (Linha)buscaCelulaArvore(segmentosAtivos);
         if (linhaProxima != NULL) {
             double x_far_antes = xOrigem + far_dist * cos(anguloAntes);
@@ -156,20 +155,20 @@ void calcularVisibilidade(Poligono p, Lista anteparos, Lista formas, Lista verti
             liberaLinha(ray_antes);
         }
 
-        // -- Atualiza a árvore de segmentos ativos --
+        //atualiza a árvore de segmentos ativos 
         char eventoTipo = getTipoVertice(eventoVertice);
         if (eventoTipo == 'i') {
-            // Adiciona o anteparo (linha) aos segmentos ativos
+            //adiciona o anteparo (linha) aos segmentos ativos
             setOrigemArvore(segmentosAtivos, xOrigem, yOrigem, eventoAngulo);
             insereArvore(segmentosAtivos, eventoAnteparo);
         } else if (eventoTipo == 'f') {
-            // Remove o anteparo dos segmentos ativos
+            //remove o anteparo dos segmentos ativos
             Linha linhaRemover = (Linha)eventoAnteparo;
             int idRemover = getIDLinha(linhaRemover);
             removeArvore(segmentosAtivos, idRemover);
         }
 
-        // -- Raio exatamente no ângulo do evento --
+        //raio exatamente no ângulo do evento 
         setOrigemArvore(segmentosAtivos, xOrigem, yOrigem, eventoAngulo);
         
         Linha linhaProximaDepois = (Linha)buscaCelulaArvore(segmentosAtivos);
@@ -185,19 +184,12 @@ void calcularVisibilidade(Poligono p, Lista anteparos, Lista formas, Lista verti
             liberaLinha(ray_depois);
         }
     }
-    
-    // Etapa 4: Finalizar e Limpar
-    // NOTA: A árvore não é liberada aqui pois foi passada como parâmetro
-    // e será gerenciada pela função chamadora (comandoD)
 
-    // Libera a memória do array usado para ordenação
+    //libera a memória do array usado para ordenação
     if(arrayOrdenado != NULL) {
         free(arrayOrdenado);
     }
 
-    // Libera a memória da lista temporária de vértices
-    // IMPORTANTE: Estes vértices são temporários e devem ser liberados
-    // Os vértices do polígono são criados em encontraInterseccaoMaisProxima
     CelulaLista celula = getPrimeiraCelulaLista(todosVertices);
     while(celula != NULL) {
         Vertice v = (Vertice)getConteudoCelula(celula);
