@@ -25,7 +25,7 @@ void insereLista(Lista l, void* pac);
 /*
     Remove um pacote da lista e o retorna.
 */
-CelulaLista removeLista(Lista l, int id);
+void removeLista(Lista l, int id);
 
 /*
     Retorna o tamanho da lista.
@@ -35,6 +35,7 @@ int getTamanhoLista(Lista l);
 /*
     Retorna o conteudo contido em uma célula.
 */
+
 void* getConteudoCelula(CelulaLista celula);
 
 /*

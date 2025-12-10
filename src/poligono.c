@@ -44,7 +44,7 @@ void gerarBoundingBox(Poligono p,double *minX, double *minY, double *maxX, doubl
     *maxY = pol->maxY;
 }
 
-void calcularVisibilidade(Poligono p, Lista anteparos, Lista formas, Arvore arvoreSegmentos, double xOrigem, double yOrigem, char* comando){
+void calcularVisibilidade(Poligono p, Lista anteparos, Lista /*formas*/, Arvore arvoreSegmentos, double xOrigem, double yOrigem, char* comando){
     if(p == NULL || anteparos == NULL || arvoreSegmentos == NULL){
         printf("Erro em calcularVisibilidade: parametros invalidos\n");
         return;

@@ -83,7 +83,7 @@ bool formaDentroPoligono(Pacote pac, Poligono p) {
     }
 }
 
-bool atingidaPelaExplosao(Lista formas, Poligono p, double xBomba, double yBomba) {
+bool atingidaPelaExplosao(Lista formas, Poligono p, double /*xBomba*/, double /*yBomba*/) {
     if (formas == NULL || p == NULL) {
         printf("Erro em atingidaPelaExplosao: parametros invalidos\n");
         return false;

@@ -67,7 +67,6 @@ Anteparo* retanguloViraAnteparo(Pacote pac, int maiorID){
         return NULL;
     }
     Retangulo ret = (Retangulo)form;
-    int id = getIDRetangulo(ret);
     double x = getCoordXRetangulo(ret);
     double y = getCoordYRetangulo(ret);
     double w = getWRetangulo(ret);

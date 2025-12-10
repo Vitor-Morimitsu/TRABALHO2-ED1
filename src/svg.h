@@ -12,6 +12,11 @@
 */
 
 /*
+    Função responsável por abrir o arquivo Svg passado como parâmetro.
+*/
+void abrirSvg(FILE* arqSvg);
+
+/*
     Função responsável por gerar um círculo em SVG.
 */
 void desenharCirculoSVG(FILE* arqSvg,Circulo circ);
@@ -35,4 +40,8 @@ void desenharTextoSVG(FILE* arqSvg, Texto t, Estilo ts);
     Função responsável por gerar um polígono no svg
 */
 void desenharPoligonoSVG(FILE* arqSvg, Poligono p, char* corB, char* corP);
+
+/// @brief Realiza o comando de encerramento do arquivo svg
+/// @param arqSvg Arquivo
+void fecharSVG(FILE* arqSvg);
 #endif

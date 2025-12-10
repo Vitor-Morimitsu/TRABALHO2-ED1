@@ -117,18 +117,17 @@ Pacote procuraPacoteLista(Lista l, int id){
     return NULL;
 }
 
-CelulaLista removeLista(Lista l, int id){
+void removeLista(Lista l, int id){
     if(l == NULL){
         printf("Erro em removeLista\n");
-        return NULL;
+        return;
     }
 
-    int identificador = -1;
     stLista* lista = (stLista*)l;
     stCelula* temp = lista->inicio;
     if(temp == NULL){
         printf("Lista vazia.Impossível remoção\n");
-        return NULL;
+        return;
     }
 
     while(temp != NULL){
@@ -150,16 +149,16 @@ CelulaLista removeLista(Lista l, int id){
                 lista->fim = temp->anterior;
             }
             
-            lista->tamanho--;  
-            free(temp);        
-            return cont;          
+            lista->tamanho--;
+            liberarPacote(cont);
+            free(temp);
+            return;
         }
         
         temp = temp->proximo;
     }
     
     //não encontrou o pacote com o id especificado
-    return NULL;
 }
 
 int getMaiorIdLista(Lista l){
@@ -167,7 +166,6 @@ int getMaiorIdLista(Lista l){
 
     stLista* original = (stLista*)l;
 
-    int tamanho = getTamanhoLista(l);
     int maiorAtual = -1;
 
     stCelula* temp = original->inicio;
@@ -382,6 +380,7 @@ double getMenorValorLista(Lista lista, int opcao){
 
                 valor = (y1<y2) ? y1 : y2;
             }
+            menor = (menor < valor) ? menor : valor;
             temp = temp->proximo;
         }
 

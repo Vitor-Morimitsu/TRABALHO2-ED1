@@ -5,7 +5,7 @@ typedef struct NO{
     double angulo;
 }stNo;
 
-No* gerarArray(Lista vertices, int tamanho, double xOrigem, double yOrigem){
+No* gerarArray(Lista vertices, int tamanho, double /*xOrigem*/, double /*yOrigem*/){
     if(vertices == NULL){
         printf("Erro em gerarArray\n");
         return NULL;

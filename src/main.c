@@ -3,9 +3,11 @@
 #include "geo.h"
 #include "lista.h"
 #include "qry.h"
+#include "svg.h"
 
 #define PATH_LEN 512
 #define FILE_NAME_LEN 256
+#define MAX_FULL_PATH 4096
 
 void removeExtension(char* dest, const char* src) {
     strcpy(dest, src);
@@ -50,10 +52,10 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    char fullPathGeo[1024];
+    char fullPathGeo[MAX_FULL_PATH];
     snprintf(fullPathGeo, sizeof(fullPathGeo), "%s/%s", dirEntrada, nomeArquivoGeo);
 
-    char fullPathQry[1024];
+    char fullPathQry[MAX_FULL_PATH];
     if (strlen(nomeArquivoQry) > 0) {
         snprintf(fullPathQry, sizeof(fullPathQry), "%s/%s", dirEntrada, nomeArquivoQry);
     }
@@ -63,11 +65,11 @@ int main(int argc, char* argv[])
     removeExtension(baseGeo, nomeArquivoGeo);
     removeExtension(baseQry, onlyQry);
 
-    char arquivoSaidaSvgGeo[1024];
+    char arquivoSaidaSvgGeo[MAX_FULL_PATH];
     snprintf(arquivoSaidaSvgGeo, sizeof(arquivoSaidaSvgGeo), "%s/%s.svg", dirSaida, nomeArquivoGeo);
 
-    char arquivoSaidaSvgQry[1024];
-    char arquivoSaidaTxt[1024];
+    char arquivoSaidaSvgQry[MAX_FULL_PATH];
+    char arquivoSaidaTxt[MAX_FULL_PATH];
     if (strlen(nomeArquivoQry) > 0) {
         snprintf(arquivoSaidaSvgQry, sizeof(arquivoSaidaSvgQry), "%s/%s-%s.svg", dirSaida, baseGeo, baseQry);
         snprintf(arquivoSaidaTxt, sizeof(arquivoSaidaTxt), "%s/%s-%s.txt", dirSaida, baseGeo, baseQry);
@@ -85,11 +87,13 @@ int main(int argc, char* argv[])
         fclose(arqGeo);
         return EXIT_FAILURE;
     }
+    abrirSvg(arqSvgEntrada);
 
     Lista formas = criarLista();
 
     lerGeo(arqGeo,arqSvgEntrada,formas);
 
+    fecharSVG(arqSvgEntrada);
     fclose(arqGeo);
     fclose(arqSvgEntrada);
 
@@ -116,9 +120,11 @@ int main(int argc, char* argv[])
         liberaLista(formas);
         return EXIT_FAILURE;
     }
+    abrirSvg(svgSaida);
     
     lerQry(qry,txt,svgSaida,formas);
 
+    fecharSVG(svgSaida);
     fclose(qry);
     fclose(txt);
     fclose(svgSaida);

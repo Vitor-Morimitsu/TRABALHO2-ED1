@@ -1,5 +1,9 @@
 #include "svg.h"
 
+void abrirSvg(FILE* arqSvg){
+    fprintf(arqSvg, "<svg xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n");
+}
+
 void desenharCirculoSVG(FILE* arqSvg, Circulo circ) {
     if(circ == NULL){
         fprintf(stderr, "ERRO: Forma NULL ao desenhar círculo SVG\n");
@@ -74,6 +78,8 @@ void desenharPoligonoSVG(FILE* arqSvg, Poligono p, char* corB, char* corP){
         return;
     }
 
+    fprintf(arqSvg, "<polygon points=\"");
+
     int n = getNumeroVertices(p);
     for (int i = 0; i < n; i++){
         double x, y;
@@ -81,4 +87,8 @@ void desenharPoligonoSVG(FILE* arqSvg, Poligono p, char* corB, char* corP){
         fprintf(arqSvg, "%.2f,%.2f ", x, y);
     }
     fprintf(arqSvg, "\" style=\"fill:%s; opacity:0.5; stroke:%s; stroke-width:2\" />\n", corP, corB);
+}
+
+void fecharSVG(FILE* arqSvg) {
+    fprintf(arqSvg, "</svg>\n");
 }
