@@ -90,11 +90,25 @@ void setHRetangulo(Retangulo r, double h){
 }
 
 void setCorBRetangulo(Retangulo r, char* corb){
-    ((stRetangulo*)r)->corb = corb;
+    stRetangulo* ret = (stRetangulo*)r;
+    free(ret->corb);
+    ret->corb = (char*)malloc(strlen(corb) + 1);
+    if(ret->corb == NULL){
+        printf("Erro ao alocar memória para cor da borda do retangulo.");
+        exit(1);
+    }
+    strcpy(ret->corb, corb);
 }
 
 void setCorPRetangulo(Retangulo r, char* corp){
-    ((stRetangulo*)r)->corp = corp;
+    stRetangulo* ret = (stRetangulo*)r;
+    free(ret->corp);
+    ret->corp = (char*)malloc(strlen(corp) + 1);
+    if(ret->corp == NULL){
+        printf("Erro ao alocar memória para a cor de preenchimento do retangulo.");
+        exit(1);
+    }
+    strcpy(ret->corp, corp);
 }
 
 void liberaRetangulo(Retangulo r){

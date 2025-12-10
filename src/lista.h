@@ -1,80 +1,80 @@
 #ifndef LISTA_H
 #define LISTA_H
-
-/*
-    Arquivo .h destinado à criação e utilização de uma lista ligada.
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "pacote.h"
 
 typedef void* Lista;
 typedef void* CelulaLista;
+typedef void* Forma;
+typedef void* No;
 
-/*
-    Cria uma lista e a retorna.
-*/
 Lista criarLista();
 
 /*
-    Insere um pacote na lista.
+Insere um pacote no final da lista.
 */
-void insereLista(Lista l, void* pac);
+void insereLista(Lista l, void* conteudo);
 
 /*
-    Remove um pacote da lista e o retorna.
-*/
-void removeLista(Lista l, int id);
-
-/*
-    Retorna o tamanho da lista.
+Retorna o tamanho da lista.
 */
 int getTamanhoLista(Lista l);
 
 /*
-    Retorna o conteudo contido em uma célula.
+Retorna o conteudo de uma celula.
 */
-
 void* getConteudoCelula(CelulaLista celula);
 
 /*
-    Retorna a primeira célula da lista.
+Retorna a primeira celula da lista.
 */
 CelulaLista getPrimeiraCelulaLista(Lista l);
 
 /*
-    Retorna a próxima célula da lista.
+Retorna a proxima celula da lista.
 */
 CelulaLista getProximaCelulaLista(CelulaLista celula);
 
+
 /*
-    Procura e retorna um pacote contido na lista sem apagá-lo da lista.
+Encontra um pacote com o id especificado e o retorna.
 */
 Pacote procuraPacoteLista(Lista l, int id);
 
+
 /*
-    Retorna o maior id da lista.
+Remove um pacote da lista com o id fornecido
+*/
+void removeLista(Lista l, int id);
+
+/*
+Retorna o maior id da lista de formas
 */
 int getMaiorIdLista(Lista l);
 
 /*
-    Retorna o maior valor de x ou de y presente na lista dependendo do comando passado.
-    1 retorna o maior x. 
-    2 retorna o maior y.
+    Retorna o maior valor de uma coordenada específica da lista.
+    Opcao 1 para X, 2 para Y.
 */
 double getMaiorValorLista(Lista lista, int opcao);
 
 /*
-    Retorna o menor valor de x ou y presente na lista dependendo da opção selecionada.
-    1 retorna o menor x.
-    2 retorna o menor y.
+    Retorna o menor valor de uma coordenada específica da lista.
+    Opcao 1 para X, 2 para Y.
 */
 double getMenorValorLista(Lista lista, int opcao);
 
 /*
-    Libera a memória de uma lista.
+Libera a memória da lista e de todos os pacotes.
 */
 void liberaLista(Lista l);
+
+/*
+Libera apenas a memória da estrutura da lista (células), sem liberar o conteúdo.
+*/
+void liberaEstruturaLista(Lista l);
+
 
 #endif

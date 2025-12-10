@@ -196,7 +196,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, Lista /*formas*/, Arvore 
         destroiVertice(v);
         celula = getProximaCelulaLista(celula);
     }
-    liberaLista(todosVertices);
+    liberaEstruturaLista(todosVertices);
 }
 
 bool pontoNoPoligono(Poligono p, double x, double y){
@@ -270,6 +270,6 @@ void liberarPoligono(Poligono p){
         destroiVertice(v);
     }
     
-    liberaLista(pol->vertices);
+    liberaEstruturaLista(pol->vertices);
     free(pol);
 }

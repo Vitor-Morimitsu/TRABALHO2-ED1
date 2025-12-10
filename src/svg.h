@@ -44,4 +44,9 @@ void desenharPoligonoSVG(FILE* arqSvg, Poligono p, char* corB, char* corP);
 /// @brief Realiza o comando de encerramento do arquivo svg
 /// @param arqSvg Arquivo
 void fecharSVG(FILE* arqSvg);
+
+/*
+    Função que percorre a lista de formas e desenha cada uma no arquivo SVG.
+*/
+void desenharTodasAsFormas(FILE* arqSvg, Lista formas);
 #endif

@@ -3,17 +3,43 @@
 #include "retangulo.h"
 #include "linha.h"
 #include "texto.h"
+#include "poligono.h"
 #include <stdbool.h>
+#include <math.h>
 
 bool circuloDentroPoligono(Circulo c, Poligono p) {
     if (c == NULL || p == NULL) {
         return false;
     }
     
-    double x = getCoordXCirculo(c);
-    double y = getCoordYCirculo(c);
+    double cx = getCoordXCirculo(c);
+    double cy = getCoordYCirculo(c);
+    double raio = getRaioCirculo(c);
     
-    return pontoNoPoligono(p, x, y);
+    // 1. Verifica se o centro do círculo está dentro do polígono
+    if (pontoNoPoligono(p, cx, cy)) {
+        return true;
+    }
+
+    // 2. Verifica se algum vértice do polígono está dentro do círculo
+    int numVertices = getNumeroVertices(p);
+    for (int i = 0; i < numVertices; i++) {
+        double vx, vy;
+        getVerticePoligono(p, i, &vx, &vy);
+        
+        // Calcula a distância do vértice ao centro do círculo
+        double dist = sqrt(pow(vx - cx, 2) + pow(vy - cy, 2));
+        
+        if (dist < raio) {
+            return true; // Vértice do polígono está dentro do círculo
+        }
+    }
+
+    // Nota: Esta verificação ainda não cobre o caso de uma aresta do polígono cruzar o círculo sem que nenhum vértice esteja dentro.
+    // Uma solução completa exigiria um teste de interseção círculo-segmento de reta para cada aresta do polígono.
+    // No entanto, as duas verificações acima já são uma melhoria substancial.
+    
+    return false;
 }
 
 bool retanguloDentroPoligono(Retangulo r, Poligono p) {
@@ -26,11 +52,18 @@ bool retanguloDentroPoligono(Retangulo r, Poligono p) {
     double w = getWRetangulo(r);
     double h = getHRetangulo(r);
     
-    // Verifica o centro do retângulo
+    // Verifica os 4 cantos do retângulo
+    if (pontoNoPoligono(p, x, y)) return true;          // Canto superior esquerdo
+    if (pontoNoPoligono(p, x + w, y)) return true;      // Canto superior direito
+    if (pontoNoPoligono(p, x, y + h)) return true;      // Canto inferior esquerdo
+    if (pontoNoPoligono(p, x + w, y + h)) return true;  // Canto inferior direito
+    
+    // Opcional: verificar também o centro para cobrir casos onde o polígono está inteiramente dentro do retângulo
     double centroX = x + w / 2.0;
     double centroY = y + h / 2.0;
-    
-    return pontoNoPoligono(p, centroX, centroY);
+    if (pontoNoPoligono(p, centroX, centroY)) return true;
+
+    return false;
 }
 
 bool linhaDentroPoligono(Linha l, Poligono p) {

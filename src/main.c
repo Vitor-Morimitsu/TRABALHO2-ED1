@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "geo.h"
 #include "lista.h"
 #include "qry.h"
@@ -9,6 +10,7 @@
 #define FILE_NAME_LEN 256
 #define MAX_FULL_PATH 4096
 
+// Função para remover a extensão de um nome de arquivo
 void removeExtension(char* dest, const char* src) {
     strcpy(dest, src);
     char* dot = strrchr(dest, '.');
@@ -17,17 +19,14 @@ void removeExtension(char* dest, const char* src) {
     }
 }
 
-int main(int argc, char* argv[])
-{
-    FILE* arqGeo = NULL;
+int main(int argc, char* argv[]) {
     char dirEntrada[PATH_LEN] = "";
     char dirSaida[PATH_LEN] = "";
     char nomeArquivoGeo[FILE_NAME_LEN] = "";
     char nomeArquivoQry[FILE_NAME_LEN] = "";
-    char onlyQry[FILE_NAME_LEN] = "";
-    int hasGeo = 0, hasSaida = 0;
+    int hasGeo = 0, hasQry = 0, hasSaida = 0;
 
-    // Processa argumentos da linha de comando
+    // 1. Processa argumentos da linha de comando
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-e") == 0 && i + 1 < argc) {
             strcpy(dirEntrada, argv[++i]);
@@ -39,8 +38,7 @@ int main(int argc, char* argv[])
             hasGeo = 1;
         } else if (strcmp(argv[i], "-q") == 0 && i + 1 < argc) {
             strcpy(nomeArquivoQry, argv[++i]);
-            char *p = strrchr(argv[i], '/');
-            strcpy(onlyQry, p ? p + 1 : argv[i]);
+            hasQry = 1;
         } else {
             fprintf(stderr, "Parametro desconhecido ou invalido: %s\n", argv[i]);
             return EXIT_FAILURE;
@@ -52,82 +50,99 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
+    // 2. Monta os caminhos completos para os arquivos de entrada
     char fullPathGeo[MAX_FULL_PATH];
     snprintf(fullPathGeo, sizeof(fullPathGeo), "%s/%s", dirEntrada, nomeArquivoGeo);
 
     char fullPathQry[MAX_FULL_PATH];
-    if (strlen(nomeArquivoQry) > 0) {
+    if (hasQry) {
         snprintf(fullPathQry, sizeof(fullPathQry), "%s/%s", dirEntrada, nomeArquivoQry);
     }
 
+    // 3. Monta os nomes base dos arquivos para os nomes dos arquivos de saída
     char baseGeo[FILE_NAME_LEN];
-    char baseQry[FILE_NAME_LEN];
     removeExtension(baseGeo, nomeArquivoGeo);
-    removeExtension(baseQry, onlyQry);
 
-    char arquivoSaidaSvgGeo[MAX_FULL_PATH];
-    snprintf(arquivoSaidaSvgGeo, sizeof(arquivoSaidaSvgGeo), "%s/%s.svg", dirSaida, nomeArquivoGeo);
-
-    char arquivoSaidaSvgQry[MAX_FULL_PATH];
-    char arquivoSaidaTxt[MAX_FULL_PATH];
-    if (strlen(nomeArquivoQry) > 0) {
-        snprintf(arquivoSaidaSvgQry, sizeof(arquivoSaidaSvgQry), "%s/%s-%s.svg", dirSaida, baseGeo, baseQry);
-        snprintf(arquivoSaidaTxt, sizeof(arquivoSaidaTxt), "%s/%s-%s.txt", dirSaida, baseGeo, baseQry);
+    char baseQry[FILE_NAME_LEN] = "";
+    if (hasQry) {
+        char onlyQryName[FILE_NAME_LEN];
+        char *p = strrchr(nomeArquivoQry, '/');
+        strcpy(onlyQryName, p ? p + 1 : nomeArquivoQry);
+        removeExtension(baseQry, onlyQryName);
     }
-    
-    arqGeo = fopen(fullPathGeo, "r");
-    if(arqGeo == NULL){
-        printf("ERRO: Não foi possível abrir o arquivo .geo: %s\n", fullPathGeo);
+
+    // 4. Monta os caminhos completos para os arquivos de SAÍDA
+    char arquivoSaidaSvg[MAX_FULL_PATH];
+    char arquivoSaidaTxt[MAX_FULL_PATH];
+
+    if (hasQry) {
+        snprintf(arquivoSaidaSvg, sizeof(arquivoSaidaSvg), "%s/%s-%s.svg", dirSaida, baseGeo, baseQry);
+        snprintf(arquivoSaidaTxt, sizeof(arquivoSaidaTxt), "%s/%s-%s.txt", dirSaida, baseGeo, baseQry);
+    } else {
+        snprintf(arquivoSaidaSvg, sizeof(arquivoSaidaSvg), "%s/%s.svg", dirSaida, baseGeo);
+    }
+
+    // 5. Abre todos os arquivos necessários
+    FILE *arqGeo = fopen(fullPathGeo, "r");
+    if (arqGeo == NULL) {
+        fprintf(stderr, "ERRO: Não foi possível abrir o arquivo .geo: %s\n", fullPathGeo);
         return EXIT_FAILURE;
     }
 
-    FILE* arqSvgEntrada = fopen(arquivoSaidaSvgGeo, "w");
-    if(arqSvgEntrada == NULL){
-        fprintf(stderr, "ERRO: Não foi possível criar arquivo SVG de entrada: %s\n", arquivoSaidaSvgGeo);
+    FILE *arqSvg = fopen(arquivoSaidaSvg, "w");
+    if (arqSvg == NULL) {
+        fprintf(stderr, "ERRO: Não foi possível criar o arquivo SVG de saída: %s\n", arquivoSaidaSvg);
         fclose(arqGeo);
         return EXIT_FAILURE;
     }
-    abrirSvg(arqSvgEntrada);
 
+    FILE *arqQry = NULL;
+    FILE *arqTxt = NULL;
+    if (hasQry) {
+        arqQry = fopen(fullPathQry, "r");
+        if (arqQry == NULL) {
+            fprintf(stderr, "ERRO: Não foi possível abrir o arquivo .qry: %s\n", fullPathQry);
+            fclose(arqGeo);
+            fclose(arqSvg);
+            return EXIT_FAILURE;
+        }
+        arqTxt = fopen(arquivoSaidaTxt, "w");
+        if (arqTxt == NULL) {
+            fprintf(stderr, "ERRO: Não foi possível criar o arquivo .txt de saída: %s\n", arquivoSaidaTxt);
+            fclose(arqGeo);
+            fclose(arqSvg);
+            fclose(arqQry);
+            return EXIT_FAILURE;
+        }
+    }
+
+    // 6. Inicia o processo de geração
     Lista formas = criarLista();
+    
+    abrirSvg(arqSvg);
 
-    lerGeo(arqGeo,arqSvgEntrada,formas);
+    // 7. Lê o arquivo GEO e carrega as formas para a lista
+    lerGeo(arqGeo, formas);
 
-    fecharSVG(arqSvgEntrada);
+    // 8. DESENHA as formas iniciais no SVG
+    desenharTodasAsFormas(arqSvg, formas);
+
+    // 9. Se houver um arquivo QRY, processa as consultas
+    if (hasQry && arqQry != NULL) {
+        lerQry(arqQry, arqTxt, arqSvg, formas);
+    }
+
+    // 10. Finaliza o SVG, fecha todos os arquivos e libera a memória
+    fecharSVG(arqSvg);
+
     fclose(arqGeo);
-    fclose(arqSvgEntrada);
-
-    FILE* qry = fopen(fullPathQry, "r");
-    if(qry == NULL){
-        fprintf(stderr, "ERRO: Não foi possível abrir o arquivo .qry: %s\n", fullPathQry);
-        liberaLista(formas);
-        return EXIT_FAILURE;
-    }
-    
-    FILE* txt = fopen(arquivoSaidaTxt, "w");
-    if(txt == NULL){
-        fprintf(stderr, "ERRO: Não foi possível abrir o arquivo .txt: %s\n", arquivoSaidaTxt);
-        fclose(qry);
-        liberaLista(formas);
-        return EXIT_FAILURE;
+    fclose(arqSvg);
+    if (hasQry) {
+        fclose(arqQry);
+        fclose(arqTxt);
     }
 
-    FILE* svgSaida = fopen(arquivoSaidaSvgQry, "w");
-    if(svgSaida == NULL){
-        fprintf(stderr, "ERRO: Não foi possível abrir o arquivo de saída do svg: %s\n", arquivoSaidaSvgQry);
-        fclose(qry);
-        fclose(txt);
-        liberaLista(formas);
-        return EXIT_FAILURE;
-    }
-    abrirSvg(svgSaida);
-    
-    lerQry(qry,txt,svgSaida,formas);
-
-    fecharSVG(svgSaida);
-    fclose(qry);
-    fclose(txt);
-    fclose(svgSaida);
     liberaLista(formas);
+
     return EXIT_SUCCESS;
 }

@@ -92,3 +92,37 @@ void desenharPoligonoSVG(FILE* arqSvg, Poligono p, char* corB, char* corP){
 void fecharSVG(FILE* arqSvg) {
     fprintf(arqSvg, "</svg>\n");
 }
+
+void desenharTodasAsFormas(FILE* arqSvg, Lista formas) {
+    if (arqSvg == NULL || formas == NULL) {
+        return;
+    }
+
+    for (CelulaLista celula = getPrimeiraCelulaLista(formas); celula != NULL; celula = getProximaCelulaLista(celula)) {
+        Pacote pac = (Pacote)getConteudoCelula(celula);
+        if (pac == NULL) continue;
+
+        char tipo = getTipoPacote(pac);
+        Forma forma = getFormaPacote(pac);
+
+        switch (tipo) {
+            case 'c':
+                desenharCirculoSVG(arqSvg, (Circulo)forma);
+                break;
+            case 'r':
+                desenharRetanguloSVG(arqSvg, (Retangulo)forma);
+                break;
+            case 'l':
+                desenharLinhaSVG(arqSvg, (Linha)forma);
+                break;
+            case 't':
+                // Para textos, precisamos do estilo. Vamos assumir NULL se não houver um.
+                // O ideal seria armazenar o estilo no pacote também.
+                desenharTextoSVG(arqSvg, (Texto)forma, NULL); 
+                break;
+            default:
+                // Forma desconhecida ou não visualizável
+                break;
+        }
+    }
+}

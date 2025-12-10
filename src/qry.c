@@ -38,7 +38,7 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
     }
 
     int contador = inicio;
-    while(contador < fim){  // Corrigido: < ao invés de !=
+    while(contador <= fim){  
         Pacote pac = procuraPacoteLista(pacotes, contador);
         if(pac == NULL){//não achou o pacote
             printf("Pacote não encontrado em comandoA\n");
@@ -53,14 +53,14 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
             double x = getCoordXCirculo((Circulo)formaPac);
             double y = getCoordYCirculo((Circulo)formaPac);
             double raio = getRaioCirculo((Circulo)formaPac);
-            char* cor = getCorPCirculo((Circulo)formaPac);  // Corrigido: char* ao invés de char[]
+            char* cor = getCorPCirculo((Circulo)formaPac);
 
             if(letra == 'h'){//círculo virará um anteparo(linha) horizontal
                 Linha lin = criarLinha(id,x - raio, y,x+raio,y,cor);
                 liberaCirculo((Circulo)formaPac);
                 setTipoPacote(pac, 'l');
                 setFormaPacote(pac, (Forma)lin);
-                removeLista(pacotes, id);  // Remove da lista original
+                // removeLista(pacotes, id);  // Remove da lista original
                 insereLista(anteparos, pac);
 
             }else if(letra == 'v'){//círculo virará um anteparo(linha) vertical
@@ -68,8 +68,8 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
                 liberaCirculo((Circulo)formaPac);
                 setTipoPacote(pac, 'l');
                 setFormaPacote(pac, (Forma)lin);
-                removeLista(pacotes, id);  // Remove da lista original
-                insereLista(anteparos, pac);
+                
+                // removeLista(pacotes, id);  // Remove da lista original
 
             }else{
                 printf("letra de comando invalida em comandoA\n");
@@ -194,7 +194,6 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
     
     // Reporta informações da explosão no arquivo de texto
     fprintf(arqTxt, "Explosão na posição (%.2f, %.2f)\n", xBomba, yBomba);
-    fprintf(arqTxt, "Formas destruídas:\n");
     
     // Percorre a lista de formas verificando quais estão dentro do polígono
     CelulaLista celula = getPrimeiraCelulaLista(formas);

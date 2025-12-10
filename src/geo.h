@@ -15,6 +15,6 @@
 /*
     Função responsável por ler o arquivo geo passado, gerar o svg inicial e registrar as formas em pacotes e colocá-los na lista.
 */
-void lerGeo(FILE* geo, FILE* svgEntrada, Lista list);
+void lerGeo(FILE* geo, Lista list);
 
 #endif

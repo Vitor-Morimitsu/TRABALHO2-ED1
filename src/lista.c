@@ -150,7 +150,8 @@ void removeLista(Lista l, int id){
             }
             
             lista->tamanho--;
-            liberarPacote(cont);
+            // liberarPacote(cont);
+            temp->conteudo = NULL;
             free(temp);
             return;
         }
@@ -401,6 +402,24 @@ void liberaLista(Lista l){
         
         liberarPacote((Pacote)temp->conteudo);
         
+        free(temp);
+        temp = proximo;
+    }
+    
+    //libera a estrutura da lista
+    free(lista);
+}
+
+void liberaEstruturaLista(Lista l){
+    if(l == NULL) return;
+    
+    stLista* lista = (stLista*)l;
+    stCelula* temp = lista->inicio;
+    stCelula* proximo;
+    
+    //percorre a lista liberando cada célula
+    while(temp != NULL) {
+        proximo = temp->proximo;
         free(temp);
         temp = proximo;
     }

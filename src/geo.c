@@ -2,8 +2,8 @@
 
 #define MAX_SIZE 200
 
-void lerGeo(FILE* geo, FILE* svgEntrada, Lista list){
-    if(geo == NULL || svgEntrada == NULL || list == NULL){
+void lerGeo(FILE* geo, Lista list){
+    if(geo == NULL || list == NULL){
         printf("Erro em lerGeo\n");
         return;
     }
@@ -36,7 +36,6 @@ void lerGeo(FILE* geo, FILE* svgEntrada, Lista list){
             setTipoPacote(pac, 'c');
 
             insereLista(list, pac);
-            desenharCirculoSVG(svgEntrada, c);
 
         } else if (strcmp(comando, "r") == 0) {
             int id;
@@ -56,7 +55,6 @@ void lerGeo(FILE* geo, FILE* svgEntrada, Lista list){
             setTipoPacote(pac, 'r');
 
             insereLista(list, pac);
-            desenharRetanguloSVG(svgEntrada, r);
 
         } else if (strcmp(comando, "l") == 0) {
             int i;
@@ -75,7 +73,6 @@ void lerGeo(FILE* geo, FILE* svgEntrada, Lista list){
             setTipoPacote(pac, 'l');
             
             insereLista(list, pac);    
-            desenharLinhaSVG(svgEntrada, lin);
 
         } else if (strcmp(comando, "t") == 0) {
             int i;
@@ -96,7 +93,6 @@ void lerGeo(FILE* geo, FILE* svgEntrada, Lista list){
             setFormaPacote(pac, (Forma)text);
             setTipoPacote(pac, 't');
             insereLista(list, pac);
-            desenharTextoSVG(svgEntrada, text, getEstiloTexto(text));
 
         } else if (strcmp(comando, "ts") == 0) {
             char font[50] = "";
