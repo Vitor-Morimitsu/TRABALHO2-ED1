@@ -12,7 +12,10 @@ Pacote criaPacote(){
         printf("Erro ao criar pacote\n");
         return NULL;
     }
-    return pac;
+    pac->fig = NULL;
+    pac->tipo = 'n';
+    printf("Pacote criado\n");
+    return (Pacote)pac;
 }
 
 Forma getFormaPacote(Pacote pac){
@@ -20,7 +23,7 @@ Forma getFormaPacote(Pacote pac){
     
     if(p == NULL){
         printf("Erro em getFormaPacote\n");
-        return;
+        return NULL;
     }
 
     return p->fig;
@@ -30,7 +33,7 @@ char getTipoPacote(Pacote pac){
     stPacote* p = (stPacote*)pac;
     if(p == NULL){
         printf("Erro em getTipoPacote\n");
-        return;
+        return '\0';
     }
 
     return p->tipo;
@@ -39,7 +42,7 @@ char getTipoPacote(Pacote pac){
 int getIDPacote(Pacote pac){
     if(pac == NULL){
         printf("Erro em getIDPacote\n");
-        return;
+        return -1;
     }
     
     int id = -1;
@@ -112,7 +115,8 @@ void liberarPacote(Pacote p) {
     
     stPacote* pacote = (stPacote*)p;
     
-    if(pacote->fig != NULL) {
+    // Verifica se o tipo está inicializado antes de usar
+    if(pacote->fig != NULL && pacote->tipo != '\0' && pacote->tipo != 'n') {
         if(pacote->tipo == 'c'){
             liberaCirculo((Circulo)pacote->fig);
         }else if(pacote->tipo == 'r'){
@@ -121,10 +125,11 @@ void liberarPacote(Pacote p) {
             liberaLinha((Linha)pacote->fig);
         }else if(pacote->tipo == 't'){
             liberaTexto((Texto)pacote->fig);
-        }else if(pacote->tipo == 'p'){ // Adicionado tratamento para polígonos
+        }else if(pacote->tipo == 'p'){ 
             liberarPoligono((Poligono)pacote->fig);
         }else{
-            printf("Erro ao encontrar tipo para liberar pacote\n");
+            // Tipo desconhecido, mas não é erro se for 'n' (não inicializado)
+            fprintf(stderr, "Aviso: Tipo de pacote desconhecido '%c' ao liberar\n", pacote->tipo);
         }
     }
     

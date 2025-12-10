@@ -84,7 +84,8 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
             y = getCoordYRetangulo((Retangulo)ret);
             w = getWRetangulo((Retangulo)ret);
             h = getHRetangulo((Retangulo)ret);
-            char cor[50] = getCorPRetangulo((Retangulo)ret);
+            char cor[50];
+            strcpy(cor,getCorPRetangulo((Retangulo)ret));
 
             //criar 4 segmentos com base nos lados do retangulo a partir do maior id da lista.
             int maiorIDPacotes = getMaiorIdLista(pacotes);    
@@ -95,25 +96,25 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
 
             //criar os novos pacotes que conterão os anteparos
             Linha esquerda = criarLinha(maior + 1,x,y,x, y+h,cor);
-            Pacote esq = criarPacote();
+            Pacote esq = criaPacote();
             setTipoPacote(esq, 'l');
             setFormaPacote(esq, (Forma)esquerda);
             insereLista(anteparos,esq);
 
             Linha direita = criarLinha(maior + 2,x+w,y, x+w, y+h,cor);
-            Pacote dir = criarPacote();
+            Pacote dir = criaPacote();
             setTipoPacote(dir, 'l');
             setFormaPacote(dir, (Forma)direita);
             insereLista(anteparos,dir);
 
             Linha cima = criarLinha(maior + 3,x,y,x+w,y,cor);
-            Pacote ci = criarPacote();
+            Pacote ci = criaPacote();
             setTipoPacote(ci, 'l');
             setFormaPacote(ci, (Forma)cima);
             insereLista(anteparos,ci);
 
             Linha baixo = criarLinha(maior + 4,x,y+h,x+w,y+h,cor);
-            Pacote ba = criarPacote();
+            Pacote ba = criaPacote();
             setTipoPacote(ba, 'l');
             setFormaPacote(ba, (Forma)baixo);
             insereLista(anteparos,ba);
@@ -183,7 +184,7 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
     Poligono poligono = criarPoligono();
     
     // Cria árvore para ordenar os segmentos ativos
-    Arvore arvoreSegmentos = criarArvore();
+    Arvore arvoreSegmentos = criaArvore();
     
     // Calcula o polígono de visibilidade
     calcularVisibilidade(poligono, anteparos, formas,arvoreSegmentos, xBomba, yBomba, comando);
@@ -237,7 +238,7 @@ void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos,double x, doub
     
     // Cria o polígono de visibilidade
     Poligono poligono = criarPoligono();
-    Arvore arvoreSegmentos = criarArvore();
+    Arvore arvoreSegmentos = criaArvore();
     
     // Calcula o polígono de visibilidade a partir da posição da bomba
     calcularVisibilidade(poligono, anteparos, formas, arvoreSegmentos, x, y, comandoSfx);
@@ -307,7 +308,7 @@ void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, d
     
     // Cria o polígono de visibilidade
     Poligono poligono = criarPoligono();
-    Arvore arvoreSegmentos = criarArvore();
+    Arvore arvoreSegmentos = criaArvore();
     
     // Calcula o polígono de visibilidade
     calcularVisibilidade(poligono, anteparos, formas, arvoreSegmentos, x, y, comandoSfx);
@@ -464,7 +465,7 @@ void lerQry(FILE* qry,FILE* txt, FILE* svg, Lista formas){
             double x,y;
             char cor[50];
             char sufixo[50];
-            sscanf(linha,"p %lf %lf %s %s", &x,&y,&cor,sufixo);
+            sscanf(linha,"p %lf %lf %s %s", &x,&y,cor,sufixo);
             comandoP(txt,svg,formas,anteparos,x,y,cor,sufixo);
         }else if(strcmp(comando, "cln") == 0){
             double x,y,dx,dy;

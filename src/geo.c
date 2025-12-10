@@ -25,6 +25,7 @@ void lerGeo(FILE* geo, FILE* svgEntrada, Lista list){
             Circulo c = criaCirculo(id,x,y,r,corb,corp);
             setFormaPacote(pac,(Forma)c);
             setTipoPacote(pac, 'c');
+
             insereLista(list, pac);
             desenharCirculoSVG(svgEntrada,c);
         }else if(tipoPacote == 'r'){//retângulo
@@ -36,6 +37,7 @@ void lerGeo(FILE* geo, FILE* svgEntrada, Lista list){
             Retangulo r = criaRetangulo(id,x,y,w,h,corb,corp);
             setFormaPacote(pac,(Forma)r);
             setTipoPacote(pac, 'r');
+
             insereLista(list, pac);
             desenharRetanguloSVG(svgEntrada, r);
         }else if(tipoPacote == 'l'){//Linha
@@ -43,27 +45,32 @@ void lerGeo(FILE* geo, FILE* svgEntrada, Lista list){
             double x1,y1,x2,y2;
             char cor[32];
             sscanf(linha, "l %d %lf %lf %lf %lf %s", &i, &x1, &y1, &x2, &y2, cor);
-            Pacote pac = criarPacote();
+            Pacote pac = criaPacote();
             Linha lin = criarLinha(i,x1,y1,x2,y2,cor);
             setFormaPacote(pac, (Forma)lin);
             setTipoPacote(pac, 'l');
+            
             insereLista(list, pac);    
             desenharLinhaSVG(svgEntrada,lin);       
         }else if(tipoPacote == 't'){//Texto
             int i;
             double x, y;
-            char corb[32];
-            char corp[32];
-            char texto[50];
-            char a;
-            sscanf(linha, "t %d %lf %lf %s %s %c %s ", &i, &x, &y, corb, corp, &a, texto);
-            Pacote pac = criarPacote();
+            char corb[32] = "";
+            char corp[32] = "";
+            char texto[50] = "";
+            char a = '\0';
+            sscanf(linha, "t %d %lf %lf %s %s %c %s", &i, &x, &y, corb, corp, &a, texto);
+
+            Pacote pac = criaPacote();
             Texto text = criarTexto(i,x,y,corb,corp,a,texto);
             setFormaPacote(pac,(Texto)text);
+            setTipoPacote(pac,'t');
 
             const char* ts_marker = strstr(linha, " ts ");
             if(ts_marker != NULL){
-                char font[500], weight[500], size[500];
+                char font[500] = "";
+                char weight[500] = "";
+                char size[500] = "";
                 sscanf(ts_marker, " ts %s %s %s", font, weight, size);
                 Estilo ts = criarEstilo(font, weight, size);
                 setEstiloTexto(text, ts);
