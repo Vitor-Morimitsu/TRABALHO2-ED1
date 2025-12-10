@@ -29,8 +29,18 @@ void insereArvore(Arvore arv, void* segmentoAtivo);
 CelulaArvore buscaCelulaArvore(Arvore arv);
 
 /*
-    Função responsável por remover um conteudo da arvore
+    Função responsável por remover um conteudo da arvore pelo ID
 */
-void removeArvore(Arvore arv);
+void removeArvore(Arvore arv, int id);
+
+/*
+    Função responsável por definir a origem e ângulo atual para cálculo de distâncias
+*/
+void setOrigemArvore(Arvore arv, double xOrigem, double yOrigem, double anguloAtual);
+
+/*
+    Função responsável por liberar toda a memória da árvore
+*/
+void liberarArvore(Arvore arv);
 
 #endif

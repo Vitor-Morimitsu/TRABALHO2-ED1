@@ -64,8 +64,15 @@ Vertice calculaInterseccao(Lista anteparos, Linha scaner) {
     return NULL; //nenhuma interseção encontrada
 }
 
-Vertice encontraInterseccaoMaisProxima(Lista anteparos, Linha scaner) {
-    if (anteparos == NULL) {
+Vertice encontraInterseccaoMaisProxima(Arvore segmentosAtivos, Linha scaner) {
+    if (segmentosAtivos == NULL || scaner == NULL) {
+        return NULL;
+    }
+
+    // Busca o segmento mais próximo na árvore (mais à esquerda)
+    Linha linhaProxima = (Linha)buscaCelulaArvore(segmentosAtivos);
+    
+    if (linhaProxima == NULL) {
         return NULL;
     }
 
@@ -73,46 +80,33 @@ Vertice encontraInterseccaoMaisProxima(Lista anteparos, Linha scaner) {
     double y1 = getY1Linha(scaner);
     double x2 = getX2Linha(scaner);
     double y2 = getY2Linha(scaner);
+    
+    double x3 = getX1Linha(linhaProxima);
+    double y3 = getY1Linha(linhaProxima);
+    double x4 = getX2Linha(linhaProxima);
+    double y4 = getY2Linha(linhaProxima);
 
-    double menorDistancia = DBL_MAX;
-    double closest_x, closest_y;
-    bool foundIntersection = false;
+    double denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
 
-    for (CelulaLista celula = getPrimeiraCelulaLista(anteparos); celula != NULL; celula = getProximaCelulaLista(celula)) {
-        Anteparo antCelula = getConteudoCelula(celula);
-        double x3 = getX1Anteparo(antCelula);
-        double y3 = getY1Anteparo(antCelula);
-        double x4 = getX2Anteparo(antCelula);
-        double y4 = getY2Anteparo(antCelula);
+    if (fabs(denom) > 1e-9) {
+        double t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+        double u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
 
-        double denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-
-        if (fabs(denom) > 1e-9) { // Use a small epsilon for floating point comparison
-            double t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
-            double u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
-
-            // Check if intersection is within both line segments
-            if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
-                double xIntersec = x1 + t * (x2 - x1);
-                double yIntersec = y1 + t * (y2 - y1);
-
-                double dist = distanciaEntrePontos(x1, y1, xIntersec, yIntersec);
-
-                if (dist < menorDistancia) {
-                    menorDistancia = dist;
-                    closest_x = xIntersec;
-                    closest_y = yIntersec;
-                    foundIntersection = true;
-                }
+        if (t > 0 && t <= 1 && u >= 0 && u <= 1) {
+            double xIntersec = x1 + t * (x2 - x1);
+            double yIntersec = y1 + t * (y2 - y1);
+            
+            double dist = distanciaEntrePontos(x1, y1, xIntersec, yIntersec);
+            
+            if (dist > 1e-6) {
+                Vertice v = criarVertice();
+                setXVertice(v, xIntersec);
+                setYVertice(v, yIntersec);
+                setAnguloVertice(v, x1, y1);
+                setDistanciaVertice(v, dist);
+                return v;
             }
         }
-    }
-
-    if (foundIntersection) {
-        Vertice v = criarVertice();
-        setXVertice(v, closest_x);
-        setYVertice(v, closest_y);
-        return v;
     }
 
     return NULL;

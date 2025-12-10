@@ -9,6 +9,7 @@
 #include <string.h>
 #include "svg.h"
 #include "geo.h"
+#include "colisao.h"
 
 /*
     Arquivo .h responsável pelo processamento das instruções contidas no .qry

@@ -7,6 +7,7 @@
 #include "pacote.h"
 #include "vertice.h"
 #include "lista.h"
+#include "arvore.h"
 
 /*
     Arquivo .h responsável por realizar todas as geometrias necessárias no segundo trabalho de estrutura de dados.
@@ -34,9 +35,9 @@ bool dentroBoundingBox(double x, double y, double minX, double minY, double maxX
 Vertice calculaInterseccao(Lista anteparos,Linha scaner);
 
 /*
-    Encontra o ponto de intersecção mais próximo entre um raio (scaner) e uma lista de anteparos.
+    Encontra o ponto de intersecção mais próximo entre um raio (scaner) e os segmentos ativos na árvore.
     Retorna um novo Vertice correspondente ao ponto de intersecção mais próximo, ou NULL se nenhuma interseção for encontrada.
 */
-Vertice encontraInterseccaoMaisProxima(Lista anteparos, Linha scaner);
+Vertice encontraInterseccaoMaisProxima(Arvore segmentosAtivos, Linha scaner);
 
 #endif

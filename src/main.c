@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "geo.h"
 #include "lista.h"
-//incluir todos os arquivos 
+#include "qry.h"
 
 #define PATH_LEN 512
 #define FILE_NAME_LEN 256
@@ -91,11 +91,20 @@ int main(int argc, char* argv[])
     if(qry == NULL){
         printf("ERRO: Não foi possível abrir o arquivo .qry: %s\n", fullPathQry);
     }
-
     
+    FILE* txt = fopen(arquivoSaidaTxt, "w");
+    if(txt == NULL){
+        printf("ERRo: Não foi possível abrir o arquivo .txt: %s\n", arquivoSaidaTxt);
+    }
 
+    FILE* svgSaida = fopen(arquivoSaidaSvgQry, "w");
+    if(svgSaida == NULL){
+        printf("ERRO: Não foi possível abrir o arquivo de saída do svg: %s\n", arquivoSaidaSvgQry);
+    }
+    lerQry(qry,txt,svgSaida,formas);
 
-    
-
-
+    fclose(qry);
+    fclose(txt);
+    fclose(svgSaida);
+    liberaLista(formas);
 }

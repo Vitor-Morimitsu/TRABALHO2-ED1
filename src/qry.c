@@ -174,39 +174,134 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
         printf("Erro em comandoD\n");
         return;
     }
-    CelulaLista atual = getPrimeiraCelulaLista(anteparos);
-    Lista vertices = criarLista();
-    Poligono poligono = criarPoligono();
-    Arvore arvore = criarArvore();
-
-    while (atual!=NULL){
-        //cadastro dos vertices e inserção deles no poligono
-        Anteparo anteparoAtual = (Anteparo)getConteudoCelula(atual);    
-        Vertice vInicio = criarVertice();
-        Vertice vFim = criarVertice();
-        double x1Anteparo = getX1Anteparo(anteparoAtual);
-        double y1Anteparo = getY1Anteparo(anteparoAtual);
-        double x2Anteparo = getX2Anteparo(anteparoAtual);
-        double y2Anteparo = getY2Anteparo(anteparoAtual);
-
-        setXVertice(vInicio, x1Anteparo);
-        setYVertice(vInicio, y1Anteparo);
-        setAnguloVertice(vInicio, xBomba,yBomba);
-        insereLista(vertices, (void*)vInicio);
-
-        setXVertice(vFim, x2Anteparo);
-        setYVertice(vFim, y2Anteparo);
-        setAnguloVertice(vFim, xBomba, yBomba);
-        insereLista(vertices, (void*)vFim);
-
-
-        adicionarVerticePoligono(poligono, vInicio);
-        adicionarVerticePoligono(poligono, vFim);
-        atual = getProximaCelulaLista(atual);
-    }
-    //realização do cálculo de visibilidade para montar o polígono
-    calcularVisibilidade(poligono,anteparos,formas,vertices,xBomba,yBomba,comando);
     
+    // Cria o polígono de visibilidade
+    Poligono poligono = criarPoligono();
+    
+    // Cria árvore para ordenar os segmentos ativos
+    Arvore arvoreSegmentos = criarArvore();
+    
+    // Calcula o polígono de visibilidade
+    calcularVisibilidade(poligono, anteparos, formas, NULL, arvoreSegmentos, xBomba, yBomba, comando);
+    
+    // Desenha o polígono de visibilidade no SVG
+    desenharPoligonoSVG(svgSfx, poligono, "#FF8A80", "#000000");
+    
+    // Reporta informações da explosão no arquivo de texto
+    fprintf(arqTxt, "Explosão na posição (%.2f, %.2f)\n", xBomba, yBomba);
+    fprintf(arqTxt, "Formas destruídas:\n");
+    
+    // Percorre a lista de formas verificando quais estão dentro do polígono
+    CelulaLista celula = getPrimeiraCelulaLista(formas);
+    int formasDestruidas = 0;
+    
+    while(celula != NULL) {
+        Pacote pac = (Pacote)getConteudoCelula(celula);
+        CelulaLista proximaCelula = getProximaCelulaLista(celula);
+        
+        // Usa a função de colisão para verificar se a forma está dentro do polígono
+        if(formaDentroPoligono(pac, poligono)) {
+            char tipo = getTipoPacote(pac);
+            int id = getIDPacote(pac);
+            
+            fprintf(arqTxt, "  - Tipo: %c, ID: %d\n", tipo, id);
+            formasDestruidas++;
+            
+            // Remove da lista e libera o pacote
+            removeLista(formas, id);
+            liberarPacote(pac);
+        }
+        
+        // Avança para a próxima célula
+        celula = proximaCelula;
+    }
+    
+    fprintf(arqTxt, "Total de formas destruídas: %d\n\n", formasDestruidas);
+    
+    // Libera memória
+    liberarArvore(arvoreSegmentos);
+    liberarPoligono(poligono);
+}
+
+void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos,double x, double y, char* cor, char* comandoSfx){
+    if(txt == NULL || svg == NULL || formas == NULL || anteparos == NULL){
+        printf("Erro em comandoP\n");
+        return;
+    }
+    
+    // Bomba de pintura é lançada na coordenada (x,y). 
+    // Formas dentro da região de visibilidade tem suas cores de preenchimento e de borda pintadas com a cor especificada.
+    
+    // Cria o polígono de visibilidade
+    Poligono poligono = criarPoligono();
+    Arvore arvoreSegmentos = criarArvore();
+    
+    // Calcula o polígono de visibilidade a partir da posição da bomba
+    calcularVisibilidade(poligono, anteparos, formas, NULL, arvoreSegmentos, x, y, comandoSfx);
+    
+    // Obtém a lista de formas atingidas
+    Lista formasAtingidas = obterFormasAtingidas(formas, poligono);
+    
+    if(formasAtingidas != NULL) {
+        int numAtingidas = getTamanhoLista(formasAtingidas);
+        
+        fprintf(txt, "Bomba de pintura lançada em (%.2f, %.2f)\n", x, y);
+        fprintf(txt, "Cor aplicada: %s\n", cor);
+        fprintf(txt, "Número de formas atingidas: %d\n", numAtingidas);
+        
+        // Pinta cada forma atingida
+        for(CelulaLista celula = getPrimeiraCelulaLista(formasAtingidas); celula != NULL; celula = getProximaCelulaLista(celula)) {
+            Pacote pac = (Pacote)getConteudoCelula(celula);
+            char tipo = getTipoPacote(pac);
+            Forma forma = getFormaPacote(pac);
+            int id = getIDPacote(pac);
+            
+            // Aplica a cor na forma
+            switch(tipo) {
+                case 'c':
+                    setCorBCirculo((Circulo)forma, cor);
+                    setCorPCirculo((Circulo)forma, cor);
+                    fprintf(txt, "  - Círculo ID %d pintado\n", id);
+                    break;
+                case 'r':
+                    setCorBRetangulo((Retangulo)forma, cor);
+                    setCorPRetangulo((Retangulo)forma, cor);
+                    fprintf(txt, "  - Retângulo ID %d pintado\n", id);
+                    break;
+                case 'l':
+                    setCorLinha((Linha)forma, cor);
+                    fprintf(txt, "  - Linha ID %d pintada\n", id);
+                    break;
+                case 't':
+                    setCorBTexto((Texto)forma, cor);
+                    setCorPTexto((Texto)forma, cor);
+                    fprintf(txt, "  - Texto ID %d pintado\n", id);
+                    break;
+            }
+        }
+        
+        // Libera a lista de formas atingidas (não libera os pacotes, apenas a lista)
+        liberaLista(formasAtingidas);
+    }
+    
+    // Desenha o polígono de visibilidade no SVG
+    desenharPoligonoSVG(svg, poligono, "#80D8FF", "#000000");
+    
+    // Libera memória
+    liberarArvore(arvoreSegmentos);
+    liberarPoligono(poligono);
+}
+
+void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, double y, double dx, double dy, char* comandoSfx){
+    if(txt == NULL || svg == NULL || formas == NULL || anteparos == NULL){
+        printf("Erro em comandoCln\n");
+        return;
+    }
+    //Bomba de clonagem é lançada na coordenada (x,y). Os clones são trasladados em dx, dy (nos eixos x e y, respectivamente).Note que clones devem ter identificadores únicos.
+
+
+
+
 }
 
 void lerQry(FILE* qry,FILE* txt, FILE* svg, Lista formas){
@@ -229,15 +324,24 @@ void lerQry(FILE* qry,FILE* txt, FILE* svg, Lista formas){
         if(strcmp(comando, "a") == 0){
             double inicio, fim;
             char letra;
-            sscanf(linha, "a %i %i %c", &inicio, &fim, &letra);
+            sscanf(linha, "a %lf %lf %c", &inicio, &fim, &letra);
             comandoA(txt,formas,anteparos,inicio,fim,letra);
         }else if(strcmp(comando, "d") == 0){
             double x,y;
-            char* parametro;
-            sscanf(linha, "d %i %i %s", &x, &y, parametro);
-            comandoD(txt,svg,anteparos,formas,x,y,parametro);
+            char* sufixo;
+            sscanf(linha, "d %lf %lf %s", &x, &y, &sufixo);
+            comandoD(txt,svg,anteparos,formas,x,y,sufixo);
         }else if(strcmp(comando, "p") == 0){
             double x,y;
+            char* cor;
+            char* sufixo;
+            sscanf(linha,"p %lf %lf %s %s", &x,&y,&cor,&sufixo);
+            comandoP(txt,svg,formas,anteparos,x,y,cor,sufixo);
+        }else if(strcmp(comando, "cln") == 0){
+            double x,y,dx,dy;
+            char* sufixo;
+            sscanf(linha,"cln %lf %lf %lf %lf %s",&x,&y,&dx,&dy,&sufixo);
+            comandoCln(txt,svg,formas,anteparos,x,y,dx,dy,sufixo);
         }
     }
 }
