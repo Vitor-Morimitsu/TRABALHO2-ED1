@@ -34,6 +34,11 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
 */
 void comandoP(FILE* txt, FILE* svg,Lista anteparos);
 
+/*
+    Função principal responsável por ler as intruções contidas no arquivo qry.
+*/
+void lerQry(FILE* qry,FILE* txt, FILE* svg, Lista formas);
+
 
 
 

@@ -1,4 +1,5 @@
 #include "pacote.h"
+#include "poligono.h"
 
 typedef struct{
     Forma fig;
@@ -9,13 +10,14 @@ Pacote criaPacote(){
     stPacote* pac = (stPacote*)malloc(sizeof(stPacote));
     if(pac == NULL){
         printf("Erro ao criar pacote\n");
-        return;
+        return NULL;
     }
     return pac;
 }
 
 Forma getFormaPacote(Pacote pac){
     stPacote* p = (stPacote*)pac;
+    
     if(p == NULL){
         printf("Erro em getFormaPacote\n");
         return;
@@ -78,23 +80,29 @@ void setTipoPacote(Pacote pac, char type){
 
 int comparaPacote(Pacote pac, int id){
     if(pac == NULL){
-        printf("Erro ao comparar pacotes.");
-        return;
+        printf("Erro ao comparar pacotes.\n");
+        return 0; // Retorna 0 para erro/sem correspondência
     }
 
     stPacote* p = (stPacote*)pac;
-    int idForma = -1;
+    int shape_id = -1;
 
+    // Obtém o ID da forma dentro do pacote
     if(p->tipo == 'c'){
-        return getIDCirculo((Circulo*)p->fig);
+        shape_id = getIDCirculo((Circulo)p->fig);
     }else if(p->tipo == 'r'){
-        return getIDRetangulo((Retangulo*)p->fig);
+        shape_id = getIDRetangulo((Retangulo)p->fig);
     }else if(p->tipo == 'l'){
-        return getIDLinha((Linha*)p->fig);
+        shape_id = getIDLinha((Linha)p->fig);
     }else if(p->tipo == 't'){
-        return  getIDTexto((Texto*)p->fig);
+        shape_id = getIDTexto((Texto)p->fig);
+    } else {
+        printf("Erro: Tipo de forma desconhecido em comparaPacote.\n");
+        return 0;
     }
 
+    // Compara o shape_id extraído com o id fornecido
+    return shape_id == id; // Retorna 1 se verdadeiro, 0 se falso.
 }
 
 void liberarPacote(Pacote p) {
@@ -105,7 +113,19 @@ void liberarPacote(Pacote p) {
     stPacote* pacote = (stPacote*)p;
     
     if(pacote->fig != NULL) {
-        free(pacote->fig);
+        if(pacote->tipo == 'c'){
+            liberaCirculo((Circulo)pacote->fig);
+        }else if(pacote->tipo == 'r'){
+            liberaRetangulo((Retangulo)pacote->fig);
+        }else if(pacote->tipo == 'l'){
+            liberaLinha((Linha)pacote->fig);
+        }else if(pacote->tipo == 't'){
+            liberaTexto((Texto)pacote->fig);
+        }else if(pacote->tipo == 'p'){ // Adicionado tratamento para polígonos
+            liberarPoligono((Poligono)pacote->fig);
+        }else{
+            printf("Erro ao encontrar tipo para liberar pacote\n");
+        }
     }
     
     free(pacote);

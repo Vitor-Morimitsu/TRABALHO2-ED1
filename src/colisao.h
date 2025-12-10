@@ -9,7 +9,7 @@
 /*
     Aquivo.h responsável por ver as formas que foram atingidas pelas explosões.
 */
-
+bool atingidaPelaExplosao(Lista formas, double xBomba, double yBomba);
 
 
 

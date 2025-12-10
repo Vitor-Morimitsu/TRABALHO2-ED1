@@ -1,4 +1,5 @@
 #include "poligono.h"
+#include "ordenacao.h"
 
 typedef struct poligono{
     Lista vertices;
@@ -32,45 +33,57 @@ void gerarBoundingBox(Poligono p,double *minX, double *minY, double *maxX, doubl
 }
 
 void calcularVisibilidade(Poligono p, Lista anteparos, Lista formas, double xOrigem, double yOrigem, char ordenacao){
-    if(p == NULL || anteparos == NULL || formas == NULL){
-        printf("Erro em calcularVisibilidade\n");
+    if(p == NULL || anteparos == NULL){
+        printf("Erro em calcularVisibilidade: parametros invalidos\n");
         return;
     }
-    //calculo da bounding box dos anteparos
-    double minX = getMenorValorLista(anteparos,1);
-    double minY = getMenorValorLista(anteparos,2);
-    double maxX = getMaiorValorLista(anteparos,1);
-    double maxY = getMaiorValorLista(anteparos,2);
 
-    gerarBoundingBox(p, &minX,&minY,&maxX, &maxY);
+    // Etapa 1: Extrair todos os vértices dos anteparos e calcular seus ângulos
+    Lista todosVertices = criarLista();
+    for(CelulaLista celula = getPrimeiraCelulaLista(anteparos); celula != NULL; celula = getProximaCelulaLista(celula)) {
+        Anteparo ant = getConteudoCelula(celula);
+        Vertice v1 = criarVertice();
+        setXVertice(v1, getX1Anteparo(ant));
+        setYVertice(v1, getY1Anteparo(ant));
+        setAnguloVertice(v1, xOrigem, yOrigem);
+        setAnteparoVertice(v1, ant);
+        insereLista(todosVertices, v1);
 
-    //id do scan vai ser 1000
-    Linha scan = criarLinha(1000,xOrigem,yOrigem,maxX,maxY, NULL);
-
-    Vertice v = calculaInterseccao(anteparos,scan);
-    if(v != NULL){
-        //ocorreu a intersecção com algum anteparo
-        adicionarVerticePoligono(p,v);
-    }
-    //ver se alguma extremidade de anteparo está dentro do poligono ou intersecta alguma aresta do poligono
-    CelulaLista atual = getPrimeiraCelulaLista(anteparos);
-    while(atual != NULL){
-        Anteparo ant = (Anteparo)getConteudoCelula(atual);
-        double x1 = getX1Anteparo(ant);
-        double x2 = getX2Anteparo(ant);
-        double y1 = getY1Anteparo(ant);
-        double y2 = getY2Anteparo(ant);
-        
-
-
+        Vertice v2 = criarVertice();
+        setXVertice(v2, getX2Anteparo(ant));
+        setYVertice(v2, getY2Anteparo(ant));
+        setAnguloVertice(v2, xOrigem, yOrigem);
+        setAnteparoVertice(v2, ant);
+        insereLista(todosVertices, v2);
     }
 
+    // Etapa 2: Ordenar os vértices por ângulo
+    int tamanho = getTamanhoLista(todosVertices);
+    No* arrayOrdenado = gerarArray(todosVertices, tamanho, xOrigem, yOrigem);
+    
+    if (ordenacao == 'm') {
+        mergeSort(arrayOrdenado, tamanho);
+    } else { // Assume 'q' ou qualquer outro para insertionSort
+        insertionSort(arrayOrdenado, tamanho);
+    }
 
+    // Etapa 3: Algoritmo de Varredura (Sweep-line) (a ser implementado)
+    // O 'arrayOrdenado' agora contém os vértices ordenados por ângulo.
+    // O próximo passo usará este array.
 
-    //ser qualquer vertice está dentro do polígono, se qualquer vertice do polígono está dentro do retangulo, se qualquer aresto do retangulo intersecta qualquer aresta do poligono
+    // Etapa 4: Construir o polígono final (a ser implementado)
 
-    //se centro do circulo está dentro do poligono, se existe alguma aresta do poligono cuja distancia ao centro <= raio, se algum vertice do poligono está dentro do círculo(distancia<= raio) 
+    // Libera a memória do array usado para ordenação
+    if(arrayOrdenado != NULL) {
+        free(arrayOrdenado);
+    }
 
+    // Libera a memória da lista temporária de vértices, já que não será mais usada
+    for(CelulaLista celula = getPrimeiraCelulaLista(todosVertices); celula != NULL; celula = getProximaCelulaLista(celula)) {
+        Vertice v = getConteudoCelula(celula);
+        destroiVertice(v);
+    }
+    liberaLista(todosVertices);
 }
 
 bool pontoNoPoligono(Poligono p, double x, double y){
@@ -133,11 +146,17 @@ int getNumeroVertices(Poligono p){
 
 void liberarPoligono(Poligono p){
     if(p == NULL){
-        printf("Erro em liberarPoligono\n");
         return;
     }
 
     stPoligono* pol = (stPoligono*)p;
+
+    // Libera cada vértice armazenado na lista
+    for(CelulaLista celula = getPrimeiraCelulaLista(pol->vertices); celula != NULL; celula = getProximaCelulaLista(celula)) {
+        Vertice v = getConteudoCelula(celula);
+        destroiVertice(v);
+    }
+    
     liberaLista(pol->vertices);
     free(pol);
 }

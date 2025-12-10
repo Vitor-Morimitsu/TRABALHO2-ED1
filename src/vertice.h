@@ -80,4 +80,9 @@ void setTipoVertice(Vertice v, char tipo);
 */
 void setAnteparoVertice(Vertice v, Anteparo a);
 
+/*
+    Libera a memória alocada para um vértice.
+*/
+void destroiVertice(Vertice v);
+
 #endif

@@ -204,11 +204,40 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
         adicionarVerticePoligono(poligono, vFim);
         atual = getProximaCelulaLista(atual);
     }
-    //----consertar esse parametro q eu nao sei onde receber ele
-    int parametro = 0;
+    //realização do cálculo de visibilidade para montar o polígono
+    calcularVisibilidade(poligono,anteparos,formas,vertices,xBomba,yBomba,comando);
     
-    //ver a visibilidade
-    calcularVisibilidade(poligono,anteparos,formas,xBomba,yBomba,comando,parametro);
+}
 
-    
+void lerQry(FILE* qry,FILE* txt, FILE* svg, Lista formas){
+    if(qry == NULL || txt == NULL || svg == NULL){
+        printf("Erro em lerQry\n");
+        return;
+    }
+    char linha[50];
+    char comando[50];
+
+    Lista anteparos = criarLista();
+
+    while(fgets(linha, sizeof(linha), qry)){
+        if(linha[0] == '\n' || linha[0] == '\r'){
+            continue;
+        }
+
+        sscanf(linha, "%s", comando);
+
+        if(strcmp(comando, "a") == 0){
+            double inicio, fim;
+            char letra;
+            sscanf(linha, "a %i %i %c", &inicio, &fim, &letra);
+            comandoA(txt,formas,anteparos,inicio,fim,letra);
+        }else if(strcmp(comando, "d") == 0){
+            double x,y;
+            char* parametro;
+            sscanf(linha, "d %i %i %s", &x, &y, parametro);
+            comandoD(txt,svg,anteparos,formas,x,y,parametro);
+        }else if(strcmp(comando, "p") == 0){
+            double x,y;
+        }
+    }
 }

@@ -23,9 +23,20 @@ double distanciaEntrePontos(double x1, double y1, double x2, double y2);
 double determinante(double x1, double y1, double x2, double y2, double x3, double y3);
 
 /*
+    Função responsável por ver se um ponto está dentro do bounding Box do polígono.
+*/
+bool dentroBoundingBox(double x, double y, double minX, double minY, double maxX, double maxY);
+
+/*
     Função responsável por calcular o ponto de intersecção de um segmento com uma reta de origem na bomba e destino no segmento
     criará um novo vertice do polígono
 */
 Vertice calculaInterseccao(Lista anteparos,Linha scaner);
+
+/*
+    Encontra o ponto de intersecção mais próximo entre um raio (scaner) e uma lista de anteparos.
+    Retorna um novo Vertice correspondente ao ponto de intersecção mais próximo, ou NULL se nenhuma interseção for encontrada.
+*/
+Vertice encontraInterseccaoMaisProxima(Lista anteparos, Linha scaner);
 
 #endif

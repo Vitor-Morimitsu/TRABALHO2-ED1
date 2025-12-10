@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "geo.h"
+#include "lista.h"
 //incluir todos os arquivos 
 
 #define PATH_LEN 512
@@ -90,6 +91,9 @@ int main(int argc, char* argv[])
     if(qry == NULL){
         printf("ERRO: Não foi possível abrir o arquivo .qry: %s\n", fullPathQry);
     }
+
+    
+
 
     
 
