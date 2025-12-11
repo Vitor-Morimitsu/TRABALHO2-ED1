@@ -221,7 +221,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
     }
 
     for (int i = 0; i < tamanho; i++) {
-        No* noAtual = &arrayOrdenado[i];
+        
         Vertice eventoVertice = getVerticeDoArray(arrayOrdenado,i);
         double eventoAngulo = getAnguloDoArray(arrayOrdenado,i);
         Anteparo eventoAnteparo = getAnteparoVertice(eventoVertice);

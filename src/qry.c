@@ -520,28 +520,28 @@ void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas){
         }
     }
     
-    // for(CelulaLista atual = getPrimeiraCelulaLista(formas); 
-    //     atual != NULL; 
-    //     atual = getProximaCelulaLista(atual)){
+    for(CelulaLista atual = getPrimeiraCelulaLista(formas); 
+        atual != NULL; 
+        atual = getProximaCelulaLista(atual)){
         
-    //     Pacote pac = (Pacote)getConteudoCelula(atual);
-    //     char tipo = getTipoPacote(pac);
+        Pacote pac = (Pacote)getConteudoCelula(atual);
+        char tipo = getTipoPacote(pac);
         
-    //     switch(tipo){
-    //         case 'c':
-    //             desenharCirculoSVG(svg, (Circulo)getFormaPacote(pac));
-    //             break;
-    //         case 'r':
-    //             desenharRetanguloSVG(svg, (Retangulo)getFormaPacote(pac));
-    //             break;
-    //         case 'l':
-    //             desenharLinhaSVG(svg, (Linha)getFormaPacote(pac));
-    //             break;
-    //         case 't':
-    //             desenharTextoSVG(svg, (Texto)getFormaPacote(pac), NULL);
-    //             break;
-    //     }
-    // }
+        switch(tipo){
+            case 'c':
+                desenharCirculoSVG(svg, (Circulo)getFormaPacote(pac));
+                break;
+            case 'r':
+                desenharRetanguloSVG(svg, (Retangulo)getFormaPacote(pac));
+                break;
+            case 'l':
+                desenharLinhaSVG(svg, (Linha)getFormaPacote(pac));
+                break;
+            case 't':
+                desenharTextoSVG(svg, (Texto)getFormaPacote(pac), NULL);
+                break;
+        }
+    }
     
     liberaLista(anteparos);
 }
