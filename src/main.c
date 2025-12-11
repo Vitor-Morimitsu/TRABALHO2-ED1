@@ -26,7 +26,6 @@ int main(int argc, char* argv[]) {
     char nomeArquivoQry[FILE_NAME_LEN] = "";
     int hasGeo = 0, hasQry = 0, hasSaida = 0;
 
-    // 1. Processa argumentos da linha de comando
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-e") == 0 && i + 1 < argc) {
             strcpy(dirEntrada, argv[++i]);
@@ -50,7 +49,6 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    // 2. Monta os caminhos completos para os arquivos de entrada
     char fullPathGeo[MAX_FULL_PATH];
     snprintf(fullPathGeo, sizeof(fullPathGeo), "%s/%s", dirEntrada, nomeArquivoGeo);
 
@@ -59,7 +57,6 @@ int main(int argc, char* argv[]) {
         snprintf(fullPathQry, sizeof(fullPathQry), "%s/%s", dirEntrada, nomeArquivoQry);
     }
 
-    // 3. Monta os nomes base dos arquivos para os nomes dos arquivos de saída
     char baseGeo[FILE_NAME_LEN];
     removeExtension(baseGeo, nomeArquivoGeo);
 
@@ -71,7 +68,6 @@ int main(int argc, char* argv[]) {
         removeExtension(baseQry, onlyQryName);
     }
 
-    // 4. Monta os caminhos completos para os arquivos de SAÍDA
     char arquivoSaidaSvg[MAX_FULL_PATH];
     char arquivoSaidaTxt[MAX_FULL_PATH];
 
@@ -82,7 +78,6 @@ int main(int argc, char* argv[]) {
         snprintf(arquivoSaidaSvg, sizeof(arquivoSaidaSvg), "%s/%s.svg", dirSaida, baseGeo);
     }
 
-    // 5. Abre todos os arquivos necessários
     FILE *arqGeo = fopen(fullPathGeo, "r");
     if (arqGeo == NULL) {
         fprintf(stderr, "ERRO: Não foi possível abrir o arquivo .geo: %s\n", fullPathGeo);
@@ -116,23 +111,18 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // 6. Inicia o processo de geração
     Lista formas = criarLista();
     
     abrirSvg(arqSvg);
 
-    // 7. Lê o arquivo GEO e carrega as formas para a lista
     lerGeo(arqGeo, formas);
 
-    // 8. DESENHA as formas iniciais no SVG
     desenharTodasAsFormas(arqSvg, formas);
 
-    // 9. Se houver um arquivo QRY, processa as consultas
     if (hasQry && arqQry != NULL) {
         lerQry(arqQry, arqTxt, arqSvg, formas);
     }
 
-    // 10. Finaliza o SVG, fecha todos os arquivos e libera a memória
     fecharSVG(arqSvg);
 
     fclose(arqGeo);

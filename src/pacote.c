@@ -14,7 +14,6 @@ Pacote criaPacote(){
     }
     pac->fig = NULL;
     pac->tipo = 'n';
-    printf("Pacote criado\n");
     return (Pacote)pac;
 }
 
@@ -109,6 +108,12 @@ int comparaPacote(Pacote pac, int id){
 }
 
 void liberarPacote(Pacote p) {
+    if(p == NULL) {
+        return;
+    }
+    if(p == NULL) {
+        return;
+    }
     if(p == NULL) {
         return;
     }

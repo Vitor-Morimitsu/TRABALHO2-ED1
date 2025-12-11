@@ -96,6 +96,16 @@ CelulaLista getProximaCelulaLista(CelulaLista celula){
     return (CelulaLista)cel->proximo;
 }
 
+CelulaLista getUltimaCelulaLista(Lista l){
+    if(l == NULL){
+        printf("Erro em getUltimaCelulaLista\n");
+        return NULL;
+    }
+
+    stLista* lista = (stLista*)l;
+    return (CelulaLista)lista->fim;
+}
+
 
 Pacote procuraPacoteLista(Lista l, int id){
     if(l == NULL){
@@ -108,7 +118,7 @@ Pacote procuraPacoteLista(Lista l, int id){
     int confirma = -1;
     while(temp != NULL){
         confirma = comparaPacote((Pacote)temp->conteudo, id);
-        if(confirma == 0){
+        if(confirma == 1){
             return (Pacote)temp->conteudo;
         }
 
@@ -118,18 +128,17 @@ Pacote procuraPacoteLista(Lista l, int id){
 }
 
 void removeLista(Lista l, int id){
+    fprintf(stderr, "DEBUG: removeLista: Attempting to remove ID %d\n", id);
     if(l == NULL){
         printf("Erro em removeLista\n");
         return;
     }
-
     stLista* lista = (stLista*)l;
     stCelula* temp = lista->inicio;
     if(temp == NULL){
         printf("Lista vazia.Impossível remoção\n");
         return;
     }
-
     while(temp != NULL){
         void* cont = (void*)temp->conteudo;
         int identificador = getIDPacote(cont);
@@ -138,28 +147,67 @@ void removeLista(Lista l, int id){
             if(temp->anterior != NULL){
                 temp->anterior->proximo = temp->proximo;
             }else{
-                //primeiro elemento
                 lista->inicio = temp->proximo;
             }
 
             if(temp->proximo != NULL){
                 temp->proximo->anterior = temp->anterior;
-            }else{
-                //último elemento
+            }
+            else{
                 lista->fim = temp->anterior;
             }
             
             lista->tamanho--;
-            // liberarPacote(cont);
-            temp->conteudo = NULL;
+            liberarPacote(cont);
             free(temp);
+            fprintf(stderr, "DEBUG: removeLista: Successfully removed and freed ID %d\n", id);
             return;
         }
         
         temp = temp->proximo;
     }
-    
+    fprintf(stderr, "DEBUG: removeLista: ID %d not found for removal.\n", id);
     //não encontrou o pacote com o id especificado
+}
+
+void* removeRetornaConteudo(Lista l, int id) {
+    if (l == NULL) {
+        printf("Erro em removeRetornaConteudo: lista NULL\n");
+        return NULL;
+    }
+
+    stLista* lista = (stLista*)l;
+    stCelula* temp = lista->inicio;
+    if (temp == NULL) {
+        printf("Lista vazia. Impossível remover.\n");
+        return NULL;
+    }
+
+    while (temp != NULL) {
+        void* cont = (void*)temp->conteudo;
+        int identificador = getIDPacote(cont);
+
+        if (identificador == id) {
+            if (temp->anterior != NULL) {
+                temp->anterior->proximo = temp->proximo;
+            } else {
+                lista->inicio = temp->proximo;
+            }
+
+            if (temp->proximo != NULL) {
+                temp->proximo->anterior = temp->anterior;
+            } else {
+                lista->fim = temp->anterior;
+            }
+            
+            lista->tamanho--;
+            void* retConteudo = temp->conteudo;
+            free(temp); // Free the cell, but not its content
+            return retConteudo;
+        }
+        temp = temp->proximo;
+    }
+    return NULL; // Content not found
 }
 
 int getMaiorIdLista(Lista l){
@@ -426,4 +474,34 @@ void liberaEstruturaLista(Lista l){
     
     //libera a estrutura da lista
     free(lista);
+}
+
+void removeDaListaPorConteudo(Lista l, void* conteudo) {
+    if (l == NULL || conteudo == NULL) {
+        return;
+    }
+
+    stLista* lista = (stLista*)l;
+    stCelula* temp = lista->inicio;
+
+    while (temp != NULL) {
+        if (temp->conteudo == conteudo) {
+            if (temp->anterior != NULL) {
+                temp->anterior->proximo = temp->proximo;
+            } else {
+                lista->inicio = temp->proximo;
+            }
+
+            if (temp->proximo != NULL) {
+                temp->proximo->anterior = temp->anterior;
+            } else {
+                lista->fim = temp->anterior;
+            }
+            
+            lista->tamanho--;
+            free(temp);
+            return; 
+        }
+        temp = temp->proximo;
+    }
 }

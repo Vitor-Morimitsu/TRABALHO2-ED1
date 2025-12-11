@@ -35,9 +35,9 @@ bool dentroBoundingBox(double x, double y, double minX, double minY, double maxX
 Vertice calculaInterseccao(Lista anteparos,Linha scaner);
 
 /*
-    Encontra o ponto de intersecção mais próximo entre um raio (scaner) e os segmentos ativos na árvore.
+    Encontra o ponto de intersecção mais próximo entre um raio de varredura e uma lista de segmentos de reta.
     Retorna um novo Vertice correspondente ao ponto de intersecção mais próximo, ou NULL se nenhuma interseção for encontrada.
 */
-Vertice encontraInterseccaoMaisProxima(Arvore segmentosAtivos, Linha scaner);
+Vertice encontraInterseccaoMaisProxima(Lista segmentosAtivos, double xOrigem, double yOrigem, double angulo);
 
 #endif

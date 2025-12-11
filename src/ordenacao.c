@@ -1,11 +1,6 @@
 #include "ordenacao.h"
 
-typedef struct NO{
-    Vertice ver;
-    double angulo;
-}stNo;
-
-No* gerarArray(Lista vertices, int tamanho, double /*xOrigem*/, double /*yOrigem*/){
+stNo* gerarArray(Lista vertices, int tamanho, double /*xOrigem*/, double /*yOrigem*/){
     if(vertices == NULL){
         printf("Erro em gerarArray\n");
         return NULL;
@@ -29,23 +24,20 @@ No* gerarArray(Lista vertices, int tamanho, double /*xOrigem*/, double /*yOrigem
         atual = getProximaCelulaLista(atual);
         contador++;
     }
-    return (No*)array;
+    return array;
 }
 
-void liberarArray(No array){
+void liberarArray(stNo* array){
     if(array == NULL){
         printf("Erro em liberarArray.\n");
         return;
     }
 
-    stNo* ar = (stNo*)array;
-    free(ar->ver);
-
-    free(ar);
+    free(array);
 }
 
 
-void mergeSort(No* array, int tamanho){
+void mergeSort(stNo* array, int tamanho){
     if(array == NULL){
         printf("Erro em mergeSort\n");
         return;
@@ -54,8 +46,6 @@ void mergeSort(No* array, int tamanho){
     if(tamanho <= 1){
         return;
     }
-    
-    stNo* ar = (stNo*)array;
     
     for(int tamanhoAtual = 1; tamanhoAtual < tamanho; tamanhoAtual *= 2){
         for(int inicio = 0; inicio < tamanho - 1; inicio += 2 * tamanhoAtual){
@@ -79,10 +69,10 @@ void mergeSort(No* array, int tamanho){
             }
             
             for(int i = 0; i < n1; i++){
-                L[i] = ar[inicio + i];
+                L[i] = array[inicio + i];
             }
             for(int j = 0; j < n2; j++){
-                R[j] = ar[meio + 1 + j];
+                R[j] = array[meio + 1 + j];
             }
             
             int i = 0, j = 0, k = inicio;
@@ -90,23 +80,23 @@ void mergeSort(No* array, int tamanho){
             while(i < n1 && j < n2){
                 
                 if(L[i].angulo <= R[j].angulo){
-                    ar[k] = L[i];
+                    array[k] = L[i];
                     i++;
                 }else{
-                    ar[k] = R[j];
+                    array[k] = R[j];
                     j++;
                 }
                 k++;
             }
             
             while(i < n1){
-                ar[k] = L[i];
+                array[k] = L[i];
                 i++;
                 k++;
             }
             
             while(j < n2){
-                ar[k] = R[j];
+                array[k] = R[j];
                 j++;
                 k++;
             }
@@ -117,7 +107,7 @@ void mergeSort(No* array, int tamanho){
     }
 }
 
-void insertionSort(No* array, int tamanho){
+void insertionSort(stNo* array, int tamanho){
     if(array == NULL){
         printf("Erro em insertionSort\n");
         return;
@@ -127,19 +117,48 @@ void insertionSort(No* array, int tamanho){
         return;
     }
     
-    stNo* ar = (stNo*)array;
-    
     for(int i = 1; i < tamanho; i++){
-        stNo chave = ar[i];
+        stNo chave = array[i];
         int j = i - 1;
         
         // Move elementos maiores que a chave uma posição à frente
-        while(j >= 0 && ar[j].angulo > chave.angulo){
-            ar[j + 1] = ar[j];
+        while(j >= 0 && array[j].angulo > chave.angulo){
+            array[j + 1] = array[j];
             j--;
         }
         
-        ar[j + 1] = chave;
+        array[j + 1] = chave;
     }
 }
 
+static void swap(stNo* a, stNo* b) {
+    stNo t = *a;
+    *a = *b;
+    *b = t;
+}
+
+static int partition(stNo* array, int low, int high) {
+    double pivot = array[high].angulo;
+    int i = (low - 1);
+
+    for (int j = low; j <= high - 1; j++) {
+        if (array[j].angulo <= pivot) {
+            i++;
+            swap(&array[i], &array[j]);
+        }
+    }
+    swap(&array[i + 1], &array[high]);
+    return (i + 1);
+}
+
+void quickSort(stNo* array, int low, int high) {
+    if (array == NULL) {
+        printf("Erro em quickSort: array nulo\n");
+        return;
+    }
+    if (low < high) {
+        int pi = partition(array, low, high);
+        quickSort(array, low, pi - 1);
+        quickSort(array, pi + 1, high);
+    }
+}

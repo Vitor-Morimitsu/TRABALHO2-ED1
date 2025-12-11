@@ -64,50 +64,56 @@ Vertice calculaInterseccao(Lista anteparos, Linha scaner) {
     return NULL; //nenhuma interseção encontrada
 }
 
-Vertice encontraInterseccaoMaisProxima(Arvore segmentosAtivos, Linha scaner) {
-    if (segmentosAtivos == NULL || scaner == NULL) {
+Vertice encontraInterseccaoMaisProxima(Lista segmentosAtivos, double xOrigem, double yOrigem, double angulo) {
+    if (segmentosAtivos == NULL) {
         return NULL;
     }
 
-    // Busca o segmento mais próximo na árvore (mais à esquerda)
-    Linha linhaProxima = (Linha)buscaCelulaArvore(segmentosAtivos);
-    
-    if (linhaProxima == NULL) {
-        return NULL;
-    }
+    Vertice vMaisProximo = NULL;
+    double menorDistancia = INFINITY;
 
-    double x1 = getX1Linha(scaner);
-    double y1 = getY1Linha(scaner);
-    double x2 = getX2Linha(scaner);
-    double y2 = getY2Linha(scaner);
-    
-    double x3 = getX1Linha(linhaProxima);
-    double y3 = getY1Linha(linhaProxima);
-    double x4 = getX2Linha(linhaProxima);
-    double y4 = getY2Linha(linhaProxima);
+    // Cria um raio longo na direção do ângulo para garantir que ele cruze os segmentos
+    double far_dist = 20000.0; // Distância "infinita"
+    double xRaioFim = xOrigem + far_dist * cos(angulo);
+    double yRaioFim = yOrigem + far_dist * sin(angulo);
 
-    double denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+    // Itera por todos os segmentos ativos na lista
+    for (CelulaLista celula = getPrimeiraCelulaLista(segmentosAtivos); celula != NULL; celula = getProximaCelulaLista(celula)) {
+        Linha segmento = (Linha)getConteudoCelula(celula);
 
-    if (fabs(denom) > 1e-9) {
-        double t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
-        double u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+        double x3 = getX1Linha(segmento);
+        double y3 = getY1Linha(segmento);
+        double x4 = getX2Linha(segmento);
+        double y4 = getY2Linha(segmento);
 
-        if (t > 0 && t <= 1 && u >= 0 && u <= 1) {
-            double xIntersec = x1 + t * (x2 - x1);
-            double yIntersec = y1 + t * (y2 - y1);
-            
-            double dist = distanciaEntrePontos(x1, y1, xIntersec, yIntersec);
-            
-            if (dist > 1e-6) {
-                Vertice v = criarVertice();
-                setXVertice(v, xIntersec);
-                setYVertice(v, yIntersec);
-                setAnguloVertice(v, x1, y1);
-                setDistanciaVertice(v, dist);
-                return v;
+        // Fórmula de interseção de dois segmentos de reta
+        double denom = (xOrigem - xRaioFim) * (y3 - y4) - (yOrigem - yRaioFim) * (x3 - x4);
+
+        if (fabs(denom) > 1e-9) { // Evita divisão por zero (retas paralelas)
+            double t = ((xOrigem - x3) * (y3 - y4) - (yOrigem - y3) * (x3 - x4)) / denom;
+            double u = -((xOrigem - xRaioFim) * (yOrigem - y3) - (yOrigem - yRaioFim) * (xOrigem - x3)) / denom;
+
+            // Verifica se a interseção ocorre dentro de ambos os segmentos
+            // t > 0 para garantir que a interseção esteja à frente do raio
+            // u entre 0 e 1 para garantir que esteja no segmento de anteparo
+            if (t > 1e-9 && u >= 0 && u <= 1) {
+                double xIntersec = xOrigem + t * (xRaioFim - xOrigem);
+                double yIntersec = yOrigem + t * (yRaioFim - yOrigem);
+                double dist = distanciaEntrePontos(xOrigem, yOrigem, xIntersec, yIntersec);
+
+                if (dist < menorDistancia) {
+                    menorDistancia = dist;
+                    if (vMaisProximo == NULL) {
+                        vMaisProximo = criarVertice();
+                    }
+                    setXVertice(vMaisProximo, xIntersec);
+                    setYVertice(vMaisProximo, yIntersec);
+                    setAnguloVertice(vMaisProximo, xOrigem, yOrigem);
+                    setDistanciaVertice(vMaisProximo, dist);
+                }
             }
         }
     }
 
-    return NULL;
+    return vMaisProximo;
 }

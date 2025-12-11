@@ -37,6 +37,16 @@ Retorna a proxima celula da lista.
 */
 CelulaLista getProximaCelulaLista(CelulaLista celula);
 
+/*
+Retorna a ultima celula da lista.
+*/
+CelulaLista getUltimaCelulaLista(Lista l);
+
+/*
+Retorna a ultima celula da lista.
+*/
+CelulaLista getUltimaCelulaLista(Lista l);
+
 
 /*
 Encontra um pacote com o id especificado e o retorna.
@@ -76,5 +86,14 @@ Libera apenas a memória da estrutura da lista (células), sem liberar o conteú
 */
 void liberaEstruturaLista(Lista l);
 
+/*
+Remove um item da lista buscando pelo endereço do conteúdo.
+*/
+void removeDaListaPorConteudo(Lista l, void* conteudo);
+
+/*
+Remove um item da lista com o id fornecido e retorna o conteúdo (sem liberar).
+*/
+void* removeRetornaConteudo(Lista l, int id);
 
 #endif

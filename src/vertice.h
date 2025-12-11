@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "ordenacao.h"
 #include "lista.h"
 #include "anteparo.h"
 

@@ -45,12 +45,19 @@ $(SRC_DIR)/%.o: $(SRC_DIR)/%.c
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LIB_FLAGS) $(LIBS) -o $(TARGET)
 
+# Lista explícita de objetos para test_leak (excluindo main.o)
+TEST_LEAK_OBJS_LIST = anteparo.o arvore.o circulo.o colisao.o geo.o geometria.o linha.o lista.o ordenacao.o pacote.o poligono.o qry.o retangulo.o svg.o texto.o vertice.o
+
+# Regra para compilar o test_leak executável
+test_leak: main_test_leak.o $(TEST_LEAK_OBJS_LIST)
+	$(CC) $(CFLAGS) main_test_leak.o $(TEST_LEAK_OBJS_LIST) $(LIB_FLAGS) $(LIBS) -o test_leak
+
 # Limpar arquivos intermediários e o executável (CONFERIR SE O ESPAÇO É UM TAB)
 clean:
-	rm -f $(SRC_DIR)/*.o $(TARGET)
+	rm -f $(SRC_DIR)/*.o $(TARGET) test_leak main_test_leak.o
 
 # Falsos alvos para evitar conflitos com arquivos de mesmo nome
-.PHONY: all clean pack
+.PHONY: all clean pack test_leak
 
 # Regra para criar um pacote ZIP (CONFERIR SE O ESPAÇO É UM TAB)
 pack: $(TARGET)

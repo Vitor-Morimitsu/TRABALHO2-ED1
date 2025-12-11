@@ -13,26 +13,34 @@
     Arquivo .h responsável pela criação e uso de algoritmos de ordenação.
 */
 
-typedef void* No;
+typedef struct stNo {
+    Vertice ver;
+    double angulo;
+} stNo;
 
 /*
     Converte os dados da lista em um array.
 */
-No* gerarArray(Lista vertices,int tamanho, double xOrigem, double yOrigem);
+stNo* gerarArray(Lista vertices,int tamanho, double xOrigem, double yOrigem);
 
 /*
     Função responsável por liberar a memória do array.
 */
-void liberarArray(No array);
+void liberarArray(stNo* array);
 
 /*
     Retorna uma lista ordenada com o algoritmo mergeSort.
 */
-void mergeSort(No* array,int tamanho);
+void mergeSort(stNo* array,int tamanho);
 
 /*
     Retorna uma lista ordenada com o algoritmo insertion sort.
 */
-void insertionSort(No* array,int tamanho);
+void insertionSort(stNo* array,int tamanho);
+
+/*
+    Retorna uma lista ordenada com o algoritmo quick sort.
+*/
+void quickSort(stNo* array, int low, int high);
 
 #endif

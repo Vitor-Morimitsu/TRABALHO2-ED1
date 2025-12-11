@@ -5,3 +5,6 @@ Explosão na posição (138.00, 144.00)
  Características da forma presente dentro do polígono de visibilidade: Tipo: c, ID: 11
 Total de formas destruídas: 3
 
+Explosão na posição (138.00, 144.00)
+Total de formas destruídas: 0
+
