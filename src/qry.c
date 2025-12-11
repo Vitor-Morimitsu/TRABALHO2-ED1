@@ -147,7 +147,7 @@ void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, 
 
             Pacote pacRetangulo = removeRetornaConteudo(formas,id);
             if(pacRetangulo!=NULL){
-                liberaRetangulo((Retangulo)formaPac);
+                // liberaRetangulo((Retangulo)formaPac);
                 liberarPacote(pacRetangulo);
             }
             
@@ -206,6 +206,9 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
         return;
     }
     
+    fprintf(stderr, "\n=== DEBUG comandoD: Início ===\n");
+    fprintf(stderr, "Bomba em (%.2f, %.2f)\n", xBomba, yBomba);
+    
     Poligono poligono = criarPoligono();
     if(poligono == NULL){
         printf("Erro em comandoD: falha ao criar poligono\n");
@@ -213,29 +216,55 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
     }
     
     calcularVisibilidade(poligono, anteparos, xBomba, yBomba, comando);
+    
+    int numVertices = getNumeroVertices(poligono);
+    fprintf(stderr, "Polígono criado com %d vértices\n", numVertices);
+    
     desenharPoligonoSVG(svgSfx, poligono, "#FF8A80", "#000000");
     
     fprintf(arqTxt, "Explosão na posição (%.2f, %.2f)\n", xBomba, yBomba);
     
-    CelulaLista celula = getPrimeiraCelulaLista(formas);
+    int totalFormas = getTamanhoLista(formas);
+    fprintf(stderr, "Total de formas na lista: %d\n", totalFormas);
+    
     int formasDestruidas = 0;
+    int formasVerificadas = 0;
+    CelulaLista celula = getPrimeiraCelulaLista(formas);
     
     while(celula != NULL){
         Pacote pac = (Pacote)getConteudoCelula(celula);
         CelulaLista proximaCelula = getProximaCelulaLista(celula);
         
-        if(formaDentroPoligono(pac, poligono)){
-            char tipo = getTipoPacote(pac);
-            int id = getIDPacote(pac);
-            
+        if(pac == NULL){
+            fprintf(stderr, "AVISO: Pacote NULL encontrado na lista\n");
+            celula = proximaCelula;
+            continue;
+        }
+        
+        char tipo = getTipoPacote(pac);
+        int id = getIDPacote(pac);
+        formasVerificadas++;
+        
+        fprintf(stderr, "Verificando forma ID %d (Tipo: %c)... ", id, tipo);
+        
+        bool dentro = formaDentroPoligono(pac, poligono);
+        fprintf(stderr, "Dentro? %s\n", dentro ? "SIM" : "NÃO");
+        
+        if(dentro){
             fprintf(arqTxt, " Características da forma presente dentro do polígono de visibilidade: Tipo: %c, ID: %d\n", tipo, id);
             formasDestruidas++;
             
+            fprintf(stderr, "  -> Tentando remover ID %d...\n", id);
             removeLista(formas, id);
+            fprintf(stderr, "  -> Remoção concluída\n");
         }
         
         celula = proximaCelula;
     }
+    
+    fprintf(stderr, "Formas verificadas: %d\n", formasVerificadas);
+    fprintf(stderr, "Formas destruídas: %d\n", formasDestruidas);
+    fprintf(stderr, "=== DEBUG comandoD: Fim ===\n\n");
     
     fprintf(arqTxt, "Total de formas destruídas: %d\n\n", formasDestruidas);
     liberarPoligono(poligono);
@@ -491,28 +520,28 @@ void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas){
         }
     }
     
-    for(CelulaLista atual = getPrimeiraCelulaLista(formas); 
-        atual != NULL; 
-        atual = getProximaCelulaLista(atual)){
+    // for(CelulaLista atual = getPrimeiraCelulaLista(formas); 
+    //     atual != NULL; 
+    //     atual = getProximaCelulaLista(atual)){
         
-        Pacote pac = (Pacote)getConteudoCelula(atual);
-        char tipo = getTipoPacote(pac);
+    //     Pacote pac = (Pacote)getConteudoCelula(atual);
+    //     char tipo = getTipoPacote(pac);
         
-        switch(tipo){
-            case 'c':
-                desenharCirculoSVG(svg, (Circulo)getFormaPacote(pac));
-                break;
-            case 'r':
-                desenharRetanguloSVG(svg, (Retangulo)getFormaPacote(pac));
-                break;
-            case 'l':
-                desenharLinhaSVG(svg, (Linha)getFormaPacote(pac));
-                break;
-            case 't':
-                desenharTextoSVG(svg, (Texto)getFormaPacote(pac), NULL);
-                break;
-        }
-    }
+    //     switch(tipo){
+    //         case 'c':
+    //             desenharCirculoSVG(svg, (Circulo)getFormaPacote(pac));
+    //             break;
+    //         case 'r':
+    //             desenharRetanguloSVG(svg, (Retangulo)getFormaPacote(pac));
+    //             break;
+    //         case 'l':
+    //             desenharLinhaSVG(svg, (Linha)getFormaPacote(pac));
+    //             break;
+    //         case 't':
+    //             desenharTextoSVG(svg, (Texto)getFormaPacote(pac), NULL);
+    //             break;
+    //     }
+    // }
     
     liberaLista(anteparos);
 }

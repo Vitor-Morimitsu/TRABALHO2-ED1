@@ -12,35 +12,45 @@
 /*
     Arquivo .h responsável pela criação e uso de algoritmos de ordenação.
 */
-
-typedef struct stNo {
-    Vertice ver;
-    double angulo;
-} stNo;
+typedef void* No;
 
 /*
     Converte os dados da lista em um array.
 */
-stNo* gerarArray(Lista vertices,int tamanho, double xOrigem, double yOrigem);
+No* gerarArray(Lista vertices,int tamanho);
+
+/// @brief Retorna o vértice de um nó
+/// @param n no
+/// @return No
+Vertice getVerticeNo(No n);
+
+/* Recupera o vértice na posição 'indice' do array genérico.
+   Resolve o problema de aritmética de ponteiros em outros arquivos.
+*/
+Vertice getVerticeDoArray(No* array, int indice);
+
+/* Recupera o ângulo na posição 'indice' do array genérico.
+*/
+double getAnguloDoArray(No* array, int indice);
 
 /*
     Função responsável por liberar a memória do array.
 */
-void liberarArray(stNo* array);
+void liberarArray(No* array);
 
 /*
     Retorna uma lista ordenada com o algoritmo mergeSort.
 */
-void mergeSort(stNo* array,int tamanho);
+void mergeSort(No* array,int tamanho);
 
 /*
     Retorna uma lista ordenada com o algoritmo insertion sort.
 */
-void insertionSort(stNo* array,int tamanho);
+void insertionSort(No* array,int tamanho);
 
 /*
     Retorna uma lista ordenada com o algoritmo quick sort.
 */
-void quickSort(stNo* array, int low, int high);
+void quickSort(No* array, int low, int high);
 
 #endif

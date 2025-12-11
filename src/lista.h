@@ -8,7 +8,6 @@
 typedef void* Lista;
 typedef void* CelulaLista;
 typedef void* Forma;
-typedef void* No;
 
 Lista criarLista();
 

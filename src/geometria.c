@@ -110,6 +110,7 @@ Vertice encontraInterseccaoMaisProxima(Lista segmentosAtivos, double xOrigem, do
                     setYVertice(vMaisProximo, yIntersec);
                     setAnguloVertice(vMaisProximo, xOrigem, yOrigem);
                     setDistanciaVertice(vMaisProximo, dist);
+                    setAnteparoVertice(vMaisProximo,(Anteparo)segmento);
                 }
             }
         }

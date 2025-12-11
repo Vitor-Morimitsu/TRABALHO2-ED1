@@ -3,6 +3,7 @@
 
 #include <float.h>
 #include "lista.h"
+#include <stdbool.h>
 #include "pacote.h"
 #include "vertice.h"
 #include "ordenacao.h"
@@ -60,4 +61,6 @@ int getNumeroVertices(Poligono p);
     Função responsável por liberar a memória do polígono
 */
 void liberarPoligono(Poligono p);
+
+Anteparo getAnteparoPoligono(Poligono p, int indice);
 #endif

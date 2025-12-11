@@ -1,6 +1,11 @@
 #include "ordenacao.h"
 
-stNo* gerarArray(Lista vertices, int tamanho, double /*xOrigem*/, double /*yOrigem*/){
+typedef struct stNo {
+    Vertice ver;
+    double angulo;
+} stNo;
+
+No* gerarArray(Lista vertices, int tamanho){
     if(vertices == NULL){
         printf("Erro em gerarArray\n");
         return NULL;
@@ -27,7 +32,12 @@ stNo* gerarArray(Lista vertices, int tamanho, double /*xOrigem*/, double /*yOrig
     return array;
 }
 
-void liberarArray(stNo* array){
+Vertice getVerticeNo(No n){
+    stNo* noh = (stNo*)n;
+    return noh->ver;
+}
+
+void liberarArray(No* array){
     if(array == NULL){
         printf("Erro em liberarArray.\n");
         return;
@@ -36,12 +46,12 @@ void liberarArray(stNo* array){
     free(array);
 }
 
-
-void mergeSort(stNo* array, int tamanho){
+void mergeSort(No* array, int tamanho){
     if(array == NULL){
         printf("Erro em mergeSort\n");
         return;
     }
+    stNo* a =(stNo*)array;
     
     if(tamanho <= 1){
         return;
@@ -69,10 +79,10 @@ void mergeSort(stNo* array, int tamanho){
             }
             
             for(int i = 0; i < n1; i++){
-                L[i] = array[inicio + i];
+                L[i] = *(stNo *) array[inicio + i];
             }
             for(int j = 0; j < n2; j++){
-                R[j] = array[meio + 1 + j];
+                R[j] = *(stNo *) array[meio + 1 + j];
             }
             
             int i = 0, j = 0, k = inicio;
@@ -80,23 +90,23 @@ void mergeSort(stNo* array, int tamanho){
             while(i < n1 && j < n2){
                 
                 if(L[i].angulo <= R[j].angulo){
-                    array[k] = L[i];
+                    a[k] = L[i];
                     i++;
                 }else{
-                    array[k] = R[j];
+                    a[k] = R[j];
                     j++;
                 }
                 k++;
             }
             
             while(i < n1){
-                array[k] = L[i];
+                a[k] = L[i];
                 i++;
                 k++;
             }
             
             while(j < n2){
-                array[k] = R[j];
+                a[k] = R[j];
                 j++;
                 k++;
             }
@@ -107,28 +117,49 @@ void mergeSort(stNo* array, int tamanho){
     }
 }
 
-void insertionSort(stNo* array, int tamanho){
+Vertice getVerticeDoArray(No* arrayGen, int indice) {
+    // Aqui fazemos o cast, pois ordenacao.c CONHECE stNo
+    stNo* array = (stNo*)arrayGen;
+    return array[indice].ver;
+}
+
+double getAnguloDoArray(No* arrayGen, int indice) {
+    stNo* array = (stNo*)arrayGen;
+    return array[indice].angulo;
+}
+
+void insertionSort(No* array, int tamanho){
     if(array == NULL){
         printf("Erro em insertionSort\n");
         return;
     }
+    stNo* a =(stNo*)array;
     
     if(tamanho <= 1){
         return;
     }
     
     for(int i = 1; i < tamanho; i++){
-        stNo chave = array[i];
+        stNo chave = *(stNo *) array[i];
         int j = i - 1;
         
         // Move elementos maiores que a chave uma posição à frente
-        while(j >= 0 && array[j].angulo > chave.angulo){
-            array[j + 1] = array[j];
+        while(j >= 0 && a[j].angulo > chave.angulo){
+            a[j + 1] = a[j];
             j--;
         }
         
-        array[j + 1] = chave;
+        a[j + 1] = chave;
     }
+}
+
+int compararNos(const void* a, const void* b) {
+    stNo* noA = (stNo*)a;
+    stNo* noB = (stNo*)b;
+    
+    if (noA->angulo < noB->angulo) return -1;
+    if (noA->angulo > noB->angulo) return 1;
+    return 0;
 }
 
 static void swap(stNo* a, stNo* b) {
@@ -151,14 +182,9 @@ static int partition(stNo* array, int low, int high) {
     return (i + 1);
 }
 
-void quickSort(stNo* array, int low, int high) {
-    if (array == NULL) {
-        printf("Erro em quickSort: array nulo\n");
-        return;
-    }
-    if (low < high) {
-        int pi = partition(array, low, high);
-        quickSort(array, low, pi - 1);
-        quickSort(array, pi + 1, high);
-    }
+void quickSort(No* arrayParametro, int low, int high) {
+    int tamanho = high - low + 1;
+    
+    if (tamanho <= 1) return;
+    qsort(arrayParametro, tamanho, sizeof(stNo), compararNos);
 }

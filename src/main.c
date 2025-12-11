@@ -117,12 +117,13 @@ int main(int argc, char* argv[]) {
 
     lerGeo(arqGeo, formas);
 
-    desenharTodasAsFormas(arqSvg, formas);
+    // desenharTodasAsFormas(arqSvg, formas);
 
     if (hasQry && arqQry != NULL) {
         lerQry(arqQry, arqTxt, arqSvg, formas);
     }
 
+    desenharTodasAsFormas(arqSvg, formas);
     fecharSVG(arqSvg);
 
     fclose(arqGeo);

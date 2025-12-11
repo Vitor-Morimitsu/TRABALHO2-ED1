@@ -78,15 +78,37 @@ void desenharPoligonoSVG(FILE* arqSvg, Poligono p, char* corB, char* corP){
         return;
     }
 
+    int n = getNumeroVertices(p);
+    if(n == 0) return;
+
     fprintf(arqSvg, "<polygon points=\"");
 
-    int n = getNumeroVertices(p);
     for (int i = 0; i < n; i++){
         double x, y;
         getVerticePoligono(p, i, &x, &y);
         fprintf(arqSvg, "%.2f,%.2f ", x, y);
     }
     fprintf(arqSvg, "\" style=\"fill:%s; opacity:0.5; stroke:%s; stroke-width:2\" />\n", corP, corB);
+
+    for(int i = 0; i < n;i++){
+        double x1,y1,x2,y2;
+        int proximo = (i+1)%n;
+
+        getVerticePoligono(p,i,&x1,&y1);
+        getVerticePoligono(p,proximo,&x2,&y2);
+
+        Anteparo ant1 = getAnteparoPoligono(p,i);
+        Anteparo ant2 = getAnteparoPoligono(p,proximo);
+        if(ant1 != NULL && ant2 != NULL && ant1 == ant2) {
+            // É PAREDE
+            fprintf(arqSvg, "<line x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\" y2=\"%.2f\" "
+                            "style=\"stroke:red; stroke-width:4\" />\n", 
+                            x1, y1, x2, y2);
+        } else {
+            // É ESPAÇO VAZIO (RAIO)
+            fprintf(arqSvg, "<line x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\" y2=\"%.2f\" ""style=\"stroke:%s; stroke-width:1; stroke-dasharray:5,5\" />\n",x1, y1, x2, y2, corB);
+        }
+    }
 }
 
 void fecharSVG(FILE* arqSvg) {
