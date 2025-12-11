@@ -116,31 +116,31 @@ bool formaDentroPoligono(Pacote pac, Poligono p) {
     }
 }
 
-bool atingidaPelaExplosao(Lista formas, Poligono p, double /*xBomba*/, double /*yBomba*/) {
-    if (formas == NULL || p == NULL) {
-        printf("Erro em atingidaPelaExplosao: parametros invalidos\n");
-        return false;
-    }
+// bool atingidaPelaExplosao(Lista formas, Poligono p, double /*xBomba*/, double /*yBomba*/) {
+//     if (formas == NULL || p == NULL) {
+//         printf("Erro em atingidaPelaExplosao: parametros invalidos\n");
+//         return false;
+//     }
     
-    bool algumFormaAtingida = false;
+//     bool algumFormaAtingida = false;
     
-    // Itera por todas as formas
-    for (CelulaLista celula = getPrimeiraCelulaLista(formas); celula != NULL; celula = getProximaCelulaLista(celula)) {
-        Pacote pac = (Pacote)getConteudoCelula(celula);
+//     // Itera por todas as formas
+//     for (CelulaLista celula = getPrimeiraCelulaLista(formas); celula != NULL; celula = getProximaCelulaLista(celula)) {
+//         Pacote pac = (Pacote)getConteudoCelula(celula);
         
-        if (formaDentroPoligono(pac, p)) {
-            algumFormaAtingida = true;
+//         if (formaDentroPoligono(pac, p)) {
+//             algumFormaAtingida = true;
             
-            // Opcional: imprimir informações sobre a forma atingida
-            char tipo = getTipoPacote(pac);
-            int id = getIDPacote(pac);
+//             // Opcional: imprimir informações sobre a forma atingida
+//             char tipo = getTipoPacote(pac);
+//             int id = getIDPacote(pac);
             
-            printf("Forma atingida - Tipo: %c, ID: %d\n", tipo, id);
-        }
-    }
+//             printf("Forma atingida - Tipo: %c, ID: %d\n", tipo, id);
+//         }
+//     }
     
-    return algumFormaAtingida;
-}
+//     return algumFormaAtingida;
+// }
 
 Lista obterFormasAtingidas(Lista formas, Poligono p) {
     if (formas == NULL || p == NULL) {

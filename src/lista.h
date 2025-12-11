@@ -52,7 +52,6 @@ Encontra um pacote com o id especificado e o retorna.
 */
 Pacote procuraPacoteLista(Lista l, int id);
 
-
 /*
 Remove um pacote da lista com o id fornecido
 */
