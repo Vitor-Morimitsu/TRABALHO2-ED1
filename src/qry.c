@@ -200,7 +200,7 @@ void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, 
     }
 }
 
-void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double xBomba, double yBomba, char* comando){
+void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double xBomba, double yBomba){
     if(arqTxt == NULL || svgSfx == NULL || anteparos == NULL || formas == NULL){
         printf("Erro em comandoD: parametros invalidos\n");
         return;
@@ -215,7 +215,7 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
         return;
     }
     
-    calcularVisibilidade(poligono, anteparos, xBomba, yBomba, comando);
+    calcularVisibilidade(poligono, anteparos, xBomba, yBomba, "");
     
     int numVertices = getNumeroVertices(poligono);
     fprintf(stderr, "Polígono criado com %d vértices\n", numVertices);
@@ -270,7 +270,7 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
     liberarPoligono(poligono);
 }
 
-void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, double y, char* cor, char* comandoSfx){
+void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, double y, char* cor){
     if(txt == NULL || svg == NULL || formas == NULL || anteparos == NULL || cor == NULL){
         printf("Erro em comandoP: parametros invalidos\n");
         return;
@@ -282,7 +282,7 @@ void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, dou
         return;
     }
     
-    calcularVisibilidade(poligono, anteparos, x, y, comandoSfx);
+    calcularVisibilidade(poligono, anteparos, x, y, "");
     
     Lista formasAtingidas = obterFormasAtingidas(formas, poligono);
     
@@ -332,7 +332,7 @@ void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, dou
     liberarPoligono(poligono);
 }
 
-void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, double y, double dx, double dy, char* comandoSfx){
+void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, double y, double dx, double dy){
     if(txt == NULL || svg == NULL || formas == NULL || anteparos == NULL){
         printf("Erro em comandoCln: parametros invalidos\n");
         return;
@@ -344,7 +344,7 @@ void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, d
         return;
     }
     
-    calcularVisibilidade(poligono, anteparos, x, y, comandoSfx);
+    calcularVisibilidade(poligono, anteparos, x, y, "");
     desenharPoligonoSVG(svg, poligono, "#B388FF", "#000000");
     
     fprintf(txt, "Clonagem na posição (%.2f, %.2f)\n", x, y);
@@ -502,20 +502,44 @@ void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas){
             double x, y;
             char sufixo[50];
             if(sscanf(linha, "d %lf %lf %s", &x, &y, sufixo) == 3){
-                comandoD(txt, svg, anteparos, formas, x, y, sufixo);
+                if(strcmp(sufixo, "-") != 0){
+                    FILE* svgSfx = fopen(sufixo, "w");
+                    if(svgSfx == NULL){
+                        printf("Erro ao abrir arquivo svgSfx em comando d\n");
+                        return;
+                    }
+                    comandoD(txt, svgSfx, anteparos, formas, x, y);
+                }
+                comandoD(txt, svg,anteparos,formas,x,y);
             }
         } else if(strcmp(comando, "p") == 0){
             double x, y;
             char cor[50];
             char sufixo[50];
             if(sscanf(linha, "p %lf %lf %s %s", &x, &y, cor, sufixo) == 4){
-                comandoP(txt, svg, formas, anteparos, x, y, cor, sufixo);
+                if(strcmp(sufixo, "-") != 0){
+                    FILE* svgSfx = fopen(sufixo, "w");
+                    if(svgSfx == NULL){
+                        printf("Erro ao abrir arquivo svgSfx em comando p\n");
+                        return;
+                    }
+                    comandoP(txt, svgSfx, formas, anteparos, x, y, cor);
+                }
+                comandoP(txt,svg,formas,anteparos,x,y,cor);
             }
         } else if(strcmp(comando, "cln") == 0){
             double x, y, dx, dy;
             char sufixo[50];
             if(sscanf(linha, "cln %lf %lf %lf %lf %s", &x, &y, &dx, &dy, sufixo) == 5){
-                comandoCln(txt, svg, formas, anteparos, x, y, dx, dy, sufixo);
+                if(strcmp(sufixo, "-") != 0){
+                    FILE* svgSfx = fopen(sufixo, "w");
+                    if(svgSfx == NULL){
+                        printf("Erro ao abrir arquivo svgSfx em comando cln\n");
+                        return;
+                    }
+                    comandoCln(txt, svgSfx, formas, anteparos, x, y, dx, dy);
+                }
+                comandoCln(txt,svg,formas,anteparos,x,y,dx,dy);
             }
         }
     }
