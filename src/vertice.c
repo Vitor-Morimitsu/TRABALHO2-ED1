@@ -7,7 +7,7 @@ typedef struct vertice{
     double x, y;
     double angulo;
     double distancia;
-    char tipo;
+    char tipo; //inicio ou fim
     Anteparo a;
 }stVertice;
 

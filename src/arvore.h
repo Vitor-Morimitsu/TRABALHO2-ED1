@@ -11,32 +11,22 @@
 */
 
 typedef void* Arvore;
-typedef void* CelulaArvore;
+typedef void* celulaArvore;
 
 /*
     Função responsável por criar a arvore e inicializar ela.
 */
-Arvore criaArvore();
+Arvore criarArvore();
 
 /*
     Função responsável por inserir um pacote na árvore.
 */
-void insereArvore(Arvore arv, void* segmentoAtivo);
-
-/* 
-    Função responsável por buscar uma célula da árvore que possui o menor angulo
-*/
-CelulaArvore buscaCelulaArvore(Arvore arv);
+void insereArvore(Arvore arv, Anteparo an, double bx, double by, double angulo,double distCelAnterior);
 
 /*
     Função responsável por remover um conteudo da arvore pelo ID
 */
-void removeArvore(Arvore arv, int id);
-
-/*
-    Função responsável por definir a origem e ângulo atual para cálculo de distâncias
-*/
-void setOrigemArvore(Arvore arv, double xOrigem, double yOrigem, double anguloAtual);
+void removerArvore(Arvore arv, int id);
 
 /*
     Função responsável por liberar toda a memória da árvore

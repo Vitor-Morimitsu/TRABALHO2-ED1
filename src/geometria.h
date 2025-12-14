@@ -29,10 +29,9 @@ double determinante(double x1, double y1, double x2, double y2, double x3, doubl
 bool dentroBoundingBox(double x, double y, double minX, double minY, double maxX, double maxY);
 
 /*
-    Função responsável por calcular o ponto de intersecção de um segmento com uma reta de origem na bomba e destino no segmento
-    criará um novo vertice do polígono
+    Função responsável por calcular o ponto de intercecção em um anteparo a partir da bomba
 */
-Vertice calculaInterseccao(Lista anteparos,Linha scaner);
+Vertice calculaInterseccao(double bx, double by, double angulo,Anteparo ant);
 
 /*
     Encontra o ponto de intersecção mais próximo entre um raio de varredura e uma lista de segmentos de reta.
