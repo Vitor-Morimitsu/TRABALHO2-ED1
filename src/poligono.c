@@ -109,7 +109,7 @@ void gerarBoundingBox(Poligono p, double *minX, double *minY, double *maxX, doub
     *maxY = pol->maxY;
 }
 
-void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yOrigem, char* comando){
+void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yOrigem, char* comando, int limiteInsertionSort){
     if(p == NULL || anteparos == NULL){
         printf("Erro em calcularVisibilidade: parametros invalidos\n");
         return;
@@ -187,7 +187,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
     }
     
     if (ordenacao == 'm') {
-        mergeSort(arrayOrdenado, tamanho);
+        mergeSort(arrayOrdenado, tamanho, limiteInsertionSort);
     } else if (ordenacao == 'q') {
         quickSort(arrayOrdenado, 0, tamanho - 1);
     } else {
@@ -229,14 +229,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         double epsilon = calcularEpsilon(eventoAngulo);
         double anguloAntes = eventoAngulo - epsilon;
         
-        Vertice v_antes = encontraInterseccaoMaisProxima(segmentosAtivos, xOrigem, yOrigem, anguloAntes);
-        if (v_antes != NULL) {
-            Anteparo alvo = getAnteparoVertice(v_antes);
-            if(alvo!=NULL){
-                //******************************************************************************************************** */
-            }
-            adicionarVerticePoligono(p, v_antes);
-        }
+        celulaArvore celMaisProxima = encontrarMinino(arvoreSegmentosAtivos);
 
         char eventoTipo = getTipoVertice(eventoVertice);
         if (eventoTipo == 'i') {
@@ -245,14 +238,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
             removeDaListaPorConteudo(segmentosAtivos, eventoAnteparo);
         }
 
-        Vertice v_depois = encontraInterseccaoMaisProxima(segmentosAtivos, xOrigem, yOrigem, eventoAngulo);
-        if (v_depois != NULL) {
-            Anteparo alvo = getAnteparoVertice(v_depois);
-            if(alvo != NULL){
-                //*********************************************************************************************************** */
-            }
-            adicionarVerticePoligono(p, v_depois);
-        }
+       
     }
 
     stPoligono* pol = (stPoligono*)p;

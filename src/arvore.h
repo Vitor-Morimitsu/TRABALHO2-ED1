@@ -33,4 +33,10 @@ void removerArvore(Arvore arv, int id);
 */
 void liberarArvore(Arvore arv);
 
+/*
+    Encontra o menor valor presente no lado esquerdo da árvore.
+*/
+celulaArvore encontrarMinimo(celulaArvore cel)
+
+
 #endif

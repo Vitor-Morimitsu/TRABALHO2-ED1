@@ -66,12 +66,13 @@ void insereArvore(Arvore arv, Anteparo an, double bx, double by, double angulo,d
     a->raiz = insereRecursivo(a->raiz,an,bx,by,angulo,distCelAnterior);    
 }
 
-celulaArvore encontrarMinimo(stCelulaArvore* cel){
+celulaArvore encontrarMinimo(celulaArvore cel){
     if(cel == NULL) return NULL;
-    while(cel->esquerda != NULL){
-        cel = cel->esquerda;
+    stCelulaArvore* c =(stCelulaArvore*)cel;
+    while(c->esquerda != NULL){
+        c = c->esquerda;
     }
-    return cel;
+    return c;
 }
 
 celulaArvore removerRecursivo(celulaArvore cel, int id){

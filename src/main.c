@@ -24,6 +24,9 @@ int main(int argc, char* argv[]) {
     char dirSaida[PATH_LEN] = "";
     char nomeArquivoGeo[FILE_NAME_LEN] = "";
     char nomeArquivoQry[FILE_NAME_LEN] = "";
+    char comandoOrdenação[5];
+    char comandoDefault = 'q';
+    int tamanhoParaInsertion = 10;
     int hasGeo = 0, hasQry = 0, hasSaida = 0;
 
     for (int i = 1; i < argc; i++) {
@@ -38,7 +41,11 @@ int main(int argc, char* argv[]) {
         } else if (strcmp(argv[i], "-q") == 0 && i + 1 < argc) {
             strcpy(nomeArquivoQry, argv[++i]);
             hasQry = 1;
-        } else {
+        } else if (strcmp(argv[i], "-to ") == 0){
+            strcpy(comandoOrdenação, argv[i++]);
+        }else if(strcmp(argv[i], "-i") == 0){
+            scanf("-i %d", &tamanhoParaInsertion);
+        }else{
             fprintf(stderr, "Parametro desconhecido ou invalido: %s\n", argv[i]);
             return EXIT_FAILURE;
         }

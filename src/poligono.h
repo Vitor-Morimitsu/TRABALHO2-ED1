@@ -33,7 +33,7 @@ void gerarBoundingBox(Poligono p,double *minX, double *minY, double *maxX, doubl
     /// @param arvoreSegmentos: árvore BST para manter segmentos ativos ordenados por distância
     /// @param xOrigem: coordenada X da origem (bomba)
     /// @param yOrigem: coordenada Y da origem (bomba)
-    /// @param comando: escolher o tipo de ordenação desejado( "q" = quicksort, "m" = mergesort, "i" = insertion sort)
+    /// @param comando: escolher o tipo de ordenação desejado( "q" = quicksort, "m" = mergesort, "i" = insertion sort) SERÁ PASSADO POR COMANDO NO MAIN
 */
 void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yOrigem, char* comando);
 
@@ -62,5 +62,8 @@ int getNumeroVertices(Poligono p);
 */
 void liberarPoligono(Poligono p);
 
+/*
+    Retorna o anteparo do polígono baseado no índice fornecido.
+*/
 Anteparo getAnteparoPoligono(Poligono p, int indice);
 #endif
