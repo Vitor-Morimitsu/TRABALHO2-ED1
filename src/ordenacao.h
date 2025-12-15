@@ -41,7 +41,7 @@ void liberarArray(No* array);
 /*
     Retorna uma lista ordenada com o algoritmo mergeSort.
 */
-void mergeSort(No* array,int tamanho);
+void mergeSort(No* array, int tamanho, int limiteInsertionSort);
 
 /*
     Retorna uma lista ordenada com o algoritmo insertion sort.

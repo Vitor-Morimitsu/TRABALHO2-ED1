@@ -46,24 +46,40 @@ void liberarArray(No* array){
     free(array);
 }
 
-void mergeSort(No* array, int tamanho){
+void insertionSortRange(stNo* array, int inicio, int fim){
+    for(int i = inicio + 1; i <= fim; i++){
+        stNo chave = array[i];
+        int j = i - 1;
+        
+        while(j >= inicio && array[j].angulo > chave.angulo){
+            array[j + 1] = array[j];
+            j--;
+        }
+        array[j + 1] = chave;
+    }
+}
+
+void mergeSort(No* array, int tamanho, int limiteInsertionSort){
     if(array == NULL){
         printf("Erro em mergeSort\n");
         return;
     }
     stNo* a =(stNo*)array;
     
-    if(tamanho <= 1){
-        return;
-    }
+    if(tamanho <= 1) return;
     
     for(int tamanhoAtual = 1; tamanhoAtual < tamanho; tamanhoAtual *= 2){
         for(int inicio = 0; inicio < tamanho - 1; inicio += 2 * tamanhoAtual){
             int meio = inicio + tamanhoAtual - 1;
-            int fim = (inicio + 2 * tamanhoAtual - 1 < tamanho - 1) ? 
-                      inicio + 2 * tamanhoAtual - 1 : tamanho - 1;
+            int fim = (inicio + 2 * tamanhoAtual - 1 < tamanho - 1) ? inicio + 2 * tamanhoAtual - 1 : tamanho - 1;
             
             if(meio >= tamanho) continue;
+
+            int tamSubvetor = fim - inicio +1;
+            if(tamSubvetor <= limiteInsertionSort){
+                insertionSortRange(a,inicio,fim);
+                continue;
+            }
             
             int n1 = meio - inicio + 1;
             int n2 = fim - meio;
@@ -79,7 +95,7 @@ void mergeSort(No* array, int tamanho){
             }
             
             for(int i = 0; i < n1; i++){
-                L[i] = *(stNo *) array[inicio + i];
+                L[i] = a[inicio + i];
             }
             for(int j = 0; j < n2; j++){
                 R[j] = *(stNo *) array[meio + 1 + j];
@@ -157,8 +173,16 @@ int compararNos(const void* a, const void* b) {
     stNo* noA = (stNo*)a;
     stNo* noB = (stNo*)b;
     
+    //ordenar por ângulo
     if (noA->angulo < noB->angulo) return -1;
     if (noA->angulo > noB->angulo) return 1;
+    
+    //em caso de empate.ordenar por distância
+    double distA = getDistanciaVertice(noA->ver);
+    double distB = getDistanciaVertice(noB->ver);
+    
+    if (distA < distB) return -1;
+    if (distA > distB) return 1;
     return 0;
 }
 
@@ -183,8 +207,8 @@ static int partition(stNo* array, int low, int high) {
 }
 
 void quickSort(No* arrayParametro, int low, int high) {
-    int tamanho = high - low + 1;
-    
-    if (tamanho <= 1) return;
-    qsort(arrayParametro, tamanho, sizeof(stNo), compararNos);
+    if(low >= high) return;
+
+    stNo* array = (stNo*)arrayParametro;
+    qsort(&array[low], high - low + 1, sizeof(stNo), compararNos);
 }

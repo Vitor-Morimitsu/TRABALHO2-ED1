@@ -34,9 +34,17 @@ bool dentroBoundingBox(double x, double y, double minX, double minY, double maxX
 Vertice calculaInterseccao(double bx, double by, double angulo,Anteparo ant);
 
 /*
-    Encontra o ponto de intersecção mais próximo entre um raio de varredura e uma lista de segmentos de reta.
-    Retorna um novo Vertice correspondente ao ponto de intersecção mais próximo, ou NULL se nenhuma interseção for encontrada.
+    Função responsável por identificar se um ponto está no polígono.
 */
-Vertice encontraInterseccaoMaisProxima(Lista segmentosAtivos, double xOrigem, double yOrigem, double angulo);
+bool pontoEmPoligono(double px, double py, Lista verticesPoligono);
 
+/*
+    Verifica se segmento intersecta segmento
+*/
+bool segmentoIntersectaSegmento(double x1, double y1, double x2, double y2,double x3, double y3, double x4, double y4);
+
+/*
+    Função responsável por calcular a distancia de um ponto até o segmento
+*/
+double distanciaPontoSegmento(double px, double py,double x1, double y1, double x2, double y2);
 #endif
