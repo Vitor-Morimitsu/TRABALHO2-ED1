@@ -39,7 +39,9 @@ Vertice calculaInterseccao(double bx, double by, double angulo,Anteparo ant);
 bool pontoEmPoligono(double px, double py, Lista verticesPoligono);
 
 /*
-    Verifica se segmento intersecta segmento
+    Verifica se segmento intersecta segmento. Lança raios para a direita e conta quantas arestas do poligono ele cruza.
+    Ímpar: ponto está fora do poligono
+    Par: ponto está dentro do polígono
 */
 bool segmentoIntersectaSegmento(double x1, double y1, double x2, double y2,double x3, double y3, double x4, double y4);
 
