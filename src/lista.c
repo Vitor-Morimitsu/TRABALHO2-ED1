@@ -247,21 +247,20 @@ double getMaiorValorLista(Lista lista, int opcao){
 
     stLista* l = (stLista*)lista;
     stCelula* temp = l->inicio;
-    
     if(temp == NULL){
         return 0.0; // Lista vazia
     }
     
     double maior = -DBL_MAX; // Inicializa com menor valor possível
 
-    if(opcao == 1){
+    if(opcao == 1){ //eixo x
         while(temp != NULL){
             Pacote pac = (Pacote)temp->conteudo;
             Forma form = getFormaPacote(pac);
             char tipo = getTipoPacote(pac);
             double valor = -2;
-            if(tipo == 'c') valor = getCoordXCirculo((Circulo)form);
-            if(tipo == 'r') valor = getCoordXRetangulo((Retangulo)form);
+            if(tipo == 'c') valor = getCoordXCirculo((Circulo)form) + getRaioCirculo((Circulo)form);
+            if(tipo == 'r') valor = getCoordXRetangulo((Retangulo)form) + getWRetangulo((Retangulo)form);
             if(tipo == 'l'){
                 double x1 = getX1Linha((Linha)form);
                 double x2 = getX2Linha((Linha)form);
@@ -294,14 +293,14 @@ double getMaiorValorLista(Lista lista, int opcao){
             maior = (maior > valor) ? maior : valor;
             temp = temp->proximo;
         }
-    }else if(opcao == 2){
+    }else if(opcao == 2){ //eixo y
         while(temp != NULL){
             Pacote pac = (Pacote)temp->conteudo;
             Forma form = getFormaPacote(pac);
             char tipo = getTipoPacote(pac);
             double valor = -2;
-            if(tipo == 'c') valor = getCoordYCirculo((Circulo)form);
-            if(tipo == 'r') valor = getCoordYRetangulo((Retangulo)form);
+            if(tipo == 'c') valor = getCoordYCirculo((Circulo)form) + getRaioCirculo((Circulo)form);
+            if(tipo == 'r') valor = getCoordYRetangulo((Retangulo)form) + getHRetangulo((Retangulo)form);
             if(tipo == 'l'){
                 double y1 = getY1Linha((Linha)form);
                 double y2 = getY2Linha((Linha)form);
@@ -353,13 +352,13 @@ double getMenorValorLista(Lista lista, int opcao){
     }
     
     double menor = DBL_MAX; // Inicializa com maior valor possível
-    if(opcao == 1){
+    if(opcao == 1){//eixo x
         while(temp != NULL){
             Pacote pac = temp->conteudo;
             Forma f = getFormaPacote(pac);
             char tipo = getTipoPacote(pac);
             double valor = -2;
-            if(tipo == 'c') valor = getCoordXCirculo((Circulo)f);
+            if(tipo == 'c') valor = getCoordXCirculo((Circulo)f) - getRaioCirculo((Circulo)f);
             else if(tipo == 'r') valor = getCoordXRetangulo((Retangulo)f);
             else if(tipo == 'l'){
                 double x1 = getX1Linha((Linha)f);
@@ -392,14 +391,14 @@ double getMenorValorLista(Lista lista, int opcao){
             temp = temp->proximo;
         }
 
-    }else if(opcao == 2){
+    }else if(opcao == 2){ //eixo y
         while(temp != NULL){
             Pacote pac = temp->conteudo;
             Forma f = getFormaPacote(pac);
             char tipo = getTipoPacote(pac);
             double valor = -2;
 
-            if(tipo == 'c') valor = getCoordYCirculo((Circulo)f);
+            if(tipo == 'c') valor = getCoordYCirculo((Circulo)f) - getRaioCirculo((Circulo)f);
             else if(tipo == 'r') valor = getCoordYRetangulo((Retangulo)f);
             else if(tipo=='l'){
                 double y1 = getY1Linha((Linha)f);

@@ -1,35 +1,51 @@
 #include "qry.h"
 
-void gerarArena(FILE* svgEntrada, Lista pacotes, Lista anteparos){
-    if(svgEntrada == NULL || pacotes == NULL || anteparos == NULL){
+void gerarArena(FILE* svgEntrada, Lista formas, Lista anteparos){
+    if(formas == NULL || anteparos == NULL){
         printf("Erro em gerarArena: parametros invalidos\n");
         return;
     }
     
-    double menorXPacotes = getMenorValorLista(pacotes, 1);
-    double menorXAnteparos = getMenorValorLista(anteparos, 1);
-    double menorX = (menorXPacotes < menorXAnteparos) ? menorXPacotes : menorXAnteparos;
+    double margem = 50.0;
     
-    double menorYPacotes = getMenorValorLista(pacotes, 2);
-    double menorYAnteparos = getMenorValorLista(anteparos, 2);
-    double menorY = (menorYPacotes < menorYAnteparos) ? menorYPacotes : menorYAnteparos;
-    
-    double maiorXPacotes = getMaiorValorLista(pacotes, 1);
-    double maiorXAnteparos = getMaiorValorLista(anteparos, 1);
-    double maiorX = (maiorXPacotes > maiorXAnteparos) ? maiorXPacotes : maiorXAnteparos;
+    double minX = getMenorValorLista(formas, 1) - margem;
+    double minY = getMenorValorLista(formas, 2) - margem;
+    double maxX = getMaiorValorLista(formas, 1) + margem;
+    double maxY = getMaiorValorLista(formas, 2) + margem;
 
-    double maiorYPacotes = getMaiorValorLista(pacotes, 2);
-    double maiorYAnteparos = getMaiorValorLista(anteparos, 2);
-    double maiorY = (maiorYPacotes > maiorYAnteparos) ? maiorYPacotes : maiorYAnteparos;
+    if(maxX < minX) { minX = 0; maxX = 1000; }
+    if(maxY < minY) { minY = 0; maxY = 1000; }
 
-    Retangulo arena = criaRetangulo(-100, menorX, menorY, maiorX, maiorY, "#000000", "#000000");
-    if(arena == NULL){
-        printf("Erro em gerarArena: falha ao criar retangulo\n");
-        return;
+    if(svgEntrada != NULL){
+        Retangulo arena = criaRetangulo(-1, minX, minY, maxX-minX, maxY-minY, "black", "none"); 
+        desenharRetanguloSVG(svgEntrada, arena);
+        liberaRetangulo(arena);
+    }
+
+    int idBase = getMaiorIdLista(anteparos);
+    if (idBase < getMaiorIdLista(formas)) idBase = getMaiorIdLista(formas);
+    idBase++;
+
+    Linha paredes[4];
+    paredes[0] = criarLinha(idBase + 0, minX, minY, maxX, minY, "black"); //cima
+    paredes[1] = criarLinha(idBase + 1, maxX, minY, maxX, maxY, "black"); //direita
+    paredes[2] = criarLinha(idBase + 2, maxX, maxY, minX, maxY, "black"); //baixo
+    paredes[3] = criarLinha(idBase + 3, minX, maxY, minX, minY, "black"); //esquerda
+
+    for(int i = 0; i < 4; i++){
+        if(paredes[i] != NULL){
+            Pacote pac = criaPacote();
+            if(pac != NULL){
+                setTipoPacote(pac, 'l'); // 'l' de linha
+                setFormaPacote(pac, (Forma)paredes[i]);
+                insereLista(anteparos, pac);
+            } else {
+                liberaLinha(paredes[i]);
+            }
+        }
     }
     
-    desenharRetanguloSVG(svgEntrada, arena);
-    liberaRetangulo(arena);
+    printf("Arena gerada com limites: (%.2f, %.2f) a (%.2f, %.2f)\n", minX, minY, maxX, maxY);
 }
 
 void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, char letra){
@@ -320,29 +336,29 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
         celula = proximaCelula;
     }
 
-    celula = getPrimeiraCelulaLista(anteparos);
-    while(celula != NULL){
-        Pacote pac = (Pacote)getConteudoCelula(celula);
-        CelulaLista proximaCelula = getProximaCelulaLista(celula);
+    // celula = getPrimeiraCelulaLista(anteparos);
+    // while(celula != NULL){
+    //     Pacote pac = (Pacote)getConteudoCelula(celula);
+    //     CelulaLista proximaCelula = getProximaCelulaLista(celula);
         
-        if(pac == NULL){
-            celula = proximaCelula;
-            continue;
-        }
+    //     if(pac == NULL){
+    //         celula = proximaCelula;
+    //         continue;
+    //     }
         
-        char tipo = getTipoPacote(pac);
-        int id = getIDPacote(pac);
+    //     char tipo = getTipoPacote(pac);
+    //     int id = getIDPacote(pac);
                 
-        bool dentro = formaDentroPoligono(pac, poligono);
+    //     bool dentro = formaDentroPoligono(pac, poligono);
         
-        if(dentro){
-            fprintf(arqTxt, "Anteparo destruído dentro do polígono de visibilidade: Tipo: %c, ID: %d\n", tipo, id);
-            formasDestruidas++;
-            removeLista(anteparos, id);
-        }
+    //     if(dentro){
+    //         fprintf(arqTxt, "Anteparo destruído dentro do polígono de visibilidade: Tipo: %c, ID: %d\n", tipo, id);
+    //         formasDestruidas++;
+    //         removeLista(anteparos, id);
+    //     }
         
-        celula = proximaCelula;
-    }
+    //     celula = proximaCelula;
+    // }
     
     printf("Formas destruídas: %d\n", formasDestruidas);
     
@@ -555,6 +571,13 @@ void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas, char tipoOrdenacao, i
         printf("Erro em lerQry: parametros invalidos\n");
         return;
     }
+
+    double minX = getMenorValorLista(formas, 1);
+    double minY = getMenorValorLista(formas, 2);
+    double maxX = getMaiorValorLista(formas, 1);
+    double maxY = getMaiorValorLista(formas, 2);
+    double width = maxX - minX;
+    double height = maxY - minY;
     
     char linha[256];
     char comando[50];
@@ -564,6 +587,8 @@ void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas, char tipoOrdenacao, i
         printf("Erro em lerQry: falha ao criar lista de anteparos\n");
         return;
     }
+
+    gerarArena(svg, formas, anteparos);
 
     while(fgets(linha, sizeof(linha), qry)){
         if(linha[0] == '\n' || linha[0] == '\r'){
@@ -585,7 +610,7 @@ void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas, char tipoOrdenacao, i
                 if(strcmp(sufixo, "-") != 0){
                     FILE* svgSfx = fopen(sufixo, "w");
                     if(svgSfx != NULL){
-                        abrirSvg(svgSfx);
+                        abrirSvg(svgSfx,minX,minY,width,height);
                         comandoD(txt,svgSfx,anteparos,formas,x,y,tipoOrdenacao,limiteInsertionSort);
                         fecharSVG(svgSfx);
                         fclose(svgSfx);
@@ -602,7 +627,7 @@ void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas, char tipoOrdenacao, i
                 if(strcmp(sufixo, "-") != 0){
                     FILE* svgSfx = fopen(sufixo, "w");
                     if(svgSfx != NULL){
-                        abrirSvg(svgSfx);
+                        abrirSvg(svgSfx,minX,minY,width,height);
                         comandoP(txt,svg,formas,anteparos,x,y,cor,tipoOrdenacao,limiteInsertionSort);
                         fecharSVG(svgSfx);
                         fclose(svgSfx);
@@ -618,7 +643,7 @@ void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas, char tipoOrdenacao, i
                 if(strcmp(sufixo, "-") != 0){
                     FILE* svgSfx = fopen(sufixo, "w");
                     if(svgSfx != NULL){
-                        abrirSvg(svgSfx);
+                        abrirSvg(svgSfx,minX,minY,width,height);
                         comandoCln(txt,svg,formas,anteparos,x,y,dx,dy,tipoOrdenacao,limiteInsertionSort);
                         fecharSVG(svgSfx);
                         fclose(svgSfx);

@@ -176,7 +176,15 @@ int compararNos(const void* a, const void* b) {
     //ordenar por ângulo
     if (noA->angulo < noB->angulo) return -1;
     if (noA->angulo > noB->angulo) return 1;
-    
+
+    // Em caso de empate de ângulo, priorizar INÍCIO ('i') sobre FIM ('f')
+    // para evitar buracos na visibilidade (inserir antes de remover)
+    char tipoA = getTipoVertice(noA->ver);
+    char tipoB = getTipoVertice(noB->ver);
+
+    if (tipoA == 'i' && tipoB == 'f') return -1; // 'i' vem antes
+    if (tipoA == 'f' && tipoB == 'i') return 1;
+
     //em caso de empate.ordenar por distância
     double distA = getDistanciaVertice(noA->ver);
     double distB = getDistanciaVertice(noB->ver);

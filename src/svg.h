@@ -14,7 +14,7 @@
 /*
     Função responsável por abrir o arquivo Svg passado como parâmetro.
 */
-void abrirSvg(FILE* arqSvg);
+void abrirSvg(FILE* arqSvg,double x,double y, double w, double h);
 
 /*
     Função responsável por gerar um círculo em SVG.

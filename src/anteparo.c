@@ -74,6 +74,10 @@ Anteparo* retanguloViraAnteparo(Pacote pac, int maiorID){
     char* cor = getCorBRetangulo(ret);
 
     Anteparo *array = malloc(4*sizeof(Anteparo));
+    if(array == NULL){
+        printf("Erro em retanguloViraAnteparo\n");
+        return NULL;
+    }
     array[0] = criarAnteparo(maiorID + 1, x, y,x+w,y,cor);
     array[1] = criarAnteparo(maiorID + 2, x,y,x,y+h,cor);
     array[2] = criarAnteparo(maiorID + 3, x+w, y,x+w, y+h,cor);

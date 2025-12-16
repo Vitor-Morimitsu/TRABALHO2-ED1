@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "pacote.h"
+#include "circulo.h"
+#include "retangulo.h"
+#include "linha.h"
+#include "texto.h"
 
 typedef void* Lista;
 typedef void* CelulaLista;

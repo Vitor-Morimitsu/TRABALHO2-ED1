@@ -1,7 +1,12 @@
 #include "svg.h"
 
-void abrirSvg(FILE* arqSvg){
-    fprintf(arqSvg, "<svg xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n");
+void abrirSvg(FILE* arqSvg,double x ,double y, double w, double h){
+    double margem = 50.0;
+    x -= margem;
+    y -= margem;
+    w += 2*margem;
+    h += 2* margem;
+    fprintf(arqSvg, "<svg xmlns:svg=\"http://www.w3.org/2000/svg\" ""xmlns=\"http://www.w3.org/2000/svg\" ""version=\"1.1\" ""viewBox=\"%f %f %f %f\">\n", x, y, w, h);
 }
 
 void desenharCirculoSVG(FILE* arqSvg, Circulo circ) {
@@ -96,40 +101,14 @@ void desenharPoligonoSVG(FILE* arqSvg, Poligono p, char* corB, char* corP){
     int n = getNumeroVertices(p);
     if(n == 0) return;
 
-    // 1. DESENHA O PREENCHIMENTO (CHÃO)
-    // stroke:none -> Importante para não desenhar borda dupla
+    // ✅ DESENHAR APENAS O PREENCHIMENTO
     fprintf(arqSvg, "<polygon points=\"");
     for (int i = 0; i < n; i++){
         double x, y;
         getVerticePoligono(p, i, &x, &y);
         fprintf(arqSvg, "%.2f,%.2f ", x, y);
     }
-    fprintf(arqSvg, "\" style=\"fill:%s; opacity:0.5; stroke:none\" />\n", corP);
-
-    // 2. DESENHA AS ARESTAS (PAREDES VS RAIOS)
-    for(int i = 0; i < n; i++){
-        double x1, y1, x2, y2;
-        int proximo = (i+1)%n;
-
-        getVerticePoligono(p, i, &x1, &y1);
-        getVerticePoligono(p, proximo, &x2, &y2);
-
-        Anteparo ant1 = getAnteparoPoligono(p, i);
-        Anteparo ant2 = getAnteparoPoligono(p, proximo);
-        
-        // Se ambos os vértices pertencem ao MESMO anteparo, é uma parede física
-        if(ant1 != NULL && ant2 != NULL && ant1 == ant2) {
-            fprintf(arqSvg, "<line x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\" y2=\"%.2f\" "
-                            "style=\"stroke:red; stroke-width:4\" />\n", 
-                            x1, y1, x2, y2);
-        } else {
-            // Caso contrário, é apenas o raio de visão (espaço vazio)
-            // Corrigido o erro de digitação aqui (era ""style)
-            fprintf(arqSvg, "<line x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\" y2=\"%.2f\" "
-                            "style=\"stroke:%s; stroke-width:1; stroke-dasharray:none\" />\n",
-                            x1, y1, x2, y2, corB);
-        }
-    }
+    fprintf(arqSvg, "\" style=\"fill:%s; opacity:0.5; stroke:%s; stroke-width:1\" />\n", corP, corB);
 }
 
 void fecharSVG(FILE* arqSvg) {

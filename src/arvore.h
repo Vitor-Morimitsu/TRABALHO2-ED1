@@ -24,9 +24,9 @@ Arvore criarArvore();
 void insereArvore(Arvore arv, Anteparo an, double bx, double by, double angulo,double distCelAnterior);
 
 /*
-    Função responsável por remover um conteudo da arvore pelo ID
+    Função responsável por remover um conteudo da arvore pelo ID, necessitando dos dados geométricos para navegação.
 */
-void removerArvore(Arvore arv, int id);
+void removerArvore(Arvore arv, int id, double bx, double by, double angulo, double distAnteparo);
 
 /*
     Função responsável por liberar toda a memória da árvore

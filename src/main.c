@@ -112,6 +112,17 @@ int main(int argc, char* argv[]) {
     lerGeo(arqGeo, formas);
     fclose(arqGeo);
 
+    //cálculo da boundingBox
+    double minX = getMenorValorLista(formas, 1);
+    double minY = getMenorValorLista(formas, 2);
+    double maxX = getMaiorValorLista(formas, 1);
+    double maxY = getMaiorValorLista(formas, 2);
+    double width = maxX - minX;
+    double height = maxY - minY;
+
+    if (width <= 0) width = 100;
+    if (height <= 0) height = 100;
+
     FILE *arqSvgGeo = fopen(arquivoSvgGeo, "w");
     if (arqSvgGeo == NULL) {
         fprintf(stderr, "ERRO: Não foi possível criar o arquivo SVG: %s\n", arquivoSvgGeo);
@@ -119,7 +130,7 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    abrirSvg(arqSvgGeo);
+    abrirSvg(arqSvgGeo,minX,minY,width,height);
     desenharTodasAsFormas(arqSvgGeo, formas);
     fecharSVG(arqSvgGeo);
     fclose(arqSvgGeo);
@@ -149,7 +160,7 @@ int main(int argc, char* argv[]) {
             return EXIT_FAILURE;
         }
 
-        abrirSvg(arqSvgFinalFile);
+        abrirSvg(arqSvgFinalFile,minX,minY,width,height);
         lerQry(arqQry, arqTxt, arqSvgFinalFile, formas, tipoOrdenacao, limiteInsertionSort);
         desenharTodasAsFormas(arqSvgFinalFile, formas);
         fecharSVG(arqSvgFinalFile);
