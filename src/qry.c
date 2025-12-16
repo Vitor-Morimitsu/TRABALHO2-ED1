@@ -60,16 +60,22 @@ void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, 
             double raio = getRaioCirculo((Circulo)formaPac);
             char* cor = getCorPCirculo((Circulo)formaPac);
 
+            int maiorIDFormas = getMaiorIdLista(formas);
+            int maiorIDAnteparos = getMaiorIdLista(anteparos);
+            int maior = (maiorIDAnteparos > maiorIDFormas) ? maiorIDAnteparos : maiorIDFormas;
+            if(maior < 0) maior = 0;
+            int novoID = maior + 1;
+
             double x1,y1,x2,y2;
             Linha lin = NULL;
             if(letra == 'h'){
-                lin = criarLinha(id, x - raio, y, x + raio, y, cor);
+                lin = criarLinha(novoID, x - raio, y, x + raio, y, cor);
                 x1 = x-raio;
                 y1 = y;
                 x2 = x+raio;
                 y2 = y;
             } else {
-                lin = criarLinha(id, x, y - raio, x, y + raio, cor);
+                lin = criarLinha(novoID, x, y - raio, x, y + raio, cor);
                 x1 =x;
                 y1 = y-raio;
                 x2 = x;
@@ -80,16 +86,21 @@ void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, 
                 continue;
             }
 
+            Pacote novoPacote = criaPacote();
+            if(novoPacote != NULL){
+                setTipoPacote(novoPacote,'l');
+                setFormaPacote(novoPacote, (Forma)lin);
+                insereLista(anteparos,novoPacote);
+            }else{
+                liberaLinha(lin);
+            }
+
             Pacote transferPac = removeRetornaConteudo(formas, id);
             if(transferPac != NULL){
                 liberaCirculo((Circulo)formaPac);
-                setTipoPacote(transferPac, 'l');
-                setFormaPacote(transferPac, (Forma)lin);
-                insereLista(anteparos, transferPac);
-            } else {
-                liberaLinha(lin);
+                liberarPacote(transferPac);
             }
-            fprintf(arqTxt, "id do círculo: %d, figura original: círculo, id do anteparo: %d, pontos extremos: (%lf,%lf) e (%lf,%lf)\n", id, id,x1,y1,x2,y2);
+            fprintf(arqTxt, "id do círculo: %d, figura original: círculo, id do anteparo: %d, pontos extremos: (%lf,%lf) e (%lf,%lf)\n", id, novoID,x1,y1,x2,y2);
             
         } else if(tipo == 'r'){
             double x = getCoordXRetangulo((Retangulo)formaPac);
@@ -262,6 +273,15 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
     
     int numVertices = getNumeroVertices(poligono);
     printf("Polígono criado com %d vértices\n", numVertices);
+
+    printf("=== DEBUG POLÍGONO ===\n");
+    for(int i = 0; i < numVertices && i < 20; i++){
+        double x, y;
+        getVerticePoligono(poligono, i, &x, &y);
+        printf("V%d: (%.2f, %.2f)\n", i, x, y);
+    }
+    printf("Total: %d vértices\n", numVertices);
+    printf("======================\n");
     
     desenharPoligonoSVG(svgSfx, poligono, "#6e0d04ff", "#e15b35ff");
     
