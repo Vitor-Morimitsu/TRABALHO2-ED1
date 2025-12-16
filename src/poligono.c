@@ -125,7 +125,9 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
     }
     
     // COLETAR VÉRTICES DOS ANTEPAROS
-    for(CelulaLista celula = getPrimeiraCelulaLista(anteparos);celula != NULL;celula = getProximaCelulaLista(celula)) {
+    for(CelulaLista celula = getPrimeiraCelulaLista(anteparos);
+        celula != NULL;
+        celula = getProximaCelulaLista(celula)) {
         Pacote pac = (Pacote)getConteudoCelula(celula);
         char tipo = getTipoPacote(pac);
         
@@ -170,7 +172,6 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         insereLista(todosVertices, v1);
         insereLista(todosVertices, v2);
     }
-    printf("%d vertices coletados doa anteparos\n", getTamanhoLista(todosVertices));
 
     int tamanho = getTamanhoLista(todosVertices);
     if (tamanho == 0) {
@@ -209,6 +210,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         return;
     }
     
+    // INICIALIZAR ÁRVORE COM SEGMENTOS QUE INTERSECTAM O PRIMEIRO ÂNGULO
     if (tamanho > 0) {
         double primeiroAngulo = getAnguloDoArray(arrayOrdenado, 0);
 
@@ -234,6 +236,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         }
     }
 
+    // ✅ VARREDURA ANGULAR - ALGORITMO CORRIGIDO
     for (int i = 0; i < tamanho; i++) {
         Vertice eventoVertice = getVerticeDoArray(arrayOrdenado, i);
         double eventoAngulo = getAnguloDoArray(arrayOrdenado, i);
@@ -243,7 +246,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         double epsilon = calcularEpsilon(eventoAngulo);
         double anguloAntes = eventoAngulo - epsilon;
         
-        // ANTES DO EVENTO: encontrar interseção mais próxima
+        // SEMPRE adicionar vértice ANTES do evento
         celulaArvore celMaisProxima = encontrarMinimoArvore(arvoreSegmentosAtivos);
         
         if(celMaisProxima != NULL) {
@@ -257,26 +260,30 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
 
         // ATUALIZAR ÁRVORE CONFORME O TIPO DO EVENTO
         if (eventoTipo == 'i') {
-            // INÍCIO: inserir segmento na árvore
+            // ✅ INÍCIO: inserir segmento na árvore
             double dist = getDistanciaVertice(eventoVertice);
             insereArvore(arvoreSegmentosAtivos, eventoAnteparo, xOrigem, yOrigem, eventoAngulo, dist);
+            
+            // ✅ NÃO adicionar vértice DEPOIS para evento 'i'
+            // (o próximo evento vai pegar a nova configuração da árvore)
+            
         } else if (eventoTipo == 'f') {
-            // FIM: remover segmento da árvore
+            // ✅ FIM: remover segmento da árvore
             int idAnteparo = getIDAnteparo(eventoAnteparo);
             removerArvore(arvoreSegmentosAtivos, idAnteparo);
-        }
-
-        // DEPOIS DO EVENTO: encontrar nova interseção mais próxima
-        double anguloDepois = eventoAngulo + epsilon;
-        
-        celMaisProxima = encontrarMinimoArvore(arvoreSegmentosAtivos);
-        
-        if(celMaisProxima != NULL) {
-            Anteparo antMaisProximo = getAnteparoCelula(celMaisProxima);
-            Vertice interseccaoDepois = calculaInterseccao(xOrigem, yOrigem, anguloDepois, antMaisProximo);
             
-            if(interseccaoDepois != NULL) {
-                adicionarVerticePoligono(p, interseccaoDepois);
+            // ✅ ADICIONAR vértice DEPOIS apenas para evento 'f'
+            // (porque o segmento mais próximo mudou)
+            double anguloDepois = eventoAngulo + epsilon;
+            celMaisProxima = encontrarMinimoArvore(arvoreSegmentosAtivos);
+            
+            if(celMaisProxima != NULL) {
+                Anteparo antMaisProximo = getAnteparoCelula(celMaisProxima);
+                Vertice interseccaoDepois = calculaInterseccao(xOrigem, yOrigem, anguloDepois, antMaisProximo);
+                
+                if(interseccaoDepois != NULL) {
+                    adicionarVerticePoligono(p, interseccaoDepois);
+                }
             }
         }
     }

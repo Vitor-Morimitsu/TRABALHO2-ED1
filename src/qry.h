@@ -33,7 +33,13 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
 /*
     Função responsável por processar o comando P descrito no trabalho.
 */
-void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos,double x, double y, char* cor,int limiteInsertionSort);
+void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos,double x, double y, char* cor,char tipoOrdenacao, int limiteInsertionSort);
+
+/*
+    Função responsável por processar o comando CLN descrito no trabalho.
+*/
+void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, double y, double dx, double dy,char tipoOrdenacao, int limiteInsertionSort);
+
 
 /*
     Função principal responsável por ler as intruções contidas no arquivo qry.

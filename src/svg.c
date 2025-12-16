@@ -33,6 +33,7 @@ void desenharRetanguloSVG(FILE* arqSvg, Retangulo r){
         getCorBRetangulo(r), 
         getCorPRetangulo(r));
 }
+
 void desenharLinhaSVG(FILE* arqSvg, Linha l){
     if(l == NULL || arqSvg == NULL){
         fprintf(arqSvg,"Erro: Forma ou arquivo NULL ao desenhar Linha Svg\n");
@@ -52,21 +53,35 @@ void desenharTextoSVG(FILE* arqSvg, Texto t, Estilo ts){
         fprintf(stderr, "Erro: Forma ou arquivo NULL ao desenhar Texto Svg\n");
         return;
     }
+    
+    char ancora = getATexto(t);
+    const char* textAnchor = "start";  //default
+    
+    if(ancora == 'm'){
+        textAnchor = "middle";
+    } else if(ancora == 'f'){
+        textAnchor = "end";
+    } else if(ancora == 'i'){
+        textAnchor = "start";
+    }
+    
     if (ts != NULL) {
-        fprintf(arqSvg, "<text id=\"%d\" x=\"%lf\" y=\"%lf\" style=\"font-family: '%s'; font-size: %spx; font-weight: %s; fill: %s;\"> %s </text>\n",
+        fprintf(arqSvg, "<text id=\"%d\" x=\"%lf\" y=\"%lf\" text-anchor=\"%s\" style=\"font-family: '%s'; font-size: %spx; font-weight: %s; fill: %s;\"> %s </text>\n",
         getIDTexto(t), 
         getCoordXTexto(t),  
-        getCoordYTexto(t), 
+        getCoordYTexto(t),
+        textAnchor,        
         getfFamily(ts),
         getfSize(ts),
         getfWeight(ts), 
         getCorPTexto(t),  
         getTxtoTexto(t));
     } else {
-        fprintf(arqSvg, "<text id=\"%d\" x=\"%lf\" y=\"%lf\" fill=\"%s\"> %s </text>\n",
+        fprintf(arqSvg, "<text id=\"%d\" x=\"%lf\" y=\"%lf\" text-anchor=\"%s\" fill=\"%s\"> %s </text>\n",
         getIDTexto(t), 
         getCoordXTexto(t),  
-        getCoordYTexto(t), 
+        getCoordYTexto(t),
+        textAnchor,         
         getCorPTexto(t),  
         getTxtoTexto(t));
     }

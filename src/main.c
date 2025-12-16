@@ -149,12 +149,8 @@ int main(int argc, char* argv[]) {
             return EXIT_FAILURE;
         }
 
-        char comandoOrdenacao[2];
-        comandoOrdenacao[0] = tipoOrdenacao;
-        comandoOrdenacao[1] = '\0';
-
         abrirSvg(arqSvgFinalFile);
-        lerQry(arqQry, arqTxt, arqSvgFinalFile, formas, comandoOrdenacao, limiteInsertionSort);
+        lerQry(arqQry, arqTxt, arqSvgFinalFile, formas, tipoOrdenacao, limiteInsertionSort);
         desenharTodasAsFormas(arqSvgFinalFile, formas);
         fecharSVG(arqSvgFinalFile);
 

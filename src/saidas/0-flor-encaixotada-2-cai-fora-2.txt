@@ -2,3 +2,5 @@ ID do retângulo: 12, tipo da figura original: 'r', id do anteparo da esquerda: 
 pontosExtremos dos anteparos do retangulo:(30.000000,30.000000),(30.000000,124.000000),(118.000000,30.000000),(118.000000,124.000000),(30.000000,30.000000),(118.000000,30.000000),(30.000000,124.000000),(118.000000,124.000000)
 Total de formas destruídas: 0
 
+Total de formas destruídas: 0
+
