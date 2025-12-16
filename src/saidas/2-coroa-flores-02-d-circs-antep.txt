@@ -5,36 +5,46 @@ id do círculo: 78, figura original: círculo, id do anteparo: 103, pontos extre
 id do círculo: 79, figura original: círculo, id do anteparo: 104, pontos extremos: (130.912802,144.450463) e (130.912802,204.450463)
 id do círculo: 80, figura original: círculo, id do anteparo: 105, pontos extremos: (191.973116,95.756488) e (191.973116,155.756488)
 id do círculo: 81, figura original: círculo, id do anteparo: 106, pontos extremos: (268.114082,113.135167) e (268.114082,173.135167)
-Características da forma destruída presente dentro do polígono de visibilidade: Tipo: r, ID: 35
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 64
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 17
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 26
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 32
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 56
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 86
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 83
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 94
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 91
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 68
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 84
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 63
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 62
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 89
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: r, ID: 55
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 59
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 24
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 93
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 31
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 85
-Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 82
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 19
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 74
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: r, ID: 25
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 34
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 33
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 28
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 58
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 88
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 22
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 18
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: r, ID: 65
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 92
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 20
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 61
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 16
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 95
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: r, ID: 15
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 87
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 23
 Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 90
-Anteparo destruído dentro do polígono de visibilidade: Tipo: l, ID: 100
-Anteparo destruído dentro do polígono de visibilidade: Tipo: l, ID: 101
-Anteparo destruído dentro do polígono de visibilidade: Tipo: l, ID: 102
-Anteparo destruído dentro do polígono de visibilidade: Tipo: l, ID: 103
-Anteparo destruído dentro do polígono de visibilidade: Tipo: l, ID: 104
-Anteparo destruído dentro do polígono de visibilidade: Tipo: l, ID: 105
-Anteparo destruído dentro do polígono de visibilidade: Tipo: l, ID: 106
-Total de formas destruídas: 31
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 29
+Total de formas destruídas: 41
 

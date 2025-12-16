@@ -1,0 +1,19 @@
+id do círculo: 75, figura original: círculo, id do anteparo: 100, pontos extremos: (272.000000,213.500000) e (332.000000,213.500000)
+id do círculo: 76, figura original: círculo, id do anteparo: 101, pontos extremos: (238.114082,283.864833) e (298.114082,283.864833)
+id do círculo: 77, figura original: círculo, id do anteparo: 102, pontos extremos: (161.973116,301.243512) e (221.973116,301.243512)
+id do círculo: 78, figura original: círculo, id do anteparo: 103, pontos extremos: (100.912802,252.549537) e (160.912802,252.549537)
+id do círculo: 79, figura original: círculo, id do anteparo: 104, pontos extremos: (100.912802,174.450463) e (160.912802,174.450463)
+id do círculo: 80, figura original: círculo, id do anteparo: 105, pontos extremos: (161.973116,125.756488) e (221.973116,125.756488)
+id do círculo: 81, figura original: círculo, id do anteparo: 106, pontos extremos: (238.114082,143.135167) e (298.114082,143.135167)
+Bomba de pintura lançada em (200.00, 200.00)
+Cor aplicada: #ff6600
+Número de formas atingidas: 9
+  - Linha ID 86 pintada
+  - Texto ID 94 pintado
+  - Texto ID 89 pintado
+  - Texto ID 93 pintado
+  - Linha ID 88 pintada
+  - Texto ID 92 pintado
+  - Texto ID 95 pintado
+  - Linha ID 87 pintada
+  - Texto ID 90 pintado

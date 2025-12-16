@@ -194,6 +194,32 @@ void gerarBoundingBox(Poligono p, double *minX, double *minY, double *maxX, doub
     *maxY = pol->maxY;
 }
 
+// Função auxiliar de Raycast (Força Bruta)
+static Vertice obterInterseccaoMaisProxima(Lista anteparos, double xOrigem, double yOrigem, double angulo) {
+    Vertice vMaisProximo = NULL;
+    double menorDistancia = DBL_MAX;
+
+    for(CelulaLista celula = getPrimeiraCelulaLista(anteparos); celula != NULL; celula = getProximaCelulaLista(celula)) {
+        Pacote pac = (Pacote)getConteudoCelula(celula);
+        if(getTipoPacote(pac) != 'l') continue;
+        
+        Anteparo ant = (Anteparo)getFormaPacote(pac);
+        
+        Vertice v = calculaInterseccao(xOrigem, yOrigem, angulo, ant);
+        if(v != NULL) {
+            double dist = getDistanciaVertice(v);
+            if(dist > 1e-5 && dist < menorDistancia) { // Ignorar origem
+                if(vMaisProximo != NULL) destroiVertice(vMaisProximo);
+                vMaisProximo = v;
+                menorDistancia = dist;
+            } else {
+                destroiVertice(v);
+            }
+        }
+    }
+    return vMaisProximo;
+}
+
 void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yOrigem, char* comando, int limiteInsertionSort){
     if(p == NULL || anteparos == NULL){
         printf("Erro em calcularVisibilidade: parametros invalidos\n");
@@ -206,6 +232,14 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         return;
     }
     
+    // CRIAR ÁRVORE DE SEGMENTOS ATIVOS (Mover para antes do loop de vertices)
+    Arvore arvoreSegmentosAtivos = criarArvore();
+    if(arvoreSegmentosAtivos == NULL){
+        printf("Erro em calcularVisibilidade: falha ao criar arvore de segmentos ativos\n");
+        liberaEstruturaLista(todosVertices);
+        return;
+    }
+
     // COLETAR VÉRTICES DOS ANTEPAROS
     for(CelulaLista celula = getPrimeiraCelulaLista(anteparos);celula != NULL;celula = getProximaCelulaLista(celula)) {
         Pacote pac = (Pacote)getConteudoCelula(celula);
@@ -241,12 +275,45 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         if (diff > M_PI) diff -= 2 * M_PI;
         if (diff < -M_PI) diff += 2 * M_PI;
 
+        double anguloInicio, anguloFim;
+
         if (diff < 0) {
             setTipoVertice(v1, 'i');
             setTipoVertice(v2, 'f');
+            anguloInicio = ang1;
+            anguloFim = ang2;
         } else {
             setTipoVertice(v2, 'i');
             setTipoVertice(v1, 'f');
+            anguloInicio = ang2;
+            anguloFim = ang1;
+        }
+
+        // VERIFICAR WRAP-AROUND (Segmento cruza o corte -PI/PI)
+        // Se o angulo de inicio for MAIOR que o fim, ele "dá a volta"
+        // Ex: Começa em 3.0 (aprox 170 deg) e termina em -3.0 (aprox -170 deg)
+        if (anguloInicio > anguloFim) {
+             // Debug WRAP
+             printf("WRAP DETECTADO: ID=%d AngIni=%.4f AngFim=%.4f\n", getIDAnteparo((Anteparo)linha), anguloInicio, anguloFim);
+             
+             // Este segmento está ativo no ângulo -PI (início da varredura)
+             // Precisamos inseri-lo na árvore AGORA.
+             
+             // Calcula distância no ângulo inicial da varredura (-PI)
+             // Estamos usando -pi + epsilon para garantir 
+             Vertice vInit = calculaInterseccao(xOrigem, yOrigem, -M_PI + 1e-4, (Anteparo)linha);
+             double distInit = (vInit != NULL) ? getDistanciaVertice(vInit) : 999999999.0;
+             
+             printf("  -> Distancia em -PI: %.4f\n", distInit);
+             
+             if(vInit) destroiVertice(vInit);
+             
+             if(distInit < 999999999.0) {
+                 insereArvore(arvoreSegmentosAtivos, (Anteparo)linha, xOrigem, yOrigem, -M_PI, distInit);
+                 printf("  -> INSERIDO NA ARVORE (INIT)\n");
+             } else {
+                 printf("  -> FALHA AO CALCULAR INTERSECAO INIT\n");
+             }
         }
 
         insereLista(todosVertices, v1);
@@ -284,14 +351,10 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         insertionSort(arrayOrdenado, tamanho);
     }
 
-    // CRIAR ÁRVORE DE SEGMENTOS ATIVOS
-    Arvore arvoreSegmentosAtivos = criarArvore();
-    if(arvoreSegmentosAtivos == NULL){
-        printf("Erro em calcularVisibilidade: falha ao criar arvore de segmentos ativos\n");
-        free(arrayOrdenado);
-        liberarListaDeVertices(todosVertices);
-        return;
-    }
+    // CRIAR ÁRVORE DE SEGMENTOS ATIVOS (Já criada anteriormente)
+    // Arvore arvoreSegmentosAtivos = criarArvore();
+    // if(arvoreSegmentosAtivos == NULL){ ... }
+
     
     
     // // INICIALIZAR ÁRVORE - inserir cada anteparo no seu próprio ângulo
@@ -322,6 +385,12 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
     //             anguloMid, distMid);
     //     }
     // }
+    // ADICIONAR VÉRTICE INICIAL DA VARREDURA (-PI)
+    // Usar Raycast para encontrar o anteparo inicial mais próximo
+    Vertice vInicial = obterInterseccaoMaisProxima(anteparos, xOrigem, yOrigem, -M_PI + 1e-4);
+    if(vInicial != NULL) {
+       adicionarVerticePoligono(p, vInicial);
+    }
 
     for (int i = 0; i < tamanho; i++) {
         Vertice eventoVertice = getVerticeDoArray(arrayOrdenado, i);
@@ -329,6 +398,15 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         Anteparo eventoAnteparo = getAnteparoVertice(eventoVertice);
         char eventoTipo = getTipoVertice(eventoVertice);
 
+        if (fabs(eventoAngulo) > 1.5 && fabs(eventoAngulo) < 3.2) { // Debug apenas na região problemática (aprox 90 a 180 graus e wrap)
+             // printf("EVENTO: Ang=%.4f Tipo=%c ID=%d\n", eventoAngulo, eventoTipo, getIDAnteparo(eventoAnteparo));
+        }
+
+
+
+// ... DENTRO DE calcularVisibilidade ...
+
+        // Lógica ANTES do evento
         double epsilon = calcularEpsilon(eventoAngulo);
         double anguloAntes = eventoAngulo - epsilon;
         
@@ -336,31 +414,41 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         
         if(celMaisProxima != NULL) {
             Anteparo antMaisProximo = getAnteparoCelula(celMaisProxima);
-            Linha linAnt = (Linha)antMaisProximo;
-            printf("  Evento %d (ângulo=%.4f tipo=%c): Anteparo mais próximo (%.2f,%.2f)-(%.2f,%.2f)\n",i, eventoAngulo, eventoTipo,getX1Linha(linAnt), getY1Linha(linAnt),getX2Linha(linAnt), getY2Linha(linAnt));
-            
             Vertice interseccaoAntes = calculaInterseccao(xOrigem, yOrigem, anguloAntes, antMaisProximo);
             if(interseccaoAntes != NULL) {
                 adicionarVerticePoligono(p, interseccaoAntes);
             }
         }
 
+        // Atualização da árvore
         if (eventoTipo == 'i') {
             double dist = getDistanciaVertice(eventoVertice);
             insereArvore(arvoreSegmentosAtivos, eventoAnteparo, xOrigem, yOrigem, eventoAngulo, dist);
             
+            // Lógica PÓS inserção
+            double anguloDepois = eventoAngulo + epsilon;
+            celMaisProxima = encontrarMinimoArvore(arvoreSegmentosAtivos);
+        
+            if(celMaisProxima != NULL) {
+                Anteparo antMaisProximo = getAnteparoCelula(celMaisProxima);
+                Vertice interseccaoDepois = calculaInterseccao(xOrigem, yOrigem, anguloDepois, antMaisProximo);
+                if(interseccaoDepois != NULL) {
+                    adicionarVerticePoligono(p, interseccaoDepois);
+                }
+            }
+
         } else if (eventoTipo == 'f') {
             int idAnteparo = getIDAnteparo(eventoAnteparo);
             double dist = getDistanciaVertice(eventoVertice);
             removerArvore(arvoreSegmentosAtivos, idAnteparo, xOrigem, yOrigem, eventoAngulo, dist);
             
+            // Lógica PÓS remoção
             double anguloDepois = eventoAngulo + epsilon;
             celMaisProxima = encontrarMinimoArvore(arvoreSegmentosAtivos);
-            
+        
             if(celMaisProxima != NULL) {
                 Anteparo antMaisProximo = getAnteparoCelula(celMaisProxima);
                 Vertice interseccaoDepois = calculaInterseccao(xOrigem, yOrigem, anguloDepois, antMaisProximo);
-                
                 if(interseccaoDepois != NULL) {
                     adicionarVerticePoligono(p, interseccaoDepois);
                 }
@@ -447,9 +535,6 @@ void adicionarVerticePoligono(Poligono p, Vertice v){
     double x = getXVertice(v);
     double y = getYVertice(v);
 
-    // ✅ DEBUG: Imprimir vértice sendo testado
-    printf("DEBUG ADD: Testando vértice (%.2f, %.2f)\n", x, y);
-
     // Verificar duplicata
     for(CelulaLista celula = getPrimeiraCelulaLista(pol->vertices);
         celula != NULL;
@@ -463,15 +548,14 @@ void adicionarVerticePoligono(Poligono p, Vertice v){
         
         // ✅ Tolerância de 2.0 pixels
         if(dist < 2.0){
-            printf("  → REJEITADO! Muito próximo de (%.2f, %.2f) - distância: %.4f\n", 
-                   xExist, yExist, dist);
+            // printf("  → REJEITADO! Muito próximo de (%.2f, %.2f) - distância: %.4f\n", xExist, yExist, dist);
             destroiVertice(v);
             return;
         }
     }
 
     insereLista(pol->vertices, (void*)v);
-    printf("  → ACEITO! Total de vértices: %d\n", getTamanhoLista(pol->vertices));
+    // printf("  → ACEITO! Total de vértices: %d\n", getTamanhoLista(pol->vertices));
     
     atualizarBoundingBox(pol, x, y);
 }

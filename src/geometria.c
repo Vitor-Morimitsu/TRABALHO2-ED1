@@ -1,7 +1,7 @@
 #include "geometria.h"
 
 #define pi 3.141592653589793
-#define epsilon 1e-9
+#define epsilon 0.00001
 
 double distanciaEntrePontos(double x1, double y1, double x2, double y2){
     double dx = x2 - x1;
@@ -63,7 +63,7 @@ bool pontoEmPoligono(double px, double py, Lista verticesPoligono){
     CelulaLista cel = getPrimeiraCelulaLista(verticesPoligono);
     if(cel == NULL){
         printf("Erro ao achar a celula atual em pontoEmPoligono em geometria.c\n");
-        return;
+        return false;
     }
 
     int numVertices = getTamanhoLista(verticesPoligono);
