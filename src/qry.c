@@ -97,7 +97,6 @@ void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, 
 
             Pacote transferPac = removeRetornaConteudo(formas, id);
             if(transferPac != NULL){
-                liberaCirculo((Circulo)formaPac);
                 liberarPacote(transferPac);
             }
             fprintf(arqTxt, "id do círculo: %d, figura original: círculo, id do anteparo: %d, pontos extremos: (%lf,%lf) e (%lf,%lf)\n", id, novoID,x1,y1,x2,y2);
@@ -208,10 +207,17 @@ void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, 
 
             Pacote removedPac = removeRetornaConteudo(formas, id);
             if(removedPac != NULL){
-                liberaTexto((Texto)formaPac);
-                setTipoPacote(removedPac, 'l');
-                setFormaPacote(removedPac, (Forma)posTxt);
-                insereLista(anteparos, removedPac);
+                liberarPacote(removedPac);
+
+                Pacote novoPacote = criaPacote();
+                if(novoPacote != NULL){
+                    setTipoPacote(novoPacote, 'l');
+                    setFormaPacote(novoPacote, (Forma)posTxt);
+                    insereLista(anteparos, novoPacote);
+                } else {
+                    liberaLinha(posTxt);
+                }
+
                 fprintf(arqTxt, "Id do texto: %d, figura original: Texto, id do anteparo: %d, pontos extremos do anteparo: (%lf,%lf),(%lf,%lf) e (%lf,%lf),(%lf,%lf)\n", id,id,x1,y1,x2,y2);
             } else {
                 liberaLinha(posTxt);
