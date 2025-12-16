@@ -75,6 +75,16 @@ celulaArvore encontrarMinimo(celulaArvore cel){
     return c;
 }
 
+celulaArvore encontrarMinimoArvore(Arvore arv){
+    if(arv == NULL) return NULL;
+    
+    stArvore* arvore = (stArvore*)arv;
+    
+    if(arvore->raiz == NULL) return NULL;
+    
+    return encontrarMinimo(arvore->raiz);
+}
+
 celulaArvore removerRecursivo(celulaArvore cel, int id){
     if(cel == NULL) return NULL;
 
@@ -130,4 +140,14 @@ void liberarArvore(Arvore arv){
     stArvore* arvore = (stArvore*)arv;
     liberarNosRecursivo(arvore->raiz);
     free(arvore);
+}
+
+Anteparo getAnteparoCelula(celulaArvore cel){
+    if(cel == NULL){
+        printf("Erro em getAnteparoCelula: célula NULL\n");
+        return NULL;
+    }
+    
+    stCelulaArvore* celula = (stCelulaArvore*)cel;
+    return celula->anteparo;
 }

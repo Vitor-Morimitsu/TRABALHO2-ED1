@@ -2,8 +2,11 @@
 #include "ordenacao.h"
 #include "linha.h"
 #include "geometria.h"
+#include "arvore.h"      
+#include "anteparo.h"    
 #include <math.h>
 #include <string.h>
+#include <float.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -121,6 +124,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         return;
     }
     
+    // COLETAR VÉRTICES DOS ANTEPAROS
     for(CelulaLista celula = getPrimeiraCelulaLista(anteparos);celula != NULL;celula = getProximaCelulaLista(celula)) {
         Pacote pac = (Pacote)getConteudoCelula(celula);
         char tipo = getTipoPacote(pac);
@@ -166,6 +170,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         insereLista(todosVertices, v1);
         insereLista(todosVertices, v2);
     }
+    printf("%d vertices coletados doa anteparos\n", getTamanhoLista(todosVertices));
 
     int tamanho = getTamanhoLista(todosVertices);
     if (tamanho == 0) {
@@ -173,6 +178,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         return;
     }
     
+    // ORDENAR VÉRTICES POR ÂNGULO
     No* arrayOrdenado = gerarArray(todosVertices, tamanho);
     if(arrayOrdenado == NULL){
         printf("Erro em calcularVisibilidade: falha ao gerar array de vertices\n");
@@ -194,16 +200,17 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         insertionSort(arrayOrdenado, tamanho);
     }
 
-    Lista segmentosAtivos = criarLista();
-    if(segmentosAtivos == NULL){
-        printf("Erro em calcularVisibilidade: falha ao criar lista de segmentos ativos\n");
+    // CRIAR ÁRVORE DE SEGMENTOS ATIVOS
+    Arvore arvoreSegmentosAtivos = criarArvore();
+    if(arvoreSegmentosAtivos == NULL){
+        printf("Erro em calcularVisibilidade: falha ao criar arvore de segmentos ativos\n");
         free(arrayOrdenado);
         liberarListaDeVertices(todosVertices);
         return;
     }
     
     if (tamanho > 0) {
-        double primeiroAngulo = getAnguloVertice(arrayOrdenado[0]);
+        double primeiroAngulo = getAnguloDoArray(arrayOrdenado, 0);
 
         for(CelulaLista celula = getPrimeiraCelulaLista(anteparos); 
             celula != NULL; 
@@ -215,32 +222,66 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
             Linha linhaAnteparo = (Linha)getFormaPacote(pac);
 
             if (segmentoIntersectaRaio(linhaAnteparo, xOrigem, yOrigem, primeiroAngulo)) {
-                insereLista(segmentosAtivos, linhaAnteparo);
+                Anteparo ant = (Anteparo)linhaAnteparo;
+                Vertice vIntersec = calculaInterseccao(xOrigem, yOrigem, primeiroAngulo, ant);
+                
+                if(vIntersec != NULL) {
+                    double dist = getDistanciaVertice(vIntersec);
+                    insereArvore(arvoreSegmentosAtivos, ant, xOrigem, yOrigem, primeiroAngulo, dist);
+                    destroiVertice(vIntersec);
+                }
             }
         }
     }
 
     for (int i = 0; i < tamanho; i++) {
-        
-        Vertice eventoVertice = getVerticeDoArray(arrayOrdenado,i);
-        double eventoAngulo = getAnguloDoArray(arrayOrdenado,i);
+        Vertice eventoVertice = getVerticeDoArray(arrayOrdenado, i);
+        double eventoAngulo = getAnguloDoArray(arrayOrdenado, i);
         Anteparo eventoAnteparo = getAnteparoVertice(eventoVertice);
+        char eventoTipo = getTipoVertice(eventoVertice);
 
         double epsilon = calcularEpsilon(eventoAngulo);
         double anguloAntes = eventoAngulo - epsilon;
         
-        celulaArvore celMaisProxima = encontrarMinino(arvoreSegmentosAtivos);
-
-        char eventoTipo = getTipoVertice(eventoVertice);
-        if (eventoTipo == 'i') {
-            insereLista(segmentosAtivos, eventoAnteparo);
-        } else if (eventoTipo == 'f') {
-            removeDaListaPorConteudo(segmentosAtivos, eventoAnteparo);
+        // ANTES DO EVENTO: encontrar interseção mais próxima
+        celulaArvore celMaisProxima = encontrarMinimoArvore(arvoreSegmentosAtivos);
+        
+        if(celMaisProxima != NULL) {
+            Anteparo antMaisProximo = getAnteparoCelula(celMaisProxima);
+            Vertice interseccaoAntes = calculaInterseccao(xOrigem, yOrigem, anguloAntes, antMaisProximo);
+            
+            if(interseccaoAntes != NULL) {
+                adicionarVerticePoligono(p, interseccaoAntes);
+            }
         }
 
-       
+        // ATUALIZAR ÁRVORE CONFORME O TIPO DO EVENTO
+        if (eventoTipo == 'i') {
+            // INÍCIO: inserir segmento na árvore
+            double dist = getDistanciaVertice(eventoVertice);
+            insereArvore(arvoreSegmentosAtivos, eventoAnteparo, xOrigem, yOrigem, eventoAngulo, dist);
+        } else if (eventoTipo == 'f') {
+            // FIM: remover segmento da árvore
+            int idAnteparo = getIDAnteparo(eventoAnteparo);
+            removerArvore(arvoreSegmentosAtivos, idAnteparo);
+        }
+
+        // DEPOIS DO EVENTO: encontrar nova interseção mais próxima
+        double anguloDepois = eventoAngulo + epsilon;
+        
+        celMaisProxima = encontrarMinimoArvore(arvoreSegmentosAtivos);
+        
+        if(celMaisProxima != NULL) {
+            Anteparo antMaisProximo = getAnteparoCelula(celMaisProxima);
+            Vertice interseccaoDepois = calculaInterseccao(xOrigem, yOrigem, anguloDepois, antMaisProximo);
+            
+            if(interseccaoDepois != NULL) {
+                adicionarVerticePoligono(p, interseccaoDepois);
+            }
+        }
     }
 
+    // FECHAR POLÍGONO (adicionar cópia do primeiro vértice no final)
     stPoligono* pol = (stPoligono*)p;
     if(getTamanhoLista(pol->vertices) > 0){
         Vertice primeiro = (Vertice)getConteudoCelula(getPrimeiraCelulaLista(pol->vertices));
@@ -250,9 +291,10 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         }
     }
 
+    // LIMPEZA
+    liberarArvore(arvoreSegmentosAtivos);
     free(arrayOrdenado);
     liberarListaDeVertices(todosVertices);
-    liberaEstruturaLista(segmentosAtivos);
 }
 
 bool pontoNoPoligono(Poligono p, double x, double y){
@@ -359,8 +401,6 @@ Anteparo getAnteparoPoligono(Poligono p, int indice) {
     if (p == NULL) return NULL;
     stPoligono* pol = (stPoligono*)p;
     
-    // Como é uma lista, precisamos percorrer até o índice
-    // (Se fosse um vetor seria acesso direto)
     int count = 0;
     for (CelulaLista c = getPrimeiraCelulaLista(pol->vertices); c != NULL; c = getProximaCelulaLista(c)) {
         if (count == indice) {

@@ -28,16 +28,16 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
 /*
     Função responsável por processar o comando D descrito no trabalho.
 */
-void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double xBomba, double yBomba);
+void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double xBomba, double yBomba,char tipoOrdenacao,int limiteInsertionSort);
 
 /*
     Função responsável por processar o comando P descrito no trabalho.
 */
-void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos,double x, double y, char* cor);
+void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos,double x, double y, char* cor,int limiteInsertionSort);
 
 /*
     Função principal responsável por ler as intruções contidas no arquivo qry.
 */
-void lerQry(FILE* qry,FILE* txt, FILE* svg, Lista formas);
+void lerQry(FILE* qry,FILE* txt, FILE* svg, Lista formas, char tipoOrdenacao,int limiteInsertionSort);
 
 #endif

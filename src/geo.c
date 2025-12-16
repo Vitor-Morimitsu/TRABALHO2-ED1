@@ -100,13 +100,6 @@ void lerGeo(FILE* geo, Lista list){
             char size[50] = "";
             
             int lidos_ts = sscanf(&linha[strlen(comando)], " %49s %49s %49s", font, weight, size);
-
-            if(lidos_ts >= 1){ // Allow partial matches for ts for now
-                 fprintf(stderr, "INFO: Comando 'ts' lido. Font: %s, Weight: %s, Size: %s\n", font, weight, size);
-                 // Note: Style is not applied globally yet.
-            } else {
-                 fprintf(stderr, "Aviso: comando 'ts' malformado na linha: %s\n", linha);
-            }
         } else {
             fprintf(stderr, "Aviso: Comando desconhecido '%s' na linha: %s", comando, linha);
         }

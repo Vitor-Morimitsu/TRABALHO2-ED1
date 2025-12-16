@@ -128,7 +128,6 @@ Pacote procuraPacoteLista(Lista l, int id){
 }
 
 void removeLista(Lista l, int id){
-    fprintf(stderr, "DEBUG: removeLista: Attempting to remove ID %d\n", id);
     if(l == NULL){
         printf("Erro em removeLista\n");
         return;
@@ -160,13 +159,12 @@ void removeLista(Lista l, int id){
             lista->tamanho--;
             liberarPacote(cont);
             free(temp);
-            fprintf(stderr, "DEBUG: removeLista: Successfully removed and freed ID %d\n", id);
             return;
         }
         
         temp = temp->proximo;
     }
-    fprintf(stderr, "DEBUG: removeLista: ID %d not found for removal.\n", id);
+    printf("DEBUG: removeLista: ID %d not found for removal.\n", id);
     //não encontrou o pacote com o id especificado
 }
 

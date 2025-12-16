@@ -1,3 +1,0 @@
-Explosão na posição (200.00, 200.00)
-Total de formas destruídas: 0
-

@@ -39,7 +39,7 @@ void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, 
     }
 
     if(letra != 'h' && letra != 'v'){
-        printf("Erro em comandoA: letra de comando invalida\n");
+        printf("Erro em comandoA: letra de comando invalida para ciração de círculo\n");
         return;
     }
 
@@ -60,11 +60,20 @@ void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, 
             double raio = getRaioCirculo((Circulo)formaPac);
             char* cor = getCorPCirculo((Circulo)formaPac);
 
+            double x1,y1,x2,y2;
             Linha lin = NULL;
             if(letra == 'h'){
                 lin = criarLinha(id, x - raio, y, x + raio, y, cor);
+                x1 = x-raio;
+                y1 = y;
+                x2 = x+raio;
+                y2 = y;
             } else {
                 lin = criarLinha(id, x, y - raio, x, y + raio, cor);
+                x1 =x;
+                y1 = y-raio;
+                x2 = x;
+                y2 = y+raio;
             }
             if(lin == NULL){
                 printf("Erro em comandoA: falha ao criar linha\n");
@@ -77,10 +86,10 @@ void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, 
                 setTipoPacote(transferPac, 'l');
                 setFormaPacote(transferPac, (Forma)lin);
                 insereLista(anteparos, transferPac);
-                fprintf(arqTxt, "id do círculo: %d, figura original: círculo\n", id);
             } else {
                 liberaLinha(lin);
             }
+            fprintf(arqTxt, "id do círculo: %d, figura original: círculo, id do anteparo: %d, pontos extremos: (%lf,%lf) e (%lf,%lf)\n", id, id,x1,y1,x2,y2);
             
         } else if(tipo == 'r'){
             double x = getCoordXRetangulo((Retangulo)formaPac);
@@ -142,12 +151,12 @@ void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, 
             setFormaPacote(ba, (Forma)baixo);
             insereLista(anteparos, ba);
 
-            fprintf(arqTxt, "ID do retangulo: %d, id do segmento da esquerda: %d, id do segmento da direita: %d, id do segmento de cima: %d, id do segmento de baixo: %d, figura original: Retângulo\n",
-                id, maior + 1, maior + 2, maior + 3, maior + 4);
+            fprintf(arqTxt, "ID do retângulo: %d, tipo da figura original: 'r', id do anteparo da esquerda: %d, id do anteparo da direita: %d, id do anteparo de cima: %d, id do anteparo de baixo: %d, \n",id, maior + 1, maior + 2, maior + 3, maior + 4);
+            fprintf(arqTxt, "pontosExtremos dos anteparos do retangulo:(%lf,%lf),(%lf,%lf),(%lf,%lf),(%lf,%lf),(%lf,%lf),(%lf,%lf),(%lf,%lf),(%lf,%lf)\n",getX1Linha(esquerda),getY1Linha(esquerda),getX2Linha(esquerda),getY2Linha(esquerda),
+                    getX1Linha(direita),getY1Linha(direita),getX2Linha(direita), getY2Linha(direita), getX1Linha(cima),getY1Linha(cima),getX2Linha(cima),getY2Linha(cima),getX1Linha(baixo),getY1Linha(baixo),getX2Linha(baixo),getY2Linha(baixo));
 
             Pacote pacRetangulo = removeRetornaConteudo(formas,id);
             if(pacRetangulo!=NULL){
-                // liberaRetangulo((Retangulo)formaPac);
                 liberarPacote(pacRetangulo);
             }
             
@@ -192,40 +201,50 @@ void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, 
                 setTipoPacote(removedPac, 'l');
                 setFormaPacote(removedPac, (Forma)posTxt);
                 insereLista(anteparos, removedPac);
-                fprintf(arqTxt, "Id do texto: %d, figura original: Texto\n", id);
+                fprintf(arqTxt, "Id do texto: %d, figura original: Texto, id do anteparo: %d, pontos extremos do anteparo: (%lf,%lf),(%lf,%lf) e (%lf,%lf),(%lf,%lf)\n", id,id,x1,y1,x2,y2);
             } else {
                 liberaLinha(posTxt);
+            }
+        }else if(tipo == 'l'){
+            double x1 = getX1Linha((Linha)formaPac);
+            double y1 = getY1Linha((Linha)formaPac);
+            double x2 = getX2Linha((Linha)formaPac);
+            double y2 = getY2Linha((Linha)formaPac);
+            char* cor = getCorLinha((Linha)formaPac);
+            fprintf(arqTxt, "ida da linha: %d, ");
+            Pacote transferPac = removeRetornaConteudo(formas,id);
+            if(transferPac != NULL){
+                liberaLinha((Linha)formaPac);
+                setTipoPacote(transferPac, 'l');
+                setFormaPacote(transferPac,(Forma)formaPac);
+                insereLista(anteparos, transferPac);
             }
         }
     }
 }
 
-void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double xBomba, double yBomba){
+void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double xBomba, double yBomba,char tipoOrdenacao, int limiteInsertionSort){
     if(arqTxt == NULL || svgSfx == NULL || anteparos == NULL || formas == NULL){
         printf("Erro em comandoD: parametros invalidos\n");
         return;
     }
     
-    fprintf(stderr, "\n=== DEBUG comandoD: Início ===\n");
-    fprintf(stderr, "Bomba em (%.2f, %.2f)\n", xBomba, yBomba);
+    printf("Bomba em (%.2f, %.2f)\n", xBomba, yBomba);
     
     Poligono poligono = criarPoligono();
     if(poligono == NULL){
         printf("Erro em comandoD: falha ao criar poligono\n");
         return;
     }
-    
-    calcularVisibilidade(poligono, anteparos, xBomba, yBomba, "");
+    char comandoStr[2] = {tipoOrdenacao, '\0'};
+    calcularVisibilidade(poligono, anteparos, xBomba, yBomba, comandoStr,limiteInsertionSort);
     
     int numVertices = getNumeroVertices(poligono);
-    fprintf(stderr, "Polígono criado com %d vértices\n", numVertices);
+    printf("Polígono criado com %d vértices\n", numVertices);
     
-    desenharPoligonoSVG(svgSfx, poligono, "#FF8A80", "#000000");
-    
-    fprintf(arqTxt, "Explosão na posição (%.2f, %.2f)\n", xBomba, yBomba);
+    desenharPoligonoSVG(svgSfx, poligono, "#6e0d04ff", "#e15b35ff");
     
     int totalFormas = getTamanhoLista(formas);
-    fprintf(stderr, "Total de formas na lista: %d\n", totalFormas);
     
     int formasDestruidas = 0;
     int formasVerificadas = 0;
@@ -244,33 +263,25 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
         char tipo = getTipoPacote(pac);
         int id = getIDPacote(pac);
         formasVerificadas++;
-        
-        fprintf(stderr, "Verificando forma ID %d (Tipo: %c)... ", id, tipo);
-        
+                
         bool dentro = formaDentroPoligono(pac, poligono);
-        fprintf(stderr, "Dentro? %s\n", dentro ? "SIM" : "NÃO");
         
         if(dentro){
-            fprintf(arqTxt, " Características da forma presente dentro do polígono de visibilidade: Tipo: %c, ID: %d\n", tipo, id);
+            fprintf(arqTxt, " Características da forma destruída presente dentro do polígono de visibilidade: Tipo: %c, ID: %d\n", tipo, id);
             formasDestruidas++;
-            
-            fprintf(stderr, "  -> Tentando remover ID %d...\n", id);
             removeLista(formas, id);
-            fprintf(stderr, "  -> Remoção concluída\n");
         }
         
         celula = proximaCelula;
     }
     
-    fprintf(stderr, "Formas verificadas: %d\n", formasVerificadas);
-    fprintf(stderr, "Formas destruídas: %d\n", formasDestruidas);
-    fprintf(stderr, "=== DEBUG comandoD: Fim ===\n\n");
+    printf("Formas destruídas: %d\n", formasDestruidas);
     
     fprintf(arqTxt, "Total de formas destruídas: %d\n\n", formasDestruidas);
     liberarPoligono(poligono);
 }
 
-void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, double y, char* cor){
+void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, double y, char* cor,int limiteInsertionSort){
     if(txt == NULL || svg == NULL || formas == NULL || anteparos == NULL || cor == NULL){
         printf("Erro em comandoP: parametros invalidos\n");
         return;
@@ -282,7 +293,7 @@ void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, dou
         return;
     }
     
-    calcularVisibilidade(poligono, anteparos, x, y, "");
+    calcularVisibilidade(poligono, anteparos, x, y, "",limiteInsertionSort);
     
     Lista formasAtingidas = obterFormasAtingidas(formas, poligono);
     
@@ -332,7 +343,7 @@ void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, dou
     liberarPoligono(poligono);
 }
 
-void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, double y, double dx, double dy){
+void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, double y, double dx, double dy, int limiteInsertionSort){
     if(txt == NULL || svg == NULL || formas == NULL || anteparos == NULL){
         printf("Erro em comandoCln: parametros invalidos\n");
         return;
@@ -344,7 +355,7 @@ void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, d
         return;
     }
     
-    calcularVisibilidade(poligono, anteparos, x, y, "");
+    calcularVisibilidade(poligono, anteparos, x, y, "",limiteInsertionSort);
     desenharPoligonoSVG(svg, poligono, "#B388FF", "#000000");
     
     fprintf(txt, "Clonagem na posição (%.2f, %.2f)\n", x, y);
@@ -470,7 +481,7 @@ void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, d
     liberarPoligono(poligono);
 }
 
-void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas){
+void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas, char tipoOrdenacao, int limiteInsertionSort){
     if(qry == NULL || txt == NULL || svg == NULL || formas == NULL){
         printf("Erro em lerQry: parametros invalidos\n");
         return;
@@ -508,9 +519,9 @@ void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas){
                         printf("Erro ao abrir arquivo svgSfx em comando d\n");
                         return;
                     }
-                    comandoD(txt, svgSfx, anteparos, formas, x, y);
+                    comandoD(txt, svgSfx, anteparos, formas, x, y,tipoOrdenacao,limiteInsertionSort);
                 }
-                comandoD(txt, svg,anteparos,formas,x,y);
+                comandoD(txt, svg,anteparos,formas,x,y,tipoOrdenacao,limiteInsertionSort);
             }
         } else if(strcmp(comando, "p") == 0){
             double x, y;
@@ -523,9 +534,9 @@ void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas){
                         printf("Erro ao abrir arquivo svgSfx em comando p\n");
                         return;
                     }
-                    comandoP(txt, svgSfx, formas, anteparos, x, y, cor);
+                    comandoP(txt, svgSfx, formas, anteparos, x, y, cor,limiteInsertionSort);
                 }
-                comandoP(txt,svg,formas,anteparos,x,y,cor);
+                comandoP(txt,svg,formas,anteparos,x,y,cor,limiteInsertionSort);
             }
         } else if(strcmp(comando, "cln") == 0){
             double x, y, dx, dy;
@@ -537,9 +548,9 @@ void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas){
                         printf("Erro ao abrir arquivo svgSfx em comando cln\n");
                         return;
                     }
-                    comandoCln(txt, svgSfx, formas, anteparos, x, y, dx, dy);
+                    comandoCln(txt, svgSfx, formas, anteparos, x, y, dx, dy,limiteInsertionSort);
                 }
-                comandoCln(txt,svg,formas,anteparos,x,y,dx,dy);
+                comandoCln(txt,svg,formas,anteparos,x,y,dx,dy,limiteInsertionSort);
             }
         }
     }

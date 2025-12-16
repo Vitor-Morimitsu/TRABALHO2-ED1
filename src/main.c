@@ -10,7 +10,6 @@
 #define FILE_NAME_LEN 256
 #define MAX_FULL_PATH 4096
 
-// Função para remover a extensão de um nome de arquivo
 void removeExtension(char* dest, const char* src) {
     strcpy(dest, src);
     char* dot = strrchr(dest, '.');
@@ -24,9 +23,8 @@ int main(int argc, char* argv[]) {
     char dirSaida[PATH_LEN] = "";
     char nomeArquivoGeo[FILE_NAME_LEN] = "";
     char nomeArquivoQry[FILE_NAME_LEN] = "";
-    char comandoOrdenação[5];
-    char comandoDefault = 'q';
-    int tamanhoParaInsertion = 10;
+    char tipoOrdenacao = 'q';
+    int limiteInsertionSort = 10;
     int hasGeo = 0, hasQry = 0, hasSaida = 0;
 
     for (int i = 1; i < argc; i++) {
@@ -41,11 +39,23 @@ int main(int argc, char* argv[]) {
         } else if (strcmp(argv[i], "-q") == 0 && i + 1 < argc) {
             strcpy(nomeArquivoQry, argv[++i]);
             hasQry = 1;
-        } else if (strcmp(argv[i], "-to ") == 0){
-            strcpy(comandoOrdenação, argv[i++]);
-        }else if(strcmp(argv[i], "-i") == 0){
-            scanf("-i %d", &tamanhoParaInsertion);
-        }else{
+        } else if (strcmp(argv[i], "-to") == 0 && i + 1 < argc) {  
+            i++;  
+            if (strcmp(argv[i], "q") == 0) {
+                tipoOrdenacao = 'q';
+            } else if (strcmp(argv[i], "m") == 0) {
+                tipoOrdenacao = 'm';
+            } else {
+                fprintf(stderr, "Aviso: tipo de ordenacao invalido '%s', usando 'q'\n", argv[i]);
+                tipoOrdenacao = 'q';
+            }
+        } else if (strcmp(argv[i], "-i") == 0 && i + 1 < argc) { 
+            limiteInsertionSort = atoi(argv[++i]);  
+            if (limiteInsertionSort <= 0) {
+                fprintf(stderr, "Aviso: limite insertion sort invalido, usando 10\n");
+                limiteInsertionSort = 10;
+            }
+        } else {
             fprintf(stderr, "Parametro desconhecido ou invalido: %s\n", argv[i]);
             return EXIT_FAILURE;
         }
@@ -75,14 +85,15 @@ int main(int argc, char* argv[]) {
         removeExtension(baseQry, onlyQryName);
     }
 
-    char arquivoSaidaSvg[MAX_FULL_PATH];
+    char arquivoSvgGeo[MAX_FULL_PATH];
+    char arquivoSvgFinal[MAX_FULL_PATH];
     char arquivoSaidaTxt[MAX_FULL_PATH];
 
+    snprintf(arquivoSvgGeo, sizeof(arquivoSvgGeo), "%s/%s.svg", dirSaida, baseGeo);
+
     if (hasQry) {
-        snprintf(arquivoSaidaSvg, sizeof(arquivoSaidaSvg), "%s/%s-%s.svg", dirSaida, baseGeo, baseQry);
+        snprintf(arquivoSvgFinal, sizeof(arquivoSvgFinal), "%s/%s-%s.svg", dirSaida, baseGeo, baseQry);
         snprintf(arquivoSaidaTxt, sizeof(arquivoSaidaTxt), "%s/%s-%s.txt", dirSaida, baseGeo, baseQry);
-    } else {
-        snprintf(arquivoSaidaSvg, sizeof(arquivoSaidaSvg), "%s/%s.svg", dirSaida, baseGeo);
     }
 
     FILE *arqGeo = fopen(fullPathGeo, "r");
@@ -91,51 +102,65 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    FILE *arqSvg = fopen(arquivoSaidaSvg, "w");
-    if (arqSvg == NULL) {
-        fprintf(stderr, "ERRO: Não foi possível criar o arquivo SVG de saída: %s\n", arquivoSaidaSvg);
+    Lista formas = criarLista();
+    if (formas == NULL) {
+        fprintf(stderr, "ERRO: Não foi possível criar lista de formas\n");
         fclose(arqGeo);
         return EXIT_FAILURE;
     }
+    
+    lerGeo(arqGeo, formas);
+    fclose(arqGeo);
 
-    FILE *arqQry = NULL;
-    FILE *arqTxt = NULL;
+    FILE *arqSvgGeo = fopen(arquivoSvgGeo, "w");
+    if (arqSvgGeo == NULL) {
+        fprintf(stderr, "ERRO: Não foi possível criar o arquivo SVG: %s\n", arquivoSvgGeo);
+        liberaLista(formas);
+        return EXIT_FAILURE;
+    }
+
+    abrirSvg(arqSvgGeo);
+    desenharTodasAsFormas(arqSvgGeo, formas);
+    fecharSVG(arqSvgGeo);
+    fclose(arqSvgGeo);
+
     if (hasQry) {
-        arqQry = fopen(fullPathQry, "r");
+        FILE *arqQry = fopen(fullPathQry, "r");
         if (arqQry == NULL) {
             fprintf(stderr, "ERRO: Não foi possível abrir o arquivo .qry: %s\n", fullPathQry);
-            fclose(arqGeo);
-            fclose(arqSvg);
+            liberaLista(formas);
             return EXIT_FAILURE;
         }
-        arqTxt = fopen(arquivoSaidaTxt, "w");
+
+        FILE *arqTxt = fopen(arquivoSaidaTxt, "w");
         if (arqTxt == NULL) {
-            fprintf(stderr, "ERRO: Não foi possível criar o arquivo .txt de saída: %s\n", arquivoSaidaTxt);
-            fclose(arqGeo);
-            fclose(arqSvg);
+            fprintf(stderr, "ERRO: Não foi possível criar o arquivo .txt: %s\n", arquivoSaidaTxt);
             fclose(arqQry);
+            liberaLista(formas);
             return EXIT_FAILURE;
         }
-    }
 
-    Lista formas = criarLista();
-    
-    abrirSvg(arqSvg);
+        FILE *arqSvgFinalFile = fopen(arquivoSvgFinal, "w");
+        if (arqSvgFinalFile == NULL) {
+            fprintf(stderr, "ERRO: Não foi possível criar o arquivo SVG final: %s\n", arquivoSvgFinal);
+            fclose(arqQry);
+            fclose(arqTxt);
+            liberaLista(formas);
+            return EXIT_FAILURE;
+        }
 
-    lerGeo(arqGeo, formas);
+        char comandoOrdenacao[2];
+        comandoOrdenacao[0] = tipoOrdenacao;
+        comandoOrdenacao[1] = '\0';
 
-    if (hasQry && arqQry != NULL) {
-        lerQry(arqQry, arqTxt, arqSvg, formas);
-    }
+        abrirSvg(arqSvgFinalFile);
+        lerQry(arqQry, arqTxt, arqSvgFinalFile, formas, comandoOrdenacao, limiteInsertionSort);
+        desenharTodasAsFormas(arqSvgFinalFile, formas);
+        fecharSVG(arqSvgFinalFile);
 
-    desenharTodasAsFormas(arqSvg, formas);
-    fecharSVG(arqSvg);
-
-    fclose(arqGeo);
-    fclose(arqSvg);
-    if (hasQry) {
         fclose(arqQry);
         fclose(arqTxt);
+        fclose(arqSvgFinalFile);
     }
 
     liberaLista(formas);

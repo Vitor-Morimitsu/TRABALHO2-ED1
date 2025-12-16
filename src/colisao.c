@@ -6,6 +6,7 @@
 #include "poligono.h"
 #include <stdbool.h>
 #include <math.h>
+#include <string.h> 
 
 bool circuloDentroPoligono(Circulo c, Poligono p) {
     if (c == NULL || p == NULL) {
@@ -16,28 +17,21 @@ bool circuloDentroPoligono(Circulo c, Poligono p) {
     double cy = getCoordYCirculo(c);
     double raio = getRaioCirculo(c);
     
-    // 1. Verifica se o centro do círculo está dentro do polígono
     if (pontoNoPoligono(p, cx, cy)) {
         return true;
     }
 
-    // 2. Verifica se algum vértice do polígono está dentro do círculo
     int numVertices = getNumeroVertices(p);
     for (int i = 0; i < numVertices; i++) {
         double vx, vy;
         getVerticePoligono(p, i, &vx, &vy);
         
-        // Calcula a distância do vértice ao centro do círculo
         double dist = sqrt(pow(vx - cx, 2) + pow(vy - cy, 2));
         
         if (dist < raio) {
-            return true; // Vértice do polígono está dentro do círculo
+            return true; 
         }
     }
-
-    // Nota: Esta verificação ainda não cobre o caso de uma aresta do polígono cruzar o círculo sem que nenhum vértice esteja dentro.
-    // Uma solução completa exigiria um teste de interseção círculo-segmento de reta para cada aresta do polígono.
-    // No entanto, as duas verificações acima já são uma melhoria substancial.
     
     return false;
 }
@@ -52,17 +46,11 @@ bool retanguloDentroPoligono(Retangulo r, Poligono p) {
     double w = getWRetangulo(r);
     double h = getHRetangulo(r);
     
-    // Verifica os 4 cantos do retângulo
-    if (pontoNoPoligono(p, x, y)) return true;          // Canto superior esquerdo
-    if (pontoNoPoligono(p, x + w, y)) return true;      // Canto superior direito
-    if (pontoNoPoligono(p, x, y + h)) return true;      // Canto inferior esquerdo
-    if (pontoNoPoligono(p, x + w, y + h)) return true;  // Canto inferior direito
+    if (pontoNoPoligono(p, x, y)) return true;         
+    if (pontoNoPoligono(p, x + w, y)) return true;      
+    if (pontoNoPoligono(p, x, y + h)) return true;      
+    if (pontoNoPoligono(p, x + w, y + h)) return true; 
     
-    // Opcional: verificar também o centro para cobrir casos onde o polígono está inteiramente dentro do retângulo
-    double centroX = x + w / 2.0;
-    double centroY = y + h / 2.0;
-    if (pontoNoPoligono(p, centroX, centroY)) return true;
-
     return false;
 }
 
@@ -76,11 +64,14 @@ bool linhaDentroPoligono(Linha l, Poligono p) {
     double x2 = getX2Linha(l);
     double y2 = getY2Linha(l);
     
-    // Verifica o ponto médio da linha
+    if (pontoNoPoligono(p, x1, y1)) return true;
+    if (pontoNoPoligono(p, x2, y2)) return true;
+    
     double meioX = (x1 + x2) / 2.0;
     double meioY = (y1 + y2) / 2.0;
+    if (pontoNoPoligono(p, meioX, meioY)) return true;
     
-    return pontoNoPoligono(p, meioX, meioY);
+    return false;
 }
 
 bool textoDentroPoligono(Texto t, Poligono p) {
@@ -91,7 +82,28 @@ bool textoDentroPoligono(Texto t, Poligono p) {
     double x = getCoordXTexto(t);
     double y = getCoordYTexto(t);
     
-    return pontoNoPoligono(p, x, y);
+    char ancora = getATexto(t);
+    const char* texto = getTxtoTexto(t);
+    int len = (texto != NULL) ? strlen(texto) : 0;
+    
+    double x1, x2;
+    if(ancora == 'i') {
+        x1 = x;
+        x2 = x + 10.0 * len;
+    } else if(ancora == 'f') {
+        x1 = x - 10.0 * len;
+        x2 = x;
+    } else { // 'm'
+        x1 = x - 10.0 * len / 2.0;
+        x2 = x + 10.0 * len / 2.0;
+    }
+    
+    //testar extremidades do texto
+    if (pontoNoPoligono(p, x1, y)) return true;
+    if (pontoNoPoligono(p, x2, y)) return true;
+    if (pontoNoPoligono(p, x, y)) return true;  
+    
+    return false;
 }
 
 bool formaDentroPoligono(Pacote pac, Poligono p) {
@@ -116,32 +128,6 @@ bool formaDentroPoligono(Pacote pac, Poligono p) {
     }
 }
 
-// bool atingidaPelaExplosao(Lista formas, Poligono p, double /*xBomba*/, double /*yBomba*/) {
-//     if (formas == NULL || p == NULL) {
-//         printf("Erro em atingidaPelaExplosao: parametros invalidos\n");
-//         return false;
-//     }
-    
-//     bool algumFormaAtingida = false;
-    
-//     // Itera por todas as formas
-//     for (CelulaLista celula = getPrimeiraCelulaLista(formas); celula != NULL; celula = getProximaCelulaLista(celula)) {
-//         Pacote pac = (Pacote)getConteudoCelula(celula);
-        
-//         if (formaDentroPoligono(pac, p)) {
-//             algumFormaAtingida = true;
-            
-//             // Opcional: imprimir informações sobre a forma atingida
-//             char tipo = getTipoPacote(pac);
-//             int id = getIDPacote(pac);
-            
-//             printf("Forma atingida - Tipo: %c, ID: %d\n", tipo, id);
-//         }
-//     }
-    
-//     return algumFormaAtingida;
-// }
-
 Lista obterFormasAtingidas(Lista formas, Poligono p) {
     if (formas == NULL || p == NULL) {
         printf("Erro em obterFormasAtingidas: parametros invalidos\n");
@@ -149,16 +135,41 @@ Lista obterFormasAtingidas(Lista formas, Poligono p) {
     }
     
     Lista formasAtingidas = criarLista();
+    if(formasAtingidas == NULL) {
+        printf("Erro ao criar lista de formas atingidas\n");
+        return NULL;
+    }
     
-    // Itera por todas as formas
-    for (CelulaLista celula = getPrimeiraCelulaLista(formas); celula != NULL; celula = getProximaCelulaLista(celula)) {
+    for (CelulaLista celula = getPrimeiraCelulaLista(formas); 
+         celula != NULL; 
+         celula = getProximaCelulaLista(celula)) {
+        
         Pacote pac = (Pacote)getConteudoCelula(celula);
         
         if (formaDentroPoligono(pac, p)) {
-            // Adiciona a forma à lista de atingidas (apenas referência, não cópia)
             insereLista(formasAtingidas, pac);
         }
     }
     
     return formasAtingidas;
+}
+
+
+bool atingidaPelaExplosao(Lista formas, Poligono p, double xBomba, double yBomba) {
+    if (formas == NULL || p == NULL) {
+        return false;
+    }
+    
+    for (CelulaLista celula = getPrimeiraCelulaLista(formas); 
+         celula != NULL; 
+         celula = getProximaCelulaLista(celula)) {
+        
+        Pacote pac = (Pacote)getConteudoCelula(celula);
+        
+        if (formaDentroPoligono(pac, p)) {
+            return true;  
+        }
+    }
+    
+    return false; 
 }

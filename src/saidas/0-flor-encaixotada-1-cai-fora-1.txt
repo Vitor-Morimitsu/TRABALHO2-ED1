@@ -1,7 +1,7 @@
-ID do retangulo: 12, id do segmento da esquerda: 13, id do segmento da direita: 14, id do segmento de cima: 15, id do segmento de baixo: 16, figura original: Retângulo
-Explosão na posição (138.00, 144.00)
- Características da forma presente dentro do polígono de visibilidade: Tipo: r, ID: 5
- Características da forma presente dentro do polígono de visibilidade: Tipo: l, ID: 8
- Características da forma presente dentro do polígono de visibilidade: Tipo: c, ID: 11
+ID do retângulo: 12, tipo da figura original: 'r', id do anteparo da esquerda: 13, id do anteparo da direita: 14, id do anteparo de cima: 15, id do anteparo de baixo: 16, 
+pontosExtremos dos anteparos do retangulo:(30.000000,30.000000),(30.000000,124.000000),(118.000000,30.000000),(118.000000,124.000000),(30.000000,30.000000),(118.000000,30.000000),(30.000000,124.000000),(118.000000,124.000000)
+ Características da forma destruída presente dentro do polígono de visibilidade: Tipo: r, ID: 5
+ Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 7
+ Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 10
 Total de formas destruídas: 3
 

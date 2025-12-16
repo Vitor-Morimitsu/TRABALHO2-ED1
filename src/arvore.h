@@ -34,9 +34,19 @@ void removerArvore(Arvore arv, int id);
 void liberarArvore(Arvore arv);
 
 /*
+    Encontra o menor valor presente na árvore completa. Retorna a célula com o menor valor ou NULL se a árvore estiver vazia.
+*/
+celulaArvore encontrarMinimoArvore(Arvore arv);
+
+/*
     Encontra o menor valor presente no lado esquerdo da árvore.
 */
-celulaArvore encontrarMinimo(celulaArvore cel)
+celulaArvore encontrarMinimo(celulaArvore cel);
+
+/*
+    Retorna o anteparo armazenado em uma célula da árvore.
+*/
+Anteparo getAnteparoCelula(celulaArvore cel);
 
 
 #endif

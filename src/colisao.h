@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "lista.h"
 #include "pacote.h"
 #include "poligono.h"
@@ -22,7 +23,29 @@
 */
 bool atingidaPelaExplosao(Lista formas, Poligono p, double xBomba, double yBomba);
 
+/*
+    Verifica se um círculo está dentro do poligono
+*/
+bool circuloDentroPoligono(Circulo c, Poligono p);
 
+/*
+    Verifica se um retangulo está dentro do polígono
+*/
+bool retanguloDentroPoligono(Retangulo r, Poligono p);
+
+/*
+    Verifica se uma linha está dentro do polígono
+*/
+bool linhaDentroPoligono(Linha l, Poligono p);
+
+/*
+    Verifica se um texto está dentro do polígono
+*/
+bool textoDentroPoligono(Texto t, Poligono p);
+
+/*
+    Verifica se uma forma está dentro do polígono
+*/
 bool formaDentroPoligono(Pacote pac, Poligono p);
 
 /*

@@ -35,7 +35,7 @@ void gerarBoundingBox(Poligono p,double *minX, double *minY, double *maxX, doubl
     /// @param yOrigem: coordenada Y da origem (bomba)
     /// @param comando: escolher o tipo de ordenação desejado( "q" = quicksort, "m" = mergesort, "i" = insertion sort) SERÁ PASSADO POR COMANDO NO MAIN
 */
-void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yOrigem, char* comando);
+void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yOrigem, char* comando, int limiteInsertionSort);
 
 /*
     Verifica se um ponto está dentro do polígono.
