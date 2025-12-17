@@ -81,7 +81,14 @@ void setY2Linha(Linha l, double y2){
 }
 
 void setCorLinha(Linha l, char* cor){
-    ((stLinha*)l)->cor = cor;
+    stLinha* linha = (stLinha*)l;
+    free(linha->cor);
+    linha->cor = malloc(strlen(cor) + 1);
+    if(linha->cor == NULL){
+        printf("Erro ao realocar cor da linha");
+        exit(1);
+    }
+    strcpy(linha->cor, cor);
 }
 
 void liberaLinha(Linha l){

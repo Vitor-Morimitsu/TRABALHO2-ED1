@@ -74,7 +74,14 @@ void setYCirculo(Circulo c, double y){
 }
 
 void setCorBCirculo(Circulo c, char* corb){
-    ((stCirculo*)c)->corb = corb;
+    stCirculo* circ = (stCirculo*)c;
+    free(circ->corb);
+    circ->corb = malloc(strlen(corb) + 1);
+    if(circ->corb == NULL){
+        printf("Erro ao realocar cor de borda do circulo");
+        exit(1);
+    }
+    strcpy(circ->corb, corb);
 }
 
 void setRaioCirculo(Circulo c, double raio){
@@ -82,7 +89,14 @@ void setRaioCirculo(Circulo c, double raio){
 }
 
 void setCorPCirculo(Circulo c, char* corp){
-    ((stCirculo*)c)->corp = corp;
+    stCirculo* circ = (stCirculo*)c;
+    free(circ->corp);
+    circ->corp = malloc(strlen(corp) + 1);
+    if(circ->corp == NULL){
+        printf("Erro ao realocar cor de preenchimento do circulo");
+        exit(1);
+    }
+    strcpy(circ->corp, corp);
 }
 
 void liberaCirculo(Circulo c){

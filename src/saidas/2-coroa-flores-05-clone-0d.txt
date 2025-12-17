@@ -22,17 +22,5 @@ Id do texto: 95, figura original: Texto, id do anteparo: 95, pontos extremos do 
 Clonagem na posição (200.00, 200.00)
 Deslocamento: dx=270.00, dy=270.00
 Formas clonadas:
-  - Linha ID 17 clonada para ID 75
-  - Linha ID 68 clonada para ID 76
-  - Texto ID 24 clonado para ID 77
-  - Círculo ID 19 clonado para ID 78
-  - Texto ID 74 clonado para ID 79
-  - Texto ID 22 clonado para ID 80
-  - Linha ID 18 clonada para ID 81
-  - Retângulo ID 65 clonado para ID 82
-  - Círculo ID 20 clonado para ID 83
-  - Linha ID 16 clonada para ID 84
-  - Retângulo ID 15 clonado para ID 85
-  - Texto ID 23 clonado para ID 86
-Total de formas clonadas: 12
+Total de formas clonadas: 0
 

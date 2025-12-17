@@ -397,7 +397,7 @@ void comandoP(FILE* txt, char* sufixo, FILE* svg, Lista formas, Lista anteparos,
                 case 't': setCorBTexto((Texto)forma, cor); setCorPTexto((Texto)forma, cor); fprintf(txt, "  - Texto ID %d pintado\n", id); break;
             }
         }
-        liberaLista(formasAtingidas);
+        liberaEstruturaLista(formasAtingidas);
     }
     
     desenharPoligonoSVG(svgOutput, poligono, "#80D8FF", "#000000");
