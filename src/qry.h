@@ -28,17 +28,20 @@ void comandoA(FILE* arqTxt,Lista pacotes,Lista anteparos,int inicio, int fim, ch
 /*
     Função responsável por processar o comando D descrito no trabalho.
 */
-void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double xBomba, double yBomba,char tipoOrdenacao,int limiteInsertionSort);
+/*
+    Função responsável por processar o comando D descrito no trabalho.
+*/
+void comandoD(FILE* arqTxt, char* sufixo, FILE* svgPrincipal, Lista anteparos, Lista formas, double xBomba, double yBomba, char tipoOrdenacao, int limiteInsertionSort, double minX, double minY, double width, double height);
 
 /*
     Função responsável por processar o comando P descrito no trabalho.
 */
-void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos,double x, double y, char* cor,char tipoOrdenacao, int limiteInsertionSort);
+void comandoP(FILE* txt, char* sufixo, FILE* svgPrincipal, Lista formas, Lista anteparos, double x, double y, char* cor, char tipoOrdenacao, int limiteInsertionSort, double minX, double minY, double width, double height);
 
 /*
     Função responsável por processar o comando CLN descrito no trabalho.
 */
-void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, double y, double dx, double dy,char tipoOrdenacao, int limiteInsertionSort);
+void comandoCln(FILE* txt, char* sufixo, FILE* svgPrincipal, Lista formas, Lista anteparos, double x, double y, double dx, double dy, char tipoOrdenacao, int limiteInsertionSort, double minX, double minY, double width, double height);
 
 
 /*

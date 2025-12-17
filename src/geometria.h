@@ -18,6 +18,11 @@
 */
 double distanciaEntrePontos(double x1, double y1, double x2, double y2);
 
+/*
+    Normaliza um ângulo para o intervalo [0, 2*PI).
+*/
+double normalizarAngulo(double angulo);
+
 /* 
     Função responsável por realizar o cálculo do determinante.
 */

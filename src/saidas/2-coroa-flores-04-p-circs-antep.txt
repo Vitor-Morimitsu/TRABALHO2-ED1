@@ -7,50 +7,30 @@ id do círculo: 80, figura original: círculo, id do anteparo: 105, pontos extre
 id do círculo: 81, figura original: círculo, id do anteparo: 106, pontos extremos: (238.114082,143.135167) e (298.114082,143.135167)
 Bomba de pintura lançada em (200.00, 200.00)
 Cor aplicada: #ff6600
-Número de formas atingidas: 46
-  - Texto ID 44 pintado
-  - Linha ID 17 pintada
-  - Retângulo ID 35 pintado
+Número de formas atingidas: 26
   - Linha ID 8 pintada
   - Linha ID 86 pintada
-  - Linha ID 38 pintada
   - Círculo ID 39 pintado
   - Linha ID 83 pintada
   - Texto ID 94 pintado
   - Texto ID 91 pintado
-  - Linha ID 68 pintada
-  - Linha ID 36 pintada
+  - Linha ID 84 pintada
   - Linha ID 6 pintada
   - Texto ID 89 pintado
   - Retângulo ID 45 pintado
-  - Texto ID 24 pintado
   - Círculo ID 10 pintado
   - Texto ID 93 pintado
   - Linha ID 85 pintada
   - Linha ID 82 pintada
-  - Círculo ID 19 pintado
-  - Texto ID 74 pintado
   - Texto ID 14 pintado
   - Linha ID 88 pintada
-  - Texto ID 22 pintado
   - Círculo ID 9 pintado
   - Círculo ID 11 pintado
   - Texto ID 13 pintado
-  - Linha ID 37 pintada
-  - Linha ID 18 pintada
-  - Retângulo ID 65 pintado
   - Texto ID 92 pintado
   - Texto ID 12 pintado
-  - Círculo ID 40 pintado
-  - Círculo ID 20 pintado
-  - Linha ID 16 pintada
   - Texto ID 95 pintado
-  - Retângulo ID 15 pintado
-  - Texto ID 42 pintado
-  - Texto ID 43 pintado
   - Retângulo ID 5 pintado
   - Linha ID 7 pintada
   - Linha ID 87 pintada
-  - Texto ID 23 pintado
   - Texto ID 90 pintado
-  - Círculo ID 41 pintado

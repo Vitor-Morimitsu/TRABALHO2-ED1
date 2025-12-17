@@ -48,16 +48,33 @@ void gerarArena(FILE* svgEntrada, Lista formas, Lista anteparos){
     printf("Arena gerada com limites: (%.2f, %.2f) a (%.2f, %.2f)\n", minX, minY, maxX, maxY);
 }
 
+// Helper para gerenciar abertura/fechamento de SVG com sufixo
+// Essa função encapsula a lógica repetitiva de testar sufixo != "-"
+static FILE* prepararSVG(char* sufixo, FILE* svgPrincipal, double minX, double minY, double width, double height, bool* deveFechar) {
+    if(strcmp(sufixo, "-") == 0) {
+        *deveFechar = false;
+        return svgPrincipal;
+    } else {
+        FILE* svgSfx = fopen(sufixo, "w");
+        if(svgSfx != NULL) {
+            abrirSvg(svgSfx, minX, minY, width, height);
+            *deveFechar = true;
+            return svgSfx;
+        } else {
+            printf("Erro ao criar SVG de sufixo: %s. Usando principal.\n", sufixo);
+            *deveFechar = false;
+            return svgPrincipal;
+        }
+    }
+}
+
 void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, char letra){
     if(arqTxt == NULL || formas == NULL || anteparos == NULL){
         printf("Erro em comandoA: parametros invalidos\n");
         return;
     }
 
-    if(letra != 'h' && letra != 'v'){
-        printf("Erro em comandoA: letra de comando invalida para ciração de círculo\n");
-        return;
-    }
+    // Validacao movida para dentro do loop se necessario (apenas circulos usam letra)
 
     for(int contador = inicio; contador <= fim; contador++){
         Pacote pac = procuraPacoteLista(formas, contador);
@@ -277,35 +294,30 @@ void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, 
     }
 }
 
-void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double xBomba, double yBomba,char tipoOrdenacao, int limiteInsertionSort){
+void comandoD(FILE* arqTxt, char* sufixo, FILE* svgSfx, Lista anteparos, Lista formas, double xBomba, double yBomba,char tipoOrdenacao, int limiteInsertionSort, double minX, double minY, double width, double height){
     if(arqTxt == NULL || svgSfx == NULL || anteparos == NULL || formas == NULL){
         printf("Erro em comandoD: parametros invalidos\n");
         return;
     }
+
+    // Gerenciar sufixo
+    bool deveFechar = false;
+    FILE* svgOutput = prepararSVG(sufixo, svgSfx, minX, minY, width, height, &deveFechar);
     
     Poligono poligono = criarPoligono();
     if(poligono == NULL){
         printf("Erro em comandoD: falha ao criar poligono\n");
+         if(deveFechar) { fecharSVG(svgOutput); fclose(svgOutput); }
         return;
     }
     char comandoStr[2] = {tipoOrdenacao, '\0'};
     calcularVisibilidade(poligono, anteparos, xBomba, yBomba, comandoStr,limiteInsertionSort);
     
-    int numVertices = getNumeroVertices(poligono);
-    printf("Polígono criado com %d vértices\n", numVertices);
-
-    printf("=== DEBUG POLÍGONO ===\n");
-    for(int i = 0; i < numVertices && i < 20; i++){
-        double x, y;
-        getVerticePoligono(poligono, i, &x, &y);
-        printf("V%d: (%.2f, %.2f)\n", i, x, y);
-    }
-    printf("Total: %d vértices\n", numVertices);
-    printf("======================\n");
+    // ... debug prints ...
     
-    desenharPoligonoSVG(svgSfx, poligono, "#6e0d04ff", "#e15b35ff");
+    desenharPoligonoSVG(svgOutput, poligono, "#6e0d04ff", "#e15b35ff");
     
-    int totalFormas = getTamanhoLista(formas);
+    // int totalFormas = getTamanhoLista(formas);
     
     int formasDestruidas = 0;
 
@@ -338,17 +350,26 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
     
     fprintf(arqTxt, "Total de formas destruídas: %d\n\n", formasDestruidas);
     liberarPoligono(poligono);
+
+    if(deveFechar) {
+        fecharSVG(svgOutput);
+        fclose(svgOutput);
+    }
 }
 
-void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, double y, char* cor, char tipoOrdenacao,int limiteInsertionSort){
+void comandoP(FILE* txt, char* sufixo, FILE* svg, Lista formas, Lista anteparos, double x, double y, char* cor, char tipoOrdenacao,int limiteInsertionSort, double minX, double minY, double width, double height){
     if(txt == NULL || svg == NULL || formas == NULL || anteparos == NULL || cor == NULL){
         printf("Erro em comandoP: parametros invalidos\n");
         return;
     }
     
+    bool deveFechar = false;
+    FILE* svgOutput = prepararSVG(sufixo, svg, minX, minY, width, height, &deveFechar);
+
     Poligono poligono = criarPoligono();
     if(poligono == NULL){
         printf("Erro em comandoP: falha ao criar poligono\n");
+        if(deveFechar) { fecharSVG(svgOutput); fclose(svgOutput); }
         return;
     }
     char comandoStr[2] = {tipoOrdenacao, '\0'};
@@ -363,59 +384,49 @@ void comandoP(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, dou
         fprintf(txt, "Cor aplicada: %s\n", cor);
         fprintf(txt, "Número de formas atingidas: %d\n", numAtingidas);
         
-        for(CelulaLista celula = getPrimeiraCelulaLista(formasAtingidas); 
-            celula != NULL; 
-            celula = getProximaCelulaLista(celula)){
-            
+        for(CelulaLista celula = getPrimeiraCelulaLista(formasAtingidas); celula != NULL; celula = getProximaCelulaLista(celula)){
             Pacote pac = (Pacote)getConteudoCelula(celula);
             char tipo = getTipoPacote(pac);
             Forma forma = getFormaPacote(pac);
             int id = getIDPacote(pac);
             
             switch(tipo){
-                case 'c':
-                    setCorBCirculo((Circulo)forma, cor);
-                    setCorPCirculo((Circulo)forma, cor);
-                    fprintf(txt, "  - Círculo ID %d pintado\n", id);
-                    break;
-                case 'r':
-                    setCorBRetangulo((Retangulo)forma, cor);
-                    setCorPRetangulo((Retangulo)forma, cor);
-                    fprintf(txt, "  - Retângulo ID %d pintado\n", id);
-                    break;
-                case 'l':
-                    setCorLinha((Linha)forma, cor);
-                    fprintf(txt, "  - Linha ID %d pintada\n", id);
-                    break;
-                case 't':
-                    setCorBTexto((Texto)forma, cor);
-                    setCorPTexto((Texto)forma, cor);
-                    fprintf(txt, "  - Texto ID %d pintado\n", id);
-                    break;
+                case 'c': setCorBCirculo((Circulo)forma, cor); setCorPCirculo((Circulo)forma, cor); fprintf(txt, "  - Círculo ID %d pintado\n", id); break;
+                case 'r': setCorBRetangulo((Retangulo)forma, cor); setCorPRetangulo((Retangulo)forma, cor); fprintf(txt, "  - Retângulo ID %d pintado\n", id); break;
+                case 'l': setCorLinha((Linha)forma, cor); fprintf(txt, "  - Linha ID %d pintada\n", id); break;
+                case 't': setCorBTexto((Texto)forma, cor); setCorPTexto((Texto)forma, cor); fprintf(txt, "  - Texto ID %d pintado\n", id); break;
             }
         }
-        
         liberaLista(formasAtingidas);
     }
     
-    desenharPoligonoSVG(svg, poligono, "#80D8FF", "#000000");
+    desenharPoligonoSVG(svgOutput, poligono, "#80D8FF", "#000000");
     liberarPoligono(poligono);
+
+    if(deveFechar) {
+        fecharSVG(svgOutput);
+        fclose(svgOutput);
+    }
 }
 
-void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, double y, double dx, double dy,char tipoOrdenacao, int limiteInsertionSort){
+void comandoCln(FILE* txt, char* sufixo, FILE* svg, Lista formas, Lista anteparos, double x, double y, double dx, double dy,char tipoOrdenacao, int limiteInsertionSort, double minX, double minY, double width, double height){
     if(txt == NULL || svg == NULL || formas == NULL || anteparos == NULL){
         printf("Erro em comandoCln: parametros invalidos\n");
         return;
     }
+
+    bool deveFechar = false;
+    FILE* svgOutput = prepararSVG(sufixo, svg, minX, minY, width, height, &deveFechar);
     
     Poligono poligono = criarPoligono();
     if(poligono == NULL){
         printf("Erro em comandoCln: falha ao criar poligono\n");
+        if(deveFechar) { fecharSVG(svgOutput); fclose(svgOutput); }
         return;
     }
     char comandoStr[2] = {tipoOrdenacao, '\0'};
     calcularVisibilidade(poligono, anteparos, x, y, comandoStr,limiteInsertionSort);
-    desenharPoligonoSVG(svg, poligono, "#B388FF", "#000000");
+    desenharPoligonoSVG(svgOutput, poligono, "#B388FF", "#000000");
     
     fprintf(txt, "Clonagem na posição (%.2f, %.2f)\n", x, y);
     fprintf(txt, "Deslocamento: dx=%.2f, dy=%.2f\n", dx, dy);
@@ -538,6 +549,11 @@ void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, d
     
     liberarListaSemDestruirConteudo(clones);
     liberarPoligono(poligono);
+    
+    if(deveFechar) {
+        fecharSVG(svgOutput);
+        fclose(svgOutput);
+    }
 }
 
 void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas, char tipoOrdenacao, int limiteInsertionSort){
@@ -581,50 +597,20 @@ void lerQry(FILE* qry, FILE* txt, FILE* svg, Lista formas, char tipoOrdenacao, i
             double x, y;
             char sufixo[50];
             if(sscanf(linha, "d %lf %lf %s", &x, &y, sufixo) == 3){
-                if(strcmp(sufixo, "-") != 0){
-                    FILE* svgSfx = fopen(sufixo, "w");
-                    if(svgSfx != NULL){
-                        abrirSvg(svgSfx,minX,minY,width,height);
-                        comandoD(txt,svgSfx,anteparos,formas,x,y,tipoOrdenacao,limiteInsertionSort);
-                        fecharSVG(svgSfx);
-                        fclose(svgSfx);
-                    }
-                }else{
-                    comandoD(txt, svg,anteparos,formas,x,y,tipoOrdenacao,limiteInsertionSort);
-                }
+                comandoD(txt, sufixo, svg, anteparos, formas, x, y, tipoOrdenacao, limiteInsertionSort, minX, minY, width, height);
             }
         } else if(strcmp(comando, "p") == 0){
             double x, y;
             char cor[50];
             char sufixo[50];
             if(sscanf(linha, "p %lf %lf %s %s", &x, &y, cor, sufixo) == 4){
-                if(strcmp(sufixo, "-") != 0){
-                    FILE* svgSfx = fopen(sufixo, "w");
-                    if(svgSfx != NULL){
-                        abrirSvg(svgSfx,minX,minY,width,height);
-                        comandoP(txt,svg,formas,anteparos,x,y,cor,tipoOrdenacao,limiteInsertionSort);
-                        fecharSVG(svgSfx);
-                        fclose(svgSfx);
-                    }
-                }else{
-                    comandoP(txt,svg,formas,anteparos,x,y,cor,tipoOrdenacao,limiteInsertionSort);
-                }
+                comandoP(txt, sufixo, svg, formas, anteparos, x, y, cor, tipoOrdenacao, limiteInsertionSort, minX, minY, width, height);
             }
         } else if(strcmp(comando, "cln") == 0){
             double x, y, dx, dy;
             char sufixo[50];
             if(sscanf(linha, "cln %lf %lf %lf %lf %s", &x, &y, &dx, &dy, sufixo) == 5){
-                if(strcmp(sufixo, "-") != 0){
-                    FILE* svgSfx = fopen(sufixo, "w");
-                    if(svgSfx != NULL){
-                        abrirSvg(svgSfx,minX,minY,width,height);
-                        comandoCln(txt,svg,formas,anteparos,x,y,dx,dy,tipoOrdenacao,limiteInsertionSort);
-                        fecharSVG(svgSfx);
-                        fclose(svgSfx);
-                    }                    
-                }else{
-                    comandoCln(txt,svg,formas,anteparos,x,y,dx,dy,tipoOrdenacao,limiteInsertionSort);
-                }
+                comandoCln(txt, sufixo, svg, formas, anteparos, x, y, dx, dy, tipoOrdenacao, limiteInsertionSort, minX, minY, width, height);
             }
         }
     }

@@ -188,11 +188,12 @@ int compararNos(const void* a, const void* b) {
     return compareStNoValues(*noA, *noB);
 }
 
-static void swap(stNo* a, stNo* b) {
-    stNo t = *a;
-    *a = *b;
-    *b = t;
-}
+// function used via qsort
+// static void swap(stNo* a, stNo* b) {
+//     stNo t = *a;
+//     *a = *b;
+//     *b = t;
+// }
 
 void quickSort(No* arrayParametro, int low, int high) {
     if(low >= high) return;

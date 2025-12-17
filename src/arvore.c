@@ -24,6 +24,17 @@ Arvore criarArvore(){
     return (Arvore)arvore;
 }
 
+double calculoDeCanto(double bx, double by, double angulo, Anteparo an){
+    double anguloFuturo = angulo + 0.0001; 
+    Vertice v = calculaInterseccao(bx, by, anguloFuturo, an);
+    if (v != NULL){
+        double dist = getDistanciaVertice(v);
+        destroiVertice(v);
+        return dist;
+    }
+    return 999999999.0;
+}
+
 celulaArvore insereRecursivo(celulaArvore cel,Anteparo an, double bx,double by,double angulo, double distAnteparo){
     if(cel == NULL){
         //célula vazia, nova célula deve ser criada.
@@ -56,10 +67,18 @@ celulaArvore insereRecursivo(celulaArvore cel,Anteparo an, double bx,double by,d
         dist_novoVertice = (d1 < d2) ? d1 : d2;
     }
 
-    // Modificado para <= : Em caso de empate (mesmo vértice), preferimos inserir à esquerda
-    // para que o novo segmento seja encontrado primeiro por encontrarMinimo.
-    // Isso é crucial para conexões de paredes onde Start == End.
-    if(distAnteparo <= dist_novoVertice){
+    // Modificado para usar calculoDeCanto em caso de empate
+    if(fabs(distAnteparo - dist_novoVertice) < 1e-4){ 
+        double distFuturaAnteparo = calculoDeCanto(bx, by, angulo, an);
+        double distFuturaNo = calculoDeCanto(bx, by, angulo, celArv->anteparo);
+
+        if(distFuturaAnteparo < distFuturaNo){
+            celArv->esquerda = insereRecursivo(celArv->esquerda,an,bx,by,angulo,distAnteparo);
+        } else {
+            celArv->direita = insereRecursivo(celArv->direita,an, bx,by,angulo, distAnteparo);
+        }
+    }
+    else if(distAnteparo < dist_novoVertice){
         celArv->esquerda = insereRecursivo(celArv->esquerda,an,bx,by,angulo,distAnteparo);
     }else{
         celArv->direita = insereRecursivo(celArv->direita,an, bx,by,angulo, distAnteparo);

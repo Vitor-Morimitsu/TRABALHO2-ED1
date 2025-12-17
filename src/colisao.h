@@ -13,15 +13,7 @@
     Arquivo .h responsável por verificar as formas que foram atingidas pelas explosões.
 */
 
-/*
-    Verifica se alguma forma foi atingida pela explosão (está dentro do polígono de visibilidade).
-    Retorna true se pelo menos uma forma foi atingida.
-    @param formas: lista de pacotes contendo as formas
-    @param p: polígono de visibilidade
-    @param xBomba: coordenada X da bomba
-    @param yBomba: coordenada Y da bomba
-*/
-bool atingidaPelaExplosao(Lista formas, Poligono p, double xBomba, double yBomba);
+
 
 /*
     Verifica se um círculo está dentro do poligono
@@ -56,7 +48,8 @@ bool formaDentroPoligono(Pacote pac, Poligono p);
     @param xBomba: coordenada X da bomba
     @param yBomba: coordenada Y da bomba
 */
-bool atingidaPelaExplosao(Lista formas, Poligono p, double xBomba, double yBomba);
+// Verifica se a explosão (centrada na origem do polígono p) atingiu alguma forma
+bool atingidaPelaExplosao(Lista formas, Poligono p);
 
 /*
     Retorna uma lista com todas as formas que estão dentro do polígono de visibilidade.

@@ -1,12 +1,17 @@
 #include "geometria.h"
 
-#define pi 3.141592653589793
-#define epsilon 0.001
+#define pi 3.14159265358979323846
+#define epsilon 1e-9
 
 double distanciaEntrePontos(double x1, double y1, double x2, double y2){
     double dx = x2 - x1;
     double dy = y2 - y1;
     return sqrt(dx*dx + dy*dy);
+}
+
+double normalizarAngulo(double angulo){
+    if (angulo < 0) return angulo + 2 * pi;
+    return angulo;
 }
 
 double determinante(double x1, double y1, double x2, double y2, double x3, double y3){

@@ -99,7 +99,8 @@ void lerGeo(FILE* geo, Lista list){
             char weight[50] = "";
             char size[50] = "";
             
-            int lidos_ts = sscanf(&linha[strlen(comando)], " %49s %49s %49s", font, weight, size);
+            // int lidos_ts = sscanf(&linha[strlen(comando)], " %49s %49s %49s", font, weight, size);
+            sscanf(&linha[strlen(comando)], " %49s %49s %49s", font, weight, size);
         } else {
             fprintf(stderr, "Aviso: Comando desconhecido '%s' na linha: %s", comando, linha);
         }

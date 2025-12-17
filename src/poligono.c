@@ -17,35 +17,6 @@ typedef struct poligono{
     double minX, minY, maxX, maxY;
 }stPoligono;
 
-static bool segmentoIntersectaRaio(Linha linha, double xOrigem, double yOrigem, double angulo) {
-    double x1 = getX1Linha(linha);
-    double y1 = getY1Linha(linha);
-    double x2 = getX2Linha(linha);
-    double y2 = getY2Linha(linha);
-    
-    double rayDirX = cos(angulo);
-    double rayDirY = sin(angulo);
-    
-    double segDirX = x2 - x1;
-    double segDirY = y2 - y1;
-    double segOrigX = x1 - xOrigem;
-    double segOrigY = y1 - yOrigem;
-    
-    double cross = rayDirX * segDirY - rayDirY * segDirX;
-    
-    if (fabs(cross) < 1e-10) {
-        return false;
-    }
-    
-    double t = (segOrigX * segDirY - segOrigY * segDirX) / cross;
-    double u = (segOrigX * rayDirY - segOrigY * rayDirX) / cross;
-    
-    // ✅ CORREÇÃO: Verificar AMBOS t e u
-    // t > 0: raio vai para frente
-    // -0.1 <= u <= 1.1: interseção dentro (ou perto) do segmento
-    return (t > 1e-6 && u >= -0.1 && u <= 1.1);
-}
-
 static Vertice duplicarVertice(Vertice original) {
     if (original == NULL) return NULL;
     
@@ -78,9 +49,9 @@ static void atualizarBoundingBox(stPoligono* pol, double x, double y) {
     if (y > pol->maxY) pol->maxY = y;
 }
 
-static double calcularEpsilon(double angulo) {
-    return fmax(1e-9, fabs(angulo) * 1e-10);
-}
+// static double calcularEpsilon(double angulo) {
+//     return fmax(1e-9, fabs(angulo) * 1e-10);
+// }
 
 Poligono criarPoligono(){
     stPoligono* p = (stPoligono*)malloc(sizeof(stPoligono));
@@ -104,83 +75,9 @@ Poligono criarPoligono(){
     return (Poligono)p;
 }
 
-static void simplificarPoligono(Poligono p, double tolerancia) {
-    if(p == NULL) return;
-    
-    stPoligono* pol = (stPoligono*)p;
-    int n = getTamanhoLista(pol->vertices);
-    
-    if(n < 3) return;
-    
-    printf("DEBUG: Simplificando polígono com %d vértices\n", n);
-    
-    // Criar array com todos os vértices
-    Vertice* vertices = malloc(n * sizeof(Vertice));
-    if(vertices == NULL) return;
-    
-    int idx = 0;
-    for(CelulaLista celula = getPrimeiraCelulaLista(pol->vertices);
-        celula != NULL;
-        celula = getProximaCelulaLista(celula)) {
-        vertices[idx++] = (Vertice)getConteudoCelula(celula);
-    }
-    
-    // Marcar vértices a manter
-    bool* manter = malloc(n * sizeof(bool));
-    for(int i = 0; i < n; i++) manter[i] = false;
-    
-    // Sempre manter primeiro vértice
-    manter[0] = true;
-    
-    // Para cada vértice, verificar se está longe o suficiente do anterior mantido
-    int ultimoMantido = 0;
-    for(int i = 1; i < n; i++) {
-        double x1 = getXVertice(vertices[ultimoMantido]);
-        double y1 = getYVertice(vertices[ultimoMantido]);
-        double x2 = getXVertice(vertices[i]);
-        double y2 = getYVertice(vertices[i]);
-        
-        double dist = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
-        
-        // Calcular ângulo também
-        double dx1 = x1 - getXVertice(vertices[(ultimoMantido - 1 + n) % n]);
-        double dy1 = y1 - getYVertice(vertices[(ultimoMantido - 1 + n) % n]);
-        double dx2 = x2 - x1;
-        double dy2 = y2 - y1;
-        
-        double cross = dx1 * dy2 - dy1 * dx2;
-        
-        // Manter se: distância grande OU mudança de direção significativa
-        if(dist > tolerancia || fabs(cross) > 100.0) {
-            manter[i] = true;
-            ultimoMantido = i;
-            printf("  Mantendo V%d (%.2f, %.2f) - dist=%.2f cross=%.2f\n", 
-                   i, x2, y2, dist, cross);
-        } else {
-            printf("  Removendo V%d (%.2f, %.2f) - dist=%.2f cross=%.2f\n", 
-                   i, x2, y2, dist, cross);
-        }
-    }
-    
-    // Criar nova lista com vértices mantidos
-    Lista novaLista = criarLista();
-    for(int i = 0; i < n; i++) {
-        if(manter[i]) {
-            insereLista(novaLista, vertices[i]);
-        } else {
-            destroiVertice(vertices[i]);
-        }
-    }
-    
-    // Substituir lista
-    liberaEstruturaLista(pol->vertices);
-    pol->vertices = novaLista;
-    
-    free(vertices);
-    free(manter);
-    
-    printf("DEBUG: Polígono simplificado: %d vértices\n", getTamanhoLista(pol->vertices));
-}
+// static void simplificarPoligono(Poligono p, double tolerancia) {
+// ...
+// }
 void gerarBoundingBox(Poligono p, double *minX, double *minY, double *maxX, double *maxY){
     if(p == NULL || minX == NULL || minY == NULL || maxX == NULL || maxY == NULL){
         printf("Erro em gerarBoundingBox: parametros invalidos\n");
@@ -220,11 +117,94 @@ static Vertice obterInterseccaoMaisProxima(Lista anteparos, double xOrigem, doub
     return vMaisProximo;
 }
 
+static void adicionarBordasTemporarias(Lista anteparos, double bx, double by) {
+    double minX = bx - 1, maxX = bx + 1, minY = by - 1, maxY = by + 1;
+    
+    // 1. Expandir Bounding Box da cena
+    for(CelulaLista c = getPrimeiraCelulaLista(anteparos); c != NULL; c = getProximaCelulaLista(c)){
+         Pacote pac = (Pacote)getConteudoCelula(c);
+         // Considerar todos os tipos que tem bounding box seria ideal, mas Linha é o principal anteparo
+         if(getTipoPacote(pac) == 'l') {
+             Linha l = (Linha)getFormaPacote(pac);
+             double x1 = getX1Linha(l); double x2 = getX2Linha(l);
+             double y1 = getY1Linha(l); double y2 = getY2Linha(l);
+             
+             if(x1 < minX) minX = x1; if(x1 > maxX) maxX = x1;
+             if(x2 < minX) minX = x2; if(x2 > maxX) maxX = x2;
+             if(y1 < minY) minY = y1; if(y1 > maxY) maxY = y1;
+             if(y2 < minY) minY = y2; if(y2 > maxY) maxY = y2;
+         }
+    }
+    
+    double delta = 1000.0;
+    minX -= delta; maxX += delta; minY -= delta; maxY += delta;
+    
+    // 2. Criar 4 bordas (IDs negativos para identificar e remover depois)
+    Linha bordas[4];
+    bordas[0] = criarLinha(-99991, minX, minY, maxX, minY, "black"); 
+    bordas[1] = criarLinha(-99992, maxX, minY, maxX, maxY, "black"); 
+    bordas[2] = criarLinha(-99993, maxX, maxY, minX, maxY, "black"); 
+    bordas[3] = criarLinha(-99994, minX, maxY, minX, minY, "black"); 
+
+    for(int i=0; i<4; i++) {
+        if(bordas[i] != NULL) {
+            Pacote p = criaPacote();
+            setTipoPacote(p, 'l');
+            setFormaPacote(p, (Forma)bordas[i]);
+            insereLista(anteparos, p);
+        }
+    }
+}
+
+// Função não utilizada removida
+// static void removerBordasTemporarias(Lista anteparos) { ... }
+
+// Versão simplificada de remoção que varre tudo (segura)
+static void limparBordas(Lista anteparos) {
+    CelulaLista atual = getPrimeiraCelulaLista(anteparos);
+    Lista paraRemover = criarLista();
+    
+    while(atual != NULL) {
+        Pacote pac = (Pacote)getConteudoCelula(atual);
+        if(getTipoPacote(pac) == 'l') {
+            Linha l = (Linha)getFormaPacote(pac);
+            // Verifica ID da linha (que acessamos via cast de Anteparo ou Linha)
+            // Assumindo que Linha tem campo id acessivel via getX1Linha ou similar, não, getIDLinha?
+            // arvore.c usa getIDAnteparo(linha).
+            // Vamos assumir que funciona.
+            if(getIDAnteparo((Anteparo)l) <= -99990) {
+                 insereLista(paraRemover, pac); // Guardar ponteiro do pacote
+            }
+        }
+        atual = getProximaCelulaLista(atual);
+    }
+    
+    // Remover
+    while(getTamanhoLista(paraRemover) > 0) {
+        Pacote p = (Pacote)getConteudoCelula(getPrimeiraCelulaLista(paraRemover));
+        removeDaListaPorConteudo(anteparos, p); // Precisamos dessa função em lista.h
+        // Se ela não existir, temos um problema. lista.h TEM removeDaListaPorConteudo.
+        
+        // Liberar memória do pacote e da linha
+        if(getTipoPacote(p) == 'l') {
+            Linha l = (Linha)getFormaPacote(p);
+            liberaLinha(l); // CORREÇÃO DE LEAK: liberaLinha limpa a string 'cor'
+        }
+        free(p); // liberarPacote
+        
+        removeDaListaPorConteudo(paraRemover, p); // Tira da lista temp
+    }
+    liberaEstruturaLista(paraRemover);
+}
+
 void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yOrigem, char* comando, int limiteInsertionSort){
     if(p == NULL || anteparos == NULL){
         printf("Erro em calcularVisibilidade: parametros invalidos\n");
         return;
     }
+    
+    // 1. Adicionar Bordas (Garante que o polígono feche)
+    adicionarBordasTemporarias(anteparos, xOrigem, yOrigem);
 
     Lista todosVertices = criarLista();
     if(todosVertices == NULL){
@@ -255,6 +235,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         setXVertice(v1, getX1Linha(linha));
         setYVertice(v1, getY1Linha(linha));
         setAnguloVertice(v1, xOrigem, yOrigem);
+        setDistanciaVertice(v1, distanciaEntrePontos(xOrigem, yOrigem, getXVertice(v1), getYVertice(v1)));
         setAnteparoVertice(v1, (Anteparo)linha);
 
         Vertice v2 = criarVertice();
@@ -266,6 +247,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         setXVertice(v2, getX2Linha(linha));
         setYVertice(v2, getY2Linha(linha));
         setAnguloVertice(v2, xOrigem, yOrigem);
+        setDistanciaVertice(v2, distanciaEntrePontos(xOrigem, yOrigem, getXVertice(v2), getYVertice(v2)));
         setAnteparoVertice(v2, (Anteparo)linha);
 
         double ang1 = getAnguloVertice(v1);
@@ -399,68 +381,67 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
        adicionarVerticePoligono(p, vInicial);
     }
 
-    for (int i = 0; i < tamanho; i++) {
-        Vertice eventoVertice = getVerticeDoArray(arrayOrdenado, i);
-        double eventoAngulo = getAnguloDoArray(arrayOrdenado, i);
-        Anteparo eventoAnteparo = getAnteparoVertice(eventoVertice);
-        char eventoTipo = getTipoVertice(eventoVertice);
-
-        if (fabs(eventoAngulo) > 1.5 && fabs(eventoAngulo) < 3.2) { // Debug apenas na região problemática (aprox 90 a 180 graus e wrap)
-             // printf("EVENTO: Ang=%.4f Tipo=%c ID=%d\n", eventoAngulo, eventoTipo, getIDAnteparo(eventoAnteparo));
+    // Loop agrupado por ângulo para estabilidade
+    int i = 0;
+    while(i < tamanho) {
+        // 1. Identificar grupo de eventos no mesmo ângulo
+        int j = i;
+        double anguloAtual = getAnguloDoArray(arrayOrdenado, i);
+        
+        // Avança j enquanto o ângulo for "igual" (tolerância 1e-6 usada na ordenação)
+        while(j < tamanho && fabs(getAnguloDoArray(arrayOrdenado, j) - anguloAtual) < 1e-6) {
+            j++;
         }
-
-
-
-// ... DENTRO DE calcularVisibilidade ...
-
-        // Lógica ANTES do evento
-        double epsilon = 1e-5; // Valor fixo e robusto (antes era dinâmico e muito pequeno)
-        double anguloAntes = eventoAngulo - epsilon;
+        // Agora eventos de [i até j-1] compartilham o mesmo ângulo
         
+        double epsilon = 1e-5;
+        
+        // 2. Raio ANTES do evento (Setor angular anterior)
+        // Só precisa fazer uma vez para o grupo
         celulaArvore celMaisProxima = encontrarMinimoArvore(arvoreSegmentosAtivos);
-        
         if(celMaisProxima != NULL) {
             Anteparo antMaisProximo = getAnteparoCelula(celMaisProxima);
-            Vertice interseccaoAntes = calculaInterseccao(xOrigem, yOrigem, anguloAntes, antMaisProximo);
-            if(interseccaoAntes != NULL) {
-                adicionarVerticePoligono(p, interseccaoAntes);
+            Vertice interseccao = calculaInterseccao(xOrigem, yOrigem, anguloAtual - epsilon, antMaisProximo);
+            if(interseccao != NULL) adicionarVerticePoligono(p, interseccao);
+        }
+
+        // 3. Raio NO evento (Vértice exato) - Opcional mas bom para precisão
+        // Para evitar problemas numéricos, miramos exatamente no vértice do primeiro evento
+        // Mas a árvore pode ter mudado? Não, a árvore reflete o estado ANTES das mudanças deste ângulo.
+        // Se houver parede na frente, vai pegar. Se o vértice for o mais próximo, pega ele.
+        celMaisProxima = encontrarMinimoArvore(arvoreSegmentosAtivos);
+        if(celMaisProxima != NULL) {
+           Anteparo antMaisProximo = getAnteparoCelula(celMaisProxima);
+           Vertice interseccao = calculaInterseccao(xOrigem, yOrigem, anguloAtual, antMaisProximo);
+           if(interseccao != NULL) adicionarVerticePoligono(p, interseccao);
+        }
+
+        // 4. Processar TODAS as atualizações de árvore do grupo
+        for(int k = i; k < j; k++) {
+            Vertice eventoVertice = getVerticeDoArray(arrayOrdenado, k);
+            Anteparo eventoAnteparo = getAnteparoVertice(eventoVertice);
+            char eventoTipo = getTipoVertice(eventoVertice);
+            
+            if (eventoTipo == 'i') {
+                double dist = getDistanciaVertice(eventoVertice);
+                insereArvore(arvoreSegmentosAtivos, eventoAnteparo, xOrigem, yOrigem, anguloAtual, dist);
+            } else if (eventoTipo == 'f') {
+                int idAnteparo = getIDAnteparo(eventoAnteparo);
+                removerArvore(arvoreSegmentosAtivos, idAnteparo);
             }
         }
 
-        // Atualização da árvore
-        if (eventoTipo == 'i') {
-            double dist = getDistanciaVertice(eventoVertice);
-            insereArvore(arvoreSegmentosAtivos, eventoAnteparo, xOrigem, yOrigem, eventoAngulo, dist);
-            
-            // Lógica PÓS inserção
-            double anguloDepois = eventoAngulo + epsilon;
-            celMaisProxima = encontrarMinimoArvore(arvoreSegmentosAtivos);
-        
-            if(celMaisProxima != NULL) {
-                Anteparo antMaisProximo = getAnteparoCelula(celMaisProxima);
-                Vertice interseccaoDepois = calculaInterseccao(xOrigem, yOrigem, anguloDepois, antMaisProximo);
-                if(interseccaoDepois != NULL) {
-                    adicionarVerticePoligono(p, interseccaoDepois);
-                }
-            }
-
-        } else if (eventoTipo == 'f') {
-            int idAnteparo = getIDAnteparo(eventoAnteparo);
-            double dist = getDistanciaVertice(eventoVertice);
-            removerArvore(arvoreSegmentosAtivos, idAnteparo);
-            
-            // Lógica PÓS remoção
-            double anguloDepois = eventoAngulo + epsilon;
-            celMaisProxima = encontrarMinimoArvore(arvoreSegmentosAtivos);
-        
-            if(celMaisProxima != NULL) {
-                Anteparo antMaisProximo = getAnteparoCelula(celMaisProxima);
-                Vertice interseccaoDepois = calculaInterseccao(xOrigem, yOrigem, anguloDepois, antMaisProximo);
-                if(interseccaoDepois != NULL) {
-                    adicionarVerticePoligono(p, interseccaoDepois);
-                }
-            }
+        // 5. Raio DEPOIS do evento (Setor angular posterior)
+        // Árvore já está atualizada com os novos segmentos
+        celMaisProxima = encontrarMinimoArvore(arvoreSegmentosAtivos);
+        if(celMaisProxima != NULL) {
+            Anteparo antMaisProximo = getAnteparoCelula(celMaisProxima);
+            Vertice interseccao = calculaInterseccao(xOrigem, yOrigem, anguloAtual + epsilon, antMaisProximo);
+            if(interseccao != NULL) adicionarVerticePoligono(p, interseccao);
         }
+
+        // Avançar para próximo grupo
+        i = j;
     }   
 
     // simplificarPoligono(p,0.5);
@@ -479,6 +460,9 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
     liberarArvore(arvoreSegmentosAtivos);
     free(arrayOrdenado);
     liberarListaDeVertices(todosVertices);
+    
+    // Remover bordas temporárias
+    limparBordas(anteparos);
 }
 
 bool pontoNoPoligono(Poligono p, double x, double y){
@@ -553,39 +537,15 @@ void getVerticePoligono(Poligono p, int n, double* x, double* y){
 }
 
 void adicionarVerticePoligono(Poligono p, Vertice v){
-    if(p == NULL || v == NULL){
-        printf("Erro em adicionarVerticePoligono: parametros invalidos\n");
-        return;
-    }
+    if(p == NULL || v == NULL) return;
     
     stPoligono* pol = (stPoligono*)p;
     
-    double x = getXVertice(v);
-    double y = getYVertice(v);
-
-    // Verificar duplicata
-    for(CelulaLista celula = getPrimeiraCelulaLista(pol->vertices);
-        celula != NULL;
-        celula = getProximaCelulaLista(celula)) {
-        
-        Vertice verticeExistente = (Vertice)getConteudoCelula(celula);
-        double xExist = getXVertice(verticeExistente);
-        double yExist = getYVertice(verticeExistente);
-        
-        double dist = sqrt((x - xExist)*(x - xExist) + (y - yExist)*(y - yExist));
-        
-        // ✅ Tolerância Fina para não deformar cantos vivos
-        if(dist < 0.01){
-            // printf("  → REJEITADO! Muito próximo de (%.2f, %.2f) - distância: %.4f\n", xExist, yExist, dist);
-            destroiVertice(v);
-            return;
-        }
-    }
-
-    insereLista(pol->vertices, (void*)v);
-    // printf("  → ACEITO! Total de vértices: %d\n", getTamanhoLista(pol->vertices));
+    // Otimização: Inserção direta O(1) sem verificação de duplicatas O(N)
+    // A referência removeu a verificação por performance.
     
-    atualizarBoundingBox(pol, x, y);
+    insereLista(pol->vertices, (void*)v);
+    atualizarBoundingBox(pol, getXVertice(v), getYVertice(v));
 }
 
 int getNumeroVertices(Poligono p){
