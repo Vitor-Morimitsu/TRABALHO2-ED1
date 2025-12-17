@@ -1,9 +1,10 @@
 #include "ordenacao.h"
 
-typedef struct stNo {
+struct stNo {
     Vertice ver;
     double angulo;
-} stNo;
+};
+typedef struct stNo stNo;
 
 No* gerarArray(Lista vertices, int tamanho){
     if(vertices == NULL){
@@ -32,9 +33,8 @@ No* gerarArray(Lista vertices, int tamanho){
     return array;
 }
 
-Vertice getVerticeNo(No n){
-    stNo* noh = (stNo*)n;
-    return noh->ver;
+Vertice getVerticeNo(No* n){
+    return n->ver;
 }
 
 void liberarArray(No* array){
@@ -46,12 +46,38 @@ void liberarArray(No* array){
     free(array);
 }
 
+// Helper para comparação consistente
+static int compareStNoValues(stNo noA, stNo noB) {
+    // Tolerância para ruído numérico
+    if (fabs(noA.angulo - noB.angulo) > 1e-6) {
+        if (noA.angulo < noB.angulo) return -1;
+        if (noA.angulo > noB.angulo) return 1;
+    }
+
+    // Ângulos "iguais": desempate por tipo ('i' antes de 'f')
+    char tipoA = getTipoVertice(noA.ver);
+    char tipoB = getTipoVertice(noB.ver);
+
+    if (tipoA == 'i' && tipoB == 'f') return -1;
+    if (tipoA == 'f' && tipoB == 'i') return 1;
+
+    // Empate de tipo: desempate por distância (opcional, mas bom pra estabilidade)
+    double distA = getDistanciaVertice(noA.ver);
+    double distB = getDistanciaVertice(noB.ver);
+    if (distA < distB) return -1;
+    if (distA > distB) return 1;
+
+    return 0;
+}
+
 void insertionSortRange(stNo* array, int inicio, int fim){
     for(int i = inicio + 1; i <= fim; i++){
         stNo chave = array[i];
         int j = i - 1;
         
-        while(j >= inicio && array[j].angulo > chave.angulo){
+        // CORREÇÃO: Usar compareStNoValues
+        // Movemos se array[j] > chave
+        while(j >= inicio && compareStNoValues(array[j], chave) > 0){
             array[j + 1] = array[j];
             j--;
         }
@@ -98,14 +124,14 @@ void mergeSort(No* array, int tamanho, int limiteInsertionSort){
                 L[i] = a[inicio + i];
             }
             for(int j = 0; j < n2; j++){
-                R[j] = *(stNo *) array[meio + 1 + j];
+                R[j] = array[meio + 1 + j];
             }
             
             int i = 0, j = 0, k = inicio;
             
             while(i < n1 && j < n2){
-                
-                if(L[i].angulo <= R[j].angulo){
+                // CORREÇÃO: Usar compareStNoValues
+                if(compareStNoValues(L[i], R[j]) <= 0){
                     a[k] = L[i];
                     i++;
                 }else{
@@ -133,14 +159,11 @@ void mergeSort(No* array, int tamanho, int limiteInsertionSort){
     }
 }
 
-Vertice getVerticeDoArray(No* arrayGen, int indice) {
-    // Aqui fazemos o cast, pois ordenacao.c CONHECE stNo
-    stNo* array = (stNo*)arrayGen;
+Vertice getVerticeDoArray(No* array, int indice) {
     return array[indice].ver;
 }
 
-double getAnguloDoArray(No* arrayGen, int indice) {
-    stNo* array = (stNo*)arrayGen;
+double getAnguloDoArray(No* array, int indice) {
     return array[indice].angulo;
 }
 
@@ -155,63 +178,20 @@ void insertionSort(No* array, int tamanho){
         return;
     }
     
-    for(int i = 1; i < tamanho; i++){
-        stNo chave = *(stNo *) array[i];
-        int j = i - 1;
-        
-        // Move elementos maiores que a chave uma posição à frente
-        while(j >= 0 && a[j].angulo > chave.angulo){
-            a[j + 1] = a[j];
-            j--;
-        }
-        
-        a[j + 1] = chave;
-    }
+    // Reutilizar a implementação Range para evitar duplicação
+    insertionSortRange(a, 0, tamanho - 1);
 }
 
 int compararNos(const void* a, const void* b) {
     stNo* noA = (stNo*)a;
     stNo* noB = (stNo*)b;
-    
-    //ordenar por ângulo
-    if (noA->angulo < noB->angulo) return -1;
-    if (noA->angulo > noB->angulo) return 1;
-
-    // Em caso de empate de ângulo, priorizar INÍCIO ('i') sobre FIM ('f')
-    // para evitar buracos na visibilidade (inserir antes de remover)
-    char tipoA = getTipoVertice(noA->ver);
-    char tipoB = getTipoVertice(noB->ver);
-
-    if (tipoA == 'i' && tipoB == 'f') return -1; // 'i' vem antes
-    if (tipoA == 'f' && tipoB == 'i') return 1;
-
-    //em caso de empate.ordenar por distância
-    double distA = getDistanciaVertice(noA->ver);
-    double distB = getDistanciaVertice(noB->ver);
-    
-    if (distA < distB) return -1;
-    if (distA > distB) return 1;
-    return 0;
+    return compareStNoValues(*noA, *noB);
 }
 
 static void swap(stNo* a, stNo* b) {
     stNo t = *a;
     *a = *b;
     *b = t;
-}
-
-static int partition(stNo* array, int low, int high) {
-    double pivot = array[high].angulo;
-    int i = (low - 1);
-
-    for (int j = low; j <= high - 1; j++) {
-        if (array[j].angulo <= pivot) {
-            i++;
-            swap(&array[i], &array[j]);
-        }
-    }
-    swap(&array[i + 1], &array[high]);
-    return (i + 1);
 }
 
 void quickSort(No* arrayParametro, int low, int high) {

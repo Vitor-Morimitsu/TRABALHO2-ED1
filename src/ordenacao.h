@@ -12,7 +12,7 @@
 /*
     Arquivo .h responsável pela criação e uso de algoritmos de ordenação.
 */
-typedef void* No;
+typedef struct stNo No;
 
 /*
     Converte os dados da lista em um array.
@@ -22,7 +22,7 @@ No* gerarArray(Lista vertices,int tamanho);
 /// @brief Retorna o vértice de um nó
 /// @param n no
 /// @return No
-Vertice getVerticeNo(No n);
+Vertice getVerticeNo(No* n);
 
 /* Recupera o vértice na posição 'indice' do array genérico.
    Resolve o problema de aritmética de ponteiros em outros arquivos.

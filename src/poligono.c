@@ -208,7 +208,7 @@ static Vertice obterInterseccaoMaisProxima(Lista anteparos, double xOrigem, doub
         Vertice v = calculaInterseccao(xOrigem, yOrigem, angulo, ant);
         if(v != NULL) {
             double dist = getDistanciaVertice(v);
-            if(dist > 1e-5 && dist < menorDistancia) { // Ignorar origem
+            if(dist > 1e-9 && dist < menorDistancia) { // Ignorar origem (epsilon minimo)
                 if(vMaisProximo != NULL) destroiVertice(vMaisProximo);
                 vMaisProximo = v;
                 menorDistancia = dist;
@@ -300,20 +300,27 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
              // Precisamos inseri-lo na árvore AGORA.
              
              // Calcula distância no ângulo inicial da varredura (-PI)
-             // Estamos usando -pi + epsilon para garantir 
              Vertice vInit = calculaInterseccao(xOrigem, yOrigem, -M_PI + 1e-4, (Anteparo)linha);
-             double distInit = (vInit != NULL) ? getDistanciaVertice(vInit) : 999999999.0;
+             double distInit;
              
-             printf("  -> Distancia em -PI: %.4f\n", distInit);
-             
-             if(vInit) destroiVertice(vInit);
-             
-             if(distInit < 999999999.0) {
-                 insereArvore(arvoreSegmentosAtivos, (Anteparo)linha, xOrigem, yOrigem, -M_PI, distInit);
-                 printf("  -> INSERIDO NA ARVORE (INIT)\n");
+             if(vInit != NULL) {
+                 distInit = getDistanciaVertice(vInit);
+                 destroiVertice(vInit);
              } else {
-                 printf("  -> FALHA AO CALCULAR INTERSECAO INIT\n");
+                 // Fallback: Se falhar interseção (ex: paralelo), usar menor distância dos pontos
+                 double dx1 = getX1Linha(linha) - xOrigem;
+                 double dy1 = getY1Linha(linha) - yOrigem;
+                 double dx2 = getX2Linha(linha) - xOrigem;
+                 double dy2 = getY2Linha(linha) - yOrigem;
+                 double d1 = sqrt(dx1*dx1 + dy1*dy1);
+                 double d2 = sqrt(dx2*dx2 + dy2*dy2);
+                 distInit = (d1 < d2) ? d1 : d2;
+                 printf("  -> Intersecao INIT falhou. Usando fallback dist: %.4f\n", distInit);
              }
+             
+             // Inserir SEMPRE se for wrap-around
+             insereArvore(arvoreSegmentosAtivos, (Anteparo)linha, xOrigem, yOrigem, -M_PI, distInit);
+             printf("  -> INSERIDO NA ARVORE (INIT)\n");
         }
 
         insereLista(todosVertices, v1);
@@ -407,7 +414,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
 // ... DENTRO DE calcularVisibilidade ...
 
         // Lógica ANTES do evento
-        double epsilon = calcularEpsilon(eventoAngulo);
+        double epsilon = 1e-5; // Valor fixo e robusto (antes era dinâmico e muito pequeno)
         double anguloAntes = eventoAngulo - epsilon;
         
         celulaArvore celMaisProxima = encontrarMinimoArvore(arvoreSegmentosAtivos);
@@ -440,7 +447,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         } else if (eventoTipo == 'f') {
             int idAnteparo = getIDAnteparo(eventoAnteparo);
             double dist = getDistanciaVertice(eventoVertice);
-            removerArvore(arvoreSegmentosAtivos, idAnteparo, xOrigem, yOrigem, eventoAngulo, dist);
+            removerArvore(arvoreSegmentosAtivos, idAnteparo);
             
             // Lógica PÓS remoção
             double anguloDepois = eventoAngulo + epsilon;
@@ -456,7 +463,7 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
         }
     }   
 
-    simplificarPoligono(p,0.5);
+    // simplificarPoligono(p,0.5);
 
     // FECHAR POLÍGONO (adicionar cópia do primeiro vértice no final)
     stPoligono* pol = (stPoligono*)p;
@@ -546,8 +553,8 @@ void adicionarVerticePoligono(Poligono p, Vertice v){
         
         double dist = sqrt((x - xExist)*(x - xExist) + (y - yExist)*(y - yExist));
         
-        // ✅ Tolerância de 2.0 pixels
-        if(dist < 2.0){
+        // ✅ Tolerância Fina para não deformar cantos vivos
+        if(dist < 0.01){
             // printf("  → REJEITADO! Muito próximo de (%.2f, %.2f) - distância: %.4f\n", xExist, yExist, dist);
             destroiVertice(v);
             return;

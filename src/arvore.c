@@ -42,14 +42,24 @@ celulaArvore insereRecursivo(celulaArvore cel,Anteparo an, double bx,double by,d
 
     Vertice novoVertice = calculaInterseccao(bx,by,angulo,celArv->anteparo);
 
-    //usar valor grande p indicar que não há intersecção
-    double dist_novoVertice = (novoVertice != NULL) ? getDistanciaVertice(novoVertice) : 999999999.0; 
-    if(novoVertice != NULL){
-        //erro ao criar o novo vertice
+    double dist_novoVertice;
+    if(novoVertice != NULL) {
+        dist_novoVertice = getDistanciaVertice(novoVertice);
         destroiVertice(novoVertice);
+    } else {
+        double x1 = getX1Linha((Linha)celArv->anteparo);
+        double y1 = getY1Linha((Linha)celArv->anteparo);
+        double x2 = getX2Linha((Linha)celArv->anteparo);
+        double y2 = getY2Linha((Linha)celArv->anteparo);
+        double d1 = sqrt(pow(x1-bx,2) + pow(y1-by,2));
+        double d2 = sqrt(pow(x2-bx,2) + pow(y2-by,2));
+        dist_novoVertice = (d1 < d2) ? d1 : d2;
     }
 
-    if(distAnteparo < dist_novoVertice){
+    // Modificado para <= : Em caso de empate (mesmo vértice), preferimos inserir à esquerda
+    // para que o novo segmento seja encontrado primeiro por encontrarMinimo.
+    // Isso é crucial para conexões de paredes onde Start == End.
+    if(distAnteparo <= dist_novoVertice){
         celArv->esquerda = insereRecursivo(celArv->esquerda,an,bx,by,angulo,distAnteparo);
     }else{
         celArv->direita = insereRecursivo(celArv->direita,an, bx,by,angulo, distAnteparo);
@@ -87,82 +97,73 @@ celulaArvore encontrarMinimoArvore(Arvore arv){
     return encontrarMinimo(arvore->raiz);
 }
 
-// Função auxiliar com flag de sucesso
-celulaArvore removerRecursivoComFlag(celulaArvore cel, int id, double bx, double by, double angulo, double distAnteparo, int* removido){
-    if(cel == NULL) {
-        *removido = 0;
-        return NULL;
+stCelulaArvore* removerNoEncontrado(stCelulaArvore* alvo) {
+    if(alvo->esquerda == NULL){
+        stCelulaArvore* temp = alvo->direita;
+        free(alvo);
+        return temp;
+    }else if(alvo->direita == NULL){
+        stCelulaArvore* temp = alvo->esquerda;
+        free(alvo);
+        return temp;
     }
+    
+    stCelulaArvore* paiSucessor = alvo;
+    stCelulaArvore* sucessor = alvo->direita;
+    
+    while(sucessor->esquerda != NULL){
+        paiSucessor = sucessor;
+        sucessor = sucessor->esquerda;
+    }
+    
+    alvo->anteparo = sucessor->anteparo;
+    
+    if(paiSucessor == alvo){
+        paiSucessor->direita = removerNoEncontrado(sucessor);
+    } else {
+        paiSucessor->esquerda = removerNoEncontrado(sucessor);
+    }
+    
+    return alvo;
+}
+
+stCelulaArvore* removerRecursivoID(stCelulaArvore* cel, int id, int* removido){
+    if(cel == NULL) return NULL;
 
     stCelulaArvore* celArv = (stCelulaArvore*)cel;
-
-    // Verificar se é o nó alvo
     int idAtual = getIDAnteparo(celArv->anteparo);
+
     if(id == idAtual){
         *removido = 1;
-        // Lógica de remoção
-        if(celArv->esquerda == NULL){
-            stCelulaArvore* temp = celArv->direita;
-            free(celArv);
-            return temp;
-        }else if(celArv->direita == NULL){
-            stCelulaArvore* temp = celArv->esquerda;
-            free(celArv);
-            return temp;
-        }
-        stCelulaArvore* sucessor = encontrarMinimo(celArv->direita);
-        celArv->anteparo = sucessor->anteparo;
-        // Recalcular para remover sucessor
-        Vertice vSuc = calculaInterseccao(bx, by, angulo, sucessor->anteparo);
-        double distSuc = (vSuc != NULL) ? getDistanciaVertice(vSuc) : 999999999.0;
-        if(vSuc != NULL) destroiVertice(vSuc);
-        
-        celArv->direita = removerRecursivoComFlag(celArv->direita, getIDAnteparo(sucessor->anteparo), bx, by, angulo, distSuc, removido);
-        return cel;
+        return removerNoEncontrado(celArv);
+    }
+    
+    int removidoEsq = 0;
+    celArv->esquerda = removerRecursivoID(celArv->esquerda, id, &removidoEsq);
+    if(removidoEsq) {
+        *removido = 1;
+        return celArv;
+    }
+    
+    int removidoDir = 0;
+    celArv->direita = removerRecursivoID(celArv->direita, id, &removidoDir);
+    if(removidoDir) {
+        *removido = 1;
+        return celArv;
     }
 
-    // Decisão de caminho
-    Vertice v = calculaInterseccao(bx, by, angulo, celArv->anteparo);
-    double distAtual;
-    if (v != NULL) {
-        distAtual = getDistanciaVertice(v);
-        destroiVertice(v);
-    } else {
-        distAtual = 999999999.0;
-    }
-
-    // Tentar caminho geométrico primeiro
-    if(distAnteparo < distAtual){
-        celArv->esquerda = removerRecursivoComFlag(celArv->esquerda, id, bx, by, angulo, distAnteparo, removido);
-        if(*removido) return cel;
-        
-        // Se não achou na esquerda, tenta direita (backtracking para corrigir erro numérico)
-        celArv->direita = removerRecursivoComFlag(celArv->direita, id, bx, by, angulo, distAnteparo, removido);
-    } else {
-        celArv->direita = removerRecursivoComFlag(celArv->direita, id, bx, by, angulo, distAnteparo, removido);
-        if(*removido) return cel;
-        
-        // Se não achou na direita, tenta esquerda
-        celArv->esquerda = removerRecursivoComFlag(celArv->esquerda, id, bx, by, angulo, distAnteparo, removido);
-    }
-
-    return cel;
+    return celArv;
 }
 
-celulaArvore removerRecursivo(celulaArvore cel, int id, double bx, double by, double angulo, double distAnteparo){
-    int removido = 0;
-    return removerRecursivoComFlag(cel, id, bx, by, angulo, distAnteparo, &removido);
-}
-
-void removerArvore(Arvore arv, int id, double bx, double by, double angulo, double distAnteparo){
+void removerArvore(Arvore arv, int id){
     if(arv == NULL){
         printf("Erro em removeArvore\n");
         return;
     }
     
     stArvore* arvore = (stArvore*)arv;
-    arvore->raiz = removerRecursivo(arvore->raiz, id, bx, by, angulo, distAnteparo);
-
+    int flag = 0;
+    arvore->raiz = removerRecursivoID(arvore->raiz, id, &flag);
 }
 
 void liberarNosRecursivo(stCelulaArvore* cel){

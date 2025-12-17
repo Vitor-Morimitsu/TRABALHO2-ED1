@@ -234,7 +234,7 @@ void comandoA(FILE* arqTxt, Lista formas, Lista anteparos, int inicio, int fim, 
                     liberaLinha(posTxt);
                 }
 
-                fprintf(arqTxt, "Id do texto: %d, figura original: Texto, id do anteparo: %d, pontos extremos do anteparo: (%lf,%lf),(%lf,%lf) e (%lf,%lf),(%lf,%lf)\n", id,id,x1,y1,x2,y2);
+                fprintf(arqTxt, "Id do texto: %d, figura original: Texto, id do anteparo: %d, pontos extremos do anteparo: (%lf,%lf) e (%lf,%lf)\n", id,id,x1,y1,x2,y2);
             } else {
                 liberaLinha(posTxt);
             }
@@ -282,8 +282,6 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
         printf("Erro em comandoD: parametros invalidos\n");
         return;
     }
-    
-    printf("Bomba em (%.2f, %.2f)\n", xBomba, yBomba);
     
     Poligono poligono = criarPoligono();
     if(poligono == NULL){
@@ -336,30 +334,6 @@ void comandoD(FILE* arqTxt, FILE* svgSfx, Lista anteparos, Lista formas, double 
         celula = proximaCelula;
     }
 
-    // celula = getPrimeiraCelulaLista(anteparos);
-    // while(celula != NULL){
-    //     Pacote pac = (Pacote)getConteudoCelula(celula);
-    //     CelulaLista proximaCelula = getProximaCelulaLista(celula);
-        
-    //     if(pac == NULL){
-    //         celula = proximaCelula;
-    //         continue;
-    //     }
-        
-    //     char tipo = getTipoPacote(pac);
-    //     int id = getIDPacote(pac);
-                
-    //     bool dentro = formaDentroPoligono(pac, poligono);
-        
-    //     if(dentro){
-    //         fprintf(arqTxt, "Anteparo destruído dentro do polígono de visibilidade: Tipo: %c, ID: %d\n", tipo, id);
-    //         formasDestruidas++;
-    //         removeLista(anteparos, id);
-    //     }
-        
-    //     celula = proximaCelula;
-    // }
-    
     printf("Formas destruídas: %d\n", formasDestruidas);
     
     fprintf(arqTxt, "Total de formas destruídas: %d\n\n", formasDestruidas);

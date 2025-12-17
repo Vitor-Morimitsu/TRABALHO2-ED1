@@ -1,7 +1,7 @@
 #include "geometria.h"
 
 #define pi 3.141592653589793
-#define epsilon 0.00001
+#define epsilon 0.001
 
 double distanciaEntrePontos(double x1, double y1, double x2, double y2){
     double dx = x2 - x1;
@@ -68,17 +68,20 @@ bool pontoEmPoligono(double px, double py, Lista verticesPoligono){
 
     int numVertices = getTamanhoLista(verticesPoligono);
 
-    Vertice* vertices = malloc(numVertices*sizeof(Vertice));
+    Vertice* vertices = calloc(numVertices, sizeof(Vertice));
     if(vertices == NULL){
         printf("Erro ao alocar memória em pontoEmPoligono\n");
         return false;
     }
 
     int i = 0;
-    while(cel!= NULL){
+    while(cel!= NULL && i < numVertices){
         vertices[i++] = (Vertice)getConteudoCelula(cel);
         cel = getProximaCelulaLista(cel);
     }
+    
+    // Ajustar numVertices para o que foi realmente lido (caso a lista fosse menor)
+    numVertices = i;
 
     int interseccoes = 0;
     for(int i = 0;i<numVertices; i++){

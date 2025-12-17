@@ -26,7 +26,7 @@ void insereArvore(Arvore arv, Anteparo an, double bx, double by, double angulo,d
 /*
     Função responsável por remover um conteudo da arvore pelo ID, necessitando dos dados geométricos para navegação.
 */
-void removerArvore(Arvore arv, int id, double bx, double by, double angulo, double distAnteparo);
+void removerArvore(Arvore arv, int id);
 
 /*
     Função responsável por liberar toda a memória da árvore
