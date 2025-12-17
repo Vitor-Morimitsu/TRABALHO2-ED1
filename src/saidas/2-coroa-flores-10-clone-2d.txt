@@ -1,0 +1,90 @@
+id do círculo: 75, figura original: círculo, id do anteparo: 100, pontos extremos: (272.000000,213.500000) e (332.000000,213.500000)
+id do círculo: 76, figura original: círculo, id do anteparo: 101, pontos extremos: (238.114082,283.864833) e (298.114082,283.864833)
+id do círculo: 77, figura original: círculo, id do anteparo: 102, pontos extremos: (161.973116,301.243512) e (221.973116,301.243512)
+id do círculo: 78, figura original: círculo, id do anteparo: 103, pontos extremos: (100.912802,252.549537) e (160.912802,252.549537)
+id do círculo: 79, figura original: círculo, id do anteparo: 104, pontos extremos: (100.912802,174.450463) e (160.912802,174.450463)
+id do círculo: 80, figura original: círculo, id do anteparo: 105, pontos extremos: (161.973116,125.756488) e (221.973116,125.756488)
+id do círculo: 81, figura original: círculo, id do anteparo: 106, pontos extremos: (238.114082,143.135167) e (298.114082,143.135167)
+id da linha: 82,figura original: Linha,id do anteparo: 107, pontos extremos do anteparo: (302.000000,213.500000) e (326.758589,238.238881)
+id da linha: 83,figura original: Linha,id do anteparo: 108, pontos extremos do anteparo: (268.114082,283.864833) e (292.872672,308.603715)
+id da linha: 84,figura original: Linha,id do anteparo: 109, pontos extremos do anteparo: (191.973116,301.243512) e (216.731705,325.982393)
+id da linha: 85,figura original: Linha,id do anteparo: 110, pontos extremos do anteparo: (130.912802,252.549537) e (155.671391,277.288418)
+id da linha: 86,figura original: Linha,id do anteparo: 111, pontos extremos do anteparo: (130.912802,174.450463) e (155.671391,199.189345)
+id da linha: 87,figura original: Linha,id do anteparo: 112, pontos extremos do anteparo: (191.973116,125.756488) e (216.731705,150.495369)
+id da linha: 88,figura original: Linha,id do anteparo: 113, pontos extremos do anteparo: (268.114082,143.135167) e (292.872672,167.874048)
+Id do texto: 89, figura original: Texto, id do anteparo: 89, pontos extremos do anteparo: (247.000000,213.500000) e (357.000000,213.500000)
+Id do texto: 90, figura original: Texto, id do anteparo: 90, pontos extremos do anteparo: (213.114082,283.864833) e (323.114082,283.864833)
+Id do texto: 91, figura original: Texto, id do anteparo: 91, pontos extremos do anteparo: (136.973116,301.243512) e (246.973116,301.243512)
+Id do texto: 92, figura original: Texto, id do anteparo: 92, pontos extremos do anteparo: (75.912802,252.549537) e (185.912802,252.549537)
+Id do texto: 93, figura original: Texto, id do anteparo: 93, pontos extremos do anteparo: (75.912802,174.450463) e (185.912802,174.450463)
+Id do texto: 94, figura original: Texto, id do anteparo: 94, pontos extremos do anteparo: (136.973116,125.756488) e (246.973116,125.756488)
+Id do texto: 95, figura original: Texto, id do anteparo: 95, pontos extremos do anteparo: (213.114082,143.135167) e (323.114082,143.135167)
+Clonagem na posição (200.00, 200.00)
+Deslocamento: dx=270.00, dy=270.00
+Formas clonadas:
+  - Texto ID 44 clonado para ID 75
+  - Linha ID 17 clonada para ID 76
+  - Retângulo ID 35 clonado para ID 77
+  - Linha ID 8 clonada para ID 78
+  - Linha ID 38 clonada para ID 79
+  - Círculo ID 39 clonado para ID 80
+  - Linha ID 68 clonada para ID 81
+  - Linha ID 36 clonada para ID 82
+  - Linha ID 6 clonada para ID 83
+  - Texto ID 24 clonado para ID 84
+  - Círculo ID 10 clonado para ID 85
+  - Círculo ID 19 clonado para ID 86
+  - Texto ID 74 clonado para ID 87
+  - Texto ID 14 clonado para ID 88
+  - Texto ID 22 clonado para ID 89
+  - Círculo ID 9 clonado para ID 90
+  - Círculo ID 11 clonado para ID 91
+  - Texto ID 13 clonado para ID 92
+  - Linha ID 37 clonada para ID 93
+  - Linha ID 18 clonada para ID 94
+  - Retângulo ID 65 clonado para ID 95
+  - Círculo ID 40 clonado para ID 96
+  - Círculo ID 20 clonado para ID 97
+  - Linha ID 16 clonada para ID 98
+  - Retângulo ID 15 clonado para ID 99
+  - Texto ID 42 clonado para ID 100
+  - Texto ID 43 clonado para ID 101
+  - Linha ID 7 clonada para ID 102
+  - Texto ID 23 clonado para ID 103
+  - Círculo ID 41 clonado para ID 104
+Total de formas clonadas: 30
+
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 44
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 17
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: r, ID: 35
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 8
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 38
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 39
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 68
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 36
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 6
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 24
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 10
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 19
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 74
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 14
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 22
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 9
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 11
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 13
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 37
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 18
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: r, ID: 65
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 40
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 20
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 16
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: r, ID: 15
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 42
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 43
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 7
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 23
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 41
+Total de formas destruídas: 30
+
+Total de formas destruídas: 0
+

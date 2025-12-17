@@ -536,7 +536,7 @@ void comandoCln(FILE* txt, FILE* svg, Lista formas, Lista anteparos, double x, d
         insereLista(formas, clone);
     }
     
-    liberaLista(clones);
+    liberarListaSemDestruirConteudo(clones);
     liberarPoligono(poligono);
 }
 

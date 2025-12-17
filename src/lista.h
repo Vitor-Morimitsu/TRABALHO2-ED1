@@ -98,4 +98,9 @@ Remove um item da lista com o id fornecido e retorna o conteúdo (sem liberar).
 */
 void* removeRetornaConteudo(Lista l, int id);
 
+/*
+    Libera a memória alocada para a estrutura da lista, mantendo os dados (conteúdo) intactos.
+    Útil quando o conteúdo foi transferido para outra lista.
+*/
+void liberarListaSemDestruirConteudo(Lista l);
 #endif

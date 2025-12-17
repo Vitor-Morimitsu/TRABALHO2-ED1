@@ -473,6 +473,24 @@ void liberaEstruturaLista(Lista l){
     free(lista);
 }
 
+void liberarListaSemDestruirConteudo(Lista l){
+    if(l == NULL) return;
+    
+    stLista* lista = (stLista*)l;
+    stCelula* temp = lista->inicio;
+    stCelula* proximo;
+    
+    //percorre a lista liberando cada célula, MAS NÃO O CONTEÚDO
+    while(temp != NULL) {
+        proximo = temp->proximo;
+        // Não chamamos liberarPacote aqui
+        free(temp);
+        temp = proximo;
+    }
+    
+    free(lista);
+}
+
 void removeDaListaPorConteudo(Lista l, void* conteudo) {
     if (l == NULL || conteudo == NULL) {
         return;

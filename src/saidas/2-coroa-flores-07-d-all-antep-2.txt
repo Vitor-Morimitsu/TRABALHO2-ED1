@@ -19,20 +19,19 @@ Id do texto: 92, figura original: Texto, id do anteparo: 92, pontos extremos do 
 Id do texto: 93, figura original: Texto, id do anteparo: 93, pontos extremos do anteparo: (75.912802,174.450463) e (185.912802,174.450463)
 Id do texto: 94, figura original: Texto, id do anteparo: 94, pontos extremos do anteparo: (136.973116,125.756488) e (246.973116,125.756488)
 Id do texto: 95, figura original: Texto, id do anteparo: 95, pontos extremos do anteparo: (213.114082,143.135167) e (323.114082,143.135167)
-Clonagem na posição (200.00, 200.00)
-Deslocamento: dx=270.00, dy=270.00
-Formas clonadas:
-  - Linha ID 17 clonada para ID 75
-  - Linha ID 68 clonada para ID 76
-  - Texto ID 24 clonado para ID 77
-  - Círculo ID 19 clonado para ID 78
-  - Texto ID 74 clonado para ID 79
-  - Texto ID 22 clonado para ID 80
-  - Linha ID 18 clonada para ID 81
-  - Retângulo ID 65 clonado para ID 82
-  - Círculo ID 20 clonado para ID 83
-  - Linha ID 16 clonada para ID 84
-  - Retângulo ID 15 clonado para ID 85
-  - Texto ID 23 clonado para ID 86
-Total de formas clonadas: 12
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 17
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 68
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 24
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 19
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 74
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 22
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 18
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: r, ID: 65
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: c, ID: 20
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: l, ID: 16
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: r, ID: 15
+Características da forma destruída presente dentro do polígono de visibilidade: Tipo: t, ID: 23
+Total de formas destruídas: 12
+
+Total de formas destruídas: 0
 

@@ -484,20 +484,41 @@ void calcularVisibilidade(Poligono p, Lista anteparos, double xOrigem, double yO
 bool pontoNoPoligono(Poligono p, double x, double y){
     if(p == NULL) return false;
     
-    int numVertices = getNumeroVertices(p);
+    stPoligono* pol = (stPoligono*)p; // Cast necessario para acessar lista interna
+    int numVertices = getTamanhoLista(pol->vertices);
     if(numVertices < 3) return false;
     
     int interseccoes = 0;
     
+    CelulaLista celulaAtual = getPrimeiraCelulaLista(pol->vertices);
+    CelulaLista celulaProx;
+    
+    // Percorre a lista uma única vez (O(N)) em vez de chamar getVertice(i) (O(N^2))
     for(int i = 0; i < numVertices; i++){
-        double x1, y1, x2, y2;
-        getVerticePoligono(p, i, &x1, &y1);
-        getVerticePoligono(p, (i + 1) % numVertices, &x2, &y2);
+        Vertice v1 = (Vertice)getConteudoCelula(celulaAtual);
         
+        // Pega próximo (ou volta ao início para fechar o ciclo)
+        if(i == numVertices - 1){
+            celulaProx = getPrimeiraCelulaLista(pol->vertices);
+        } else {
+            celulaProx = getProximaCelulaLista(celulaAtual);
+        }
+        Vertice v2 = (Vertice)getConteudoCelula(celulaProx);
+        
+        double x1 = getXVertice(v1);
+        double y1 = getYVertice(v1);
+        double x2 = getXVertice(v2);
+        double y2 = getYVertice(v2);
+        
+        // Algoritmo Ray Casting (Crossing Number)
         if(((y1 > y) != (y2 > y)) && 
            (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1)){
             interseccoes++;
         }
+        
+        celulaAtual = celulaProx;
+        // Nota: no último passo, celulaAtual volta pro inicio, mas o loop acaba.
+        // Se não fosse o 'if' do elo fechado, usaríamos apenas celulaAtual->proximo
     }
     
     return (interseccoes % 2) == 1;
